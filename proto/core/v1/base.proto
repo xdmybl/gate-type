@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package base.core.v1;
 
-option go_package = "github.com/xdmybl/gate-type/apis/core/v1";
+option go_package = "github.com/xdmybl/gate-type/api/core/v1";
 
 import "validate/validate.proto";
 
-import "protobuf/core/v1/types.proto";
+import "proto/core/v1/types.proto";
 
 message ResourceRef {
     // Defaults to `default`

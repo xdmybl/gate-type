@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package types.core.v1;
 
-option go_package = "github.com/xdmybl/gate-type/apis/core/v1";
+option go_package = "github.com/xdmybl/gate-type/api/core/v1";
 
 // Specifies the int64 start and end of the range using half-open interval semantics [start,
 // end).
