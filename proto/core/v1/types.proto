@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package types.core.v1;
+
+option go_package = "github.com/xdmybl/gate-type/apis/core/v1";
+
+// Specifies the int64 start and end of the range using half-open interval semantics [start,
+// end).
+message Int64Range {
+    // start of the range (inclusive)
+    int64 start = 1;
+
+    // end of the range (exclusive)
+    int64 end = 2;
+}
+
+// Specifies the int32 start and end of the range using half-open interval semantics [start,
+// end).
+message Int32Range {
+    // start of the range (inclusive)
+    int32 start = 1;
+
+    // end of the range (exclusive)
+    int32 end = 2;
+}
+
+// Specifies the double start and end of the range using half-open interval semantics [start,
+// end).
+message DoubleRange {
+    // start of the range (inclusive)
+    double start = 1;
+
+    // end of the range (exclusive)
+    double end = 2;
+}
+
+message Timestamp {
+    // Represents seconds of UTC time since Unix epoch
+    // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+    // 9999-12-31T23:59:59Z inclusive.
+    int64 seconds = 1;
+  
+    // Non-negative fractions of a second at nanosecond resolution. Negative
+    // second values with fractions must still have non-negative nanos values
+    // that count forward in time. Must be from 0 to 999,999,999
+    // inclusive.
+    int32 nanos = 2;
+  }

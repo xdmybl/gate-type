@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package certificate.common.v1;
+
+option go_package = "github.com/xdmybl/gate-type/api/common/v1";
+
+// import "validate/validate.proto";
+
+import "proto/core/v1/types.proto";
+
+message Certificate {
+    // 证书文件bytes
+    bytes raw = 1;
+
+    CertificateData data = 2;
+
+    string signatureAlgorithm = 3;
+    
+    string signatureHashAlgorithm = 4;
+}
+
+message CertificateData {
+
+    string version = 1;
+
+    string serialNumber = 2;
+
+    string signatureAlgorithm = 3;
+
+    string signatureHashAlgorithm = 4;
+
+    // 颁发者
+    repeated Names isuser = 5;
+
+    Validity validity = 6;
+
+    // 使用者
+    repeated Names subject = 7;
+
+    SubjectPublicKeyInfo subjectPublicKeyInfo = 8;
+
+    Extensions extensions = 9;
+}
+
+message Names {
+
+    // CN
+    string commonName = 1;
+
+    // OU
+    string organizationUint = 2;
+
+    // O
+    string organization = 3;
+
+    // C
+    string country = 4;
+
+    // ST
+    string stateOrProvince = 5;
+
+    // L
+    string locality = 6;
+}
+
+message Validity {
+    types.core.v1.Timestamp notBefore = 1;
+
+    types.core.v1.Timestamp notAfter = 2;
+}
+
+message SubjectPublicKeyInfo {
+    string algorithm = 1;
+
+    string length = 2;
+
+    string thumbprint = 3;
+
+    string thumbprintAlgorithm = 4;
+}
+
+message Extensions {
+    repeated string subjectAlternativeNames = 4;
+}

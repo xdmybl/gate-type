@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package base.core.v1;
+
+option go_package = "github.com/xdmybl/gate-type/apis/core/v1";
+
+import "validate/validate.proto";
+
+import "protobuf/core/v1/types.proto";
+
+message ResourceRef {
+    // Defaults to `default`
+    string namespace = 1 [
+        (validate.rules).string = {
+            pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+            max_len: 63
+        }
+    ];
+
+    string name = 2 [
+        (validate.rules).string = {
+            pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+            max_len: 63
+        }
+    ];
+
+    string group = 3;
+
+    string version = 4;
+
+    string kind = 5;
+}
+
+message CommonInfo {
+    string name = 1 [(validate.rules).string = {max_len: 128}];
+
+    string description = 2 [(validate.rules).string = {max_len: 512}];
+
+    enum Source {
+        CustomDefinition = 0;
+        AdminDefinition = 1;
+    }
+
+    Source source = 3 [(validate.rules).enum.defined_only = true];
+
+    bool disabled = 4;
+
+    types.core.v1.Timestamp updationDatetime = 5;
+}
