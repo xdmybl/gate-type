@@ -13,18 +13,28 @@ tidy:
 
 PROTO_FILES := $(shell find proto -name "*.proto" -type f)
 
+# 列出 tmp 目录下所有文件和目录的相对路径, -A 排除 . ..
+TMP_DIRS := $(shell ls -A tmp | sed "s|^|tmp/|")
+# 是否为空目录
+IS_TMP_HAS_FILE := $(shell ls -A tmp)
+
 .PHONY: run
 run:
 	# 这个指令报错的话可能是因为 protoc-gen-validate 版本不合适. 可参考 上面 install_tools
 	# 这个 for 很容易错, 主要是 ; 要加上, 不然会报错
+	# @if [ -d tmp ] && [ "$(ls -A tmp)" ]; then rm -r $$TMP_DIRS ; else mkdir -p tmp;  fi
+	@if [ -d tmp ] && [ $(IS_TMP_HAS_FILE) ]; then rm -r $(TMP_DIRS) ; else mkdir -p tmp;  fi
+
 	@for file in $(PROTO_FILES); do \
 		echo "根据 proto 文件  $$file, 生成 golang 文件"; \
 		protoc --go_out="paths=source_relative:tmp" -I . -I ${HOME}/go/pkg/mod/github.com/envoyproxy/protoc-gen-validate@v0.6.7 $$file ; \
     done
 	@echo "完成 golang type 的生成"
 	@echo "正在拷贝到 api 目录中"
-	@cp -r tmp/proto/* api
 
+.PHONY: copy
+copy:
+	@cp -r tmp/proto/* api
 
 
 	#go run api/generate.go
