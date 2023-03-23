@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package gate;
+
+option go_package = "github.com/xdmybl/gate-type/pkg/api/gate/v1";
+
+import "validate/validate.proto";
+
+import "proto/common/v1/base.proto";
+import "proto/common/v1/certificate.proto";
+import "proto/common/v1/tls.proto";
+
+message SslCertificateSpec {
+  common.v1.CommonInfo commonInfo = 1;
+
+  common.v1.Certificate certificateInfo = 2;
+
+  string certificateChain = 3;
+
+  string privateKey = 4;
+
+  // The password to decrypt the TLS private key. If this field is not set, it is assumed that the TLS private key is not password encrypted.
+  string password = 5 [
+    (validate.rules).string = {
+      max_bytes : 128
+    }
+  ];
+
+  common.v1.TlsParameters tlsParameters = 6;
+
+  // Set Application Level Protocol Negotiation
+  // If empty, defaults to ["h2", "http/1.1"].
+  repeated string alpnProtocols = 7 [
+    (validate.rules).repeated = {
+      ignore_empty: true,
+      unique: true,
+      items: {
+        string: {
+          in: ["h2,http/1.1", "http/1.1"]
+        }
+      }
+    }
+  ];
+}

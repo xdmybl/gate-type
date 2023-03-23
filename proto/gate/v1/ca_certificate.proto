@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package gate;
+
+option go_package = "github.com/xdmybl/gate-type/pkg/api/gate/v1";
+
+import "validate/validate.proto";
+import "proto/common/v1/base.proto";
+import "proto/common/v1/certificate.proto";
+import "proto/common/v1/tls.proto";
+
+message CaCertificateSpec {
+    common.v1.CommonInfo commonInfo = 1;
+
+    common.v1.Certificate certificateInfo = 2;
+
+    string ca = 3;
+
+    string crl = 5;
+
+    bool allowExpiredCertificate = 6;
+
+    common.v1.TlsParameters tlsParameters = 7;
+
+    // Set Application Level Protocol Negotiation
+    // If empty, defaults to ["h2", "http/1.1"].
+    repeated string alpnProtocols = 8 [
+        (validate.rules).repeated = {
+            ignore_empty: true,
+            unique: true,
+            items: {
+                string: {
+                    in: ["h2,http/1.1", "http/1.1"]
+                }
+            }
+        }
+    ];
+}

@@ -1,10 +1,8 @@
 syntax = "proto3";
 
-package certificate.common.v1;
+package common.v1;
 
-option go_package = "github.com/xdmybl/gate-type/api/common/v1";
-
-// import "validate/validate.proto";
+option go_package = "github.com/xdmybl/gate-type/pkg/api/common/v1";
 
 import "proto/core/v1/types.proto";
 
@@ -64,9 +62,9 @@ message Names {
 }
 
 message Validity {
-    types.core.v1.Timestamp notBefore = 1;
+    core.v1.Timestamp notBefore = 1;
 
-    types.core.v1.Timestamp notAfter = 2;
+    core.v1.Timestamp notAfter = 2;
 }
 
 message SubjectPublicKeyInfo {

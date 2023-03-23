@@ -1,11 +1,10 @@
 syntax = "proto3";
 
-package types.core.v1;
+package core.v1;
 
-option go_package = "github.com/xdmybl/gate-type/api/core/v1";
+option go_package = "github.com/xdmybl/gate-type/pkg/api/core/v1";
 
-// Specifies the int64 start and end of the range using half-open interval semantics [start,
-// end).
+
 message Int64Range {
     // start of the range (inclusive)
     int64 start = 1;
@@ -45,4 +44,4 @@ message Timestamp {
     // that count forward in time. Must be from 0 to 999,999,999
     // inclusive.
     int32 nanos = 2;
-  }
+}
