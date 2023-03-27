@@ -5,6 +5,63 @@ package common.v1;
 option go_package = "github.com/xdmybl/gate-type/pkg/api/common/v1";
 
 import "validate/validate.proto";
+import "proto/common/v1/base.proto";
+
+enum TlsMode {
+    TLS_NONE = 0;
+    TLS_V1_SIMPLE = 1;
+    TLS_V1_MUTUAL = 2;
+    TLS_V1_PASS_THROUGH = 3;
+    TLS_V1_AUTO_PASS_THROUGH = 4;
+}
+
+// For Gateway(Downstream)
+message TlsServer {
+    TlsMode tlsMode = 1 [(validate.rules).enum.defined_only = true];
+
+    common.v1.ResourceRef caCertRef = 2;
+
+    common.v1.ResourceRef sslCertRef = 3;
+
+    // optional. the SNI domains that should be considered for TLS connections
+    repeated string sniDomains = 4 [
+        (validate.rules).repeated = {
+            ignore_empty: true,
+            unique: true,
+            max_items: 128,
+            items: {
+                string: {
+                    min_bytes: 1,
+                    max_bytes: 63,
+                    pattern: "^(\\*\\.)?[a-zA-Z0-9-\\.]+$"
+                }
+            }
+        }
+    ];
+
+    bool requireClientCertificate = 5;
+}
+
+// For Upstream
+message TlsClient {
+    TlsMode tlsMode = 1;
+
+    common.v1.ResourceRef caCertRef = 2;
+
+    common.v1.ResourceRef sslCertRef = 3;
+
+    // Optional
+    string sni = 4 [
+        (validate.rules).string = {
+            ignore_empty: true,
+            max_bytes: 63,
+            pattern: "^(\\*\\.)?[a-zA-Z0-9-\\.]+$"
+        }
+    ];
+
+    bool allowRenegotiation = 5;
+}
+
 
 // General TLS parameters. See the [envoy docs](https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/auth/cert.proto#envoy-api-enum-auth-tlsparameters-tlsprotocol)
 // for more information on the meaning of these values.

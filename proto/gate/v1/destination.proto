@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package gate;
+
+option go_package = "github.com/xdmybl/gate-type/pkg/api/gate/v1";
+
+import "validate/validate.proto";
+
+import "proto/common/v1/base.proto";
+import "proto/common/v1/headers.proto";
+import "proto/common/v1/tls.proto";
+
+
+message UpstreamSpec {
+  common.v1.CommonInfo commonInfo = 1;
+
+  enum LbPolicy{
+    reserved 4;
+
+    // Refer to the :ref:`round robin load balancing
+    // policy<arch_overview_load_balancing_types_round_robin>`
+    // for an explanation.
+    ROUND_ROBIN = 0;
+
+    // Refer to the :ref:`least request load balancing
+    // policy<arch_overview_load_balancing_types_least_request>`
+    // for an explanation.
+    LEAST_REQUEST = 1;
+
+    // Refer to the :ref:`ring hash load balancing
+    // policy<arch_overview_load_balancing_types_ring_hash>`
+    // for an explanation.
+    RING_HASH = 2;
+
+    // Refer to the :ref:`random load balancing
+    // policy<arch_overview_load_balancing_types_random>`
+    // for an explanation.
+    RANDOM = 3;
+
+    // Refer to the :ref:`Maglev load balancing policy<arch_overview_load_balancing_types_maglev>`
+    // for an explanation.
+    MAGLEV = 5;
+  }
+
+  LbPolicy lbAlg = 2 [(validate.rules).enum.defined_only = true];
+
+  common.v1.TlsClient sslConfigurations = 3;
+
+  ConnPoll connPoll = 4;
+
+  common.v1.ResourceRef healthCheckRef = 5;
+
+  common.v1.StatefulSession statefulSession = 6;
+
+  repeated common.v1.Endpoint endpoints = 7 [
+    (validate.rules).repeated = {
+      min_items: 1,
+      max_items: 64
+    }
+  ];
+}
+
+message ConnPoll{
+
+  // 限制每个连接可以承载的连接个数，0表示不受限制，1表示一个连接服务一个请求后就被关闭，
+  // 也就是禁用连接复用。默认值为0。
+  uint32 maxRequestsPerConnection = 1;
+
+  // 访问该集群的最大发连接数，默认值-1 (2^32-1 = 4294967295)。
+  int64 maxConnections = 2 [
+    (validate.rules).int64 = {
+      gte: -1,
+      lt: 4294967295
+    }
+  ];
+
+  // 访问该集群的最大并发请求数，默认值-1(2^32-1)。
+  int64 maxRequests = 3 [
+    (validate.rules).int64 = {
+      gte: -1,
+      lt: 4294967295
+    }
+  ];
+
+  // 最大阻塞的请求数，默认值-1(2^32-1)。
+  int64 maxPendingRequests = 4 [
+    (validate.rules).int64 = {
+      gte: -1,
+      lt: 4294967295
+    }
+  ];
+
+  // 最大重试数，默认值3。
+  // uint32 maxRetries = 5 [
+  //     (validate.rules).uint32 = {
+  //         gte: 3
+  //     }
+  // ];
+
+  // 指定出口网卡, 通过IP来指定网卡
+  string outboundSourceAddress = 6 [
+    (validate.rules).string = {
+      ignore_empty: true,
+      ip: true,
+    }
+  ];
+}
+
+message WeightedUpstreamList {
+
+  uint32 weight = 1 [(validate.rules).uint32 = {gte: 1}];
+
+  common.v1.ResourceRef upstreamRef = 2;
+
+  common.v1.HeaderManipulation headerManipulation  = 3 [(validate.rules).message.required = true];
+}

@@ -68,6 +68,55 @@ func (CommonInfo_Source) EnumDescriptor() ([]byte, []int) {
 	return file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_rawDescGZIP(), []int{1, 0}
 }
 
+type StatefulSession_Type int32
+
+const (
+	StatefulSession_UNKNOWN StatefulSession_Type = 0
+	StatefulSession_COOKIE  StatefulSession_Type = 1
+	StatefulSession_SESSION StatefulSession_Type = 2
+)
+
+// Enum value maps for StatefulSession_Type.
+var (
+	StatefulSession_Type_name = map[int32]string{
+		0: "UNKNOWN",
+		1: "COOKIE",
+		2: "SESSION",
+	}
+	StatefulSession_Type_value = map[string]int32{
+		"UNKNOWN": 0,
+		"COOKIE":  1,
+		"SESSION": 2,
+	}
+)
+
+func (x StatefulSession_Type) Enum() *StatefulSession_Type {
+	p := new(StatefulSession_Type)
+	*p = x
+	return p
+}
+
+func (x StatefulSession_Type) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (StatefulSession_Type) Descriptor() protoreflect.EnumDescriptor {
+	return file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_enumTypes[1].Descriptor()
+}
+
+func (StatefulSession_Type) Type() protoreflect.EnumType {
+	return &file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_enumTypes[1]
+}
+
+func (x StatefulSession_Type) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use StatefulSession_Type.Descriptor instead.
+func (StatefulSession_Type) EnumDescriptor() ([]byte, []int) {
+	return file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_rawDescGZIP(), []int{2, 0}
+}
+
 type ResourceRef struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -227,6 +276,142 @@ func (x *CommonInfo) GetUpdatedDatetime() *v1.Timestamp {
 	return nil
 }
 
+type StatefulSession struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Type StatefulSession_Type `protobuf:"varint,1,opt,name=type,proto3,enum=common.v1.StatefulSession_Type" json:"type,omitempty"`
+	Name string               `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// only for COOKIE
+	Ttl *v1.Timestamp `protobuf:"bytes,3,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	// only for COOKIE
+	Path string `protobuf:"bytes,4,opt,name=path,proto3" json:"path,omitempty"`
+}
+
+func (x *StatefulSession) Reset() {
+	*x = StatefulSession{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StatefulSession) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatefulSession) ProtoMessage() {}
+
+func (x *StatefulSession) ProtoReflect() protoreflect.Message {
+	mi := &file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatefulSession.ProtoReflect.Descriptor instead.
+func (*StatefulSession) Descriptor() ([]byte, []int) {
+	return file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *StatefulSession) GetType() StatefulSession_Type {
+	if x != nil {
+		return x.Type
+	}
+	return StatefulSession_UNKNOWN
+}
+
+func (x *StatefulSession) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *StatefulSession) GetTtl() *v1.Timestamp {
+	if x != nil {
+		return x.Ttl
+	}
+	return nil
+}
+
+func (x *StatefulSession) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+type Endpoint struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Address             string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Port                uint32 `protobuf:"varint,2,opt,name=port,proto3" json:"port,omitempty"`
+	LoadBalancingWeight uint32 `protobuf:"varint,3,opt,name=loadBalancingWeight,proto3" json:"loadBalancingWeight,omitempty"`
+}
+
+func (x *Endpoint) Reset() {
+	*x = Endpoint{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Endpoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Endpoint) ProtoMessage() {}
+
+func (x *Endpoint) ProtoReflect() protoreflect.Message {
+	mi := &file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Endpoint.ProtoReflect.Descriptor instead.
+func (*Endpoint) Descriptor() ([]byte, []int) {
+	return file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Endpoint) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *Endpoint) GetPort() uint32 {
+	if x != nil {
+		return x.Port
+	}
+	return 0
+}
+
+func (x *Endpoint) GetLoadBalancingWeight() uint32 {
+	if x != nil {
+		return x.LoadBalancingWeight
+	}
+	return 0
+}
+
 var File_github_com_xdmybl_gate_type_proto_common_v1_base_proto protoreflect.FileDescriptor
 
 var file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_rawDesc = []byte{
@@ -273,11 +458,34 @@ var file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_rawDesc = []byte
 	0x44, 0x61, 0x74, 0x65, 0x74, 0x69, 0x6d, 0x65, 0x22, 0x33, 0x0a, 0x06, 0x53, 0x6f, 0x75, 0x72,
 	0x63, 0x65, 0x12, 0x14, 0x0a, 0x10, 0x43, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x44, 0x65, 0x66, 0x69,
 	0x6e, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x10, 0x00, 0x12, 0x13, 0x0a, 0x0f, 0x41, 0x64, 0x6d, 0x69,
-	0x6e, 0x44, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x10, 0x01, 0x42, 0x2f, 0x5a,
-	0x2d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x78, 0x64, 0x6d, 0x79,
-	0x62, 0x6c, 0x2f, 0x67, 0x61, 0x74, 0x65, 0x2d, 0x74, 0x79, 0x70, 0x65, 0x2f, 0x70, 0x6b, 0x67,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6e, 0x44, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x10, 0x01, 0x22, 0xe4, 0x01,
+	0x0a, 0x0f, 0x53, 0x74, 0x61, 0x74, 0x65, 0x66, 0x75, 0x6c, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x12, 0x3d, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x1f, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x61, 0x74,
+	0x65, 0x66, 0x75, 0x6c, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x54, 0x79, 0x70, 0x65,
+	0x42, 0x08, 0xfa, 0x42, 0x05, 0x82, 0x01, 0x02, 0x10, 0x01, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65,
+	0x12, 0x1e, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x0a,
+	0xfa, 0x42, 0x07, 0x72, 0x05, 0x20, 0x01, 0x28, 0x80, 0x01, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x12, 0x24, 0x0a, 0x03, 0x74, 0x74, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e,
+	0x63, 0x6f, 0x72, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x52, 0x03, 0x74, 0x74, 0x6c, 0x12, 0x1e, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x0a, 0xfa, 0x42, 0x07, 0x72, 0x05, 0x20, 0x01, 0x28, 0x80, 0x01,
+	0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x22, 0x2c, 0x0a, 0x04, 0x54, 0x79, 0x70, 0x65, 0x12, 0x0b,
+	0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x43,
+	0x4f, 0x4f, 0x4b, 0x49, 0x45, 0x10, 0x01, 0x12, 0x0b, 0x0a, 0x07, 0x53, 0x45, 0x53, 0x53, 0x49,
+	0x4f, 0x4e, 0x10, 0x02, 0x22, 0x8c, 0x01, 0x0a, 0x08, 0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e,
+	0x74, 0x12, 0x22, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x08, 0xfa, 0x42, 0x05, 0x72, 0x03, 0xa8, 0x01, 0x01, 0x52, 0x07, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x1f, 0x0a, 0x04, 0x70, 0x6f, 0x72, 0x74, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0d, 0x42, 0x0b, 0xfa, 0x42, 0x08, 0x2a, 0x06, 0x18, 0xff, 0xff, 0x03, 0x28, 0x01,
+	0x52, 0x04, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x3b, 0x0a, 0x13, 0x6c, 0x6f, 0x61, 0x64, 0x42, 0x61,
+	0x6c, 0x61, 0x6e, 0x63, 0x69, 0x6e, 0x67, 0x57, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x0d, 0x42, 0x09, 0xfa, 0x42, 0x06, 0x2a, 0x04, 0x28, 0x01, 0x40, 0x01, 0x52, 0x13,
+	0x6c, 0x6f, 0x61, 0x64, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x69, 0x6e, 0x67, 0x57, 0x65, 0x69,
+	0x67, 0x68, 0x74, 0x42, 0x2f, 0x5a, 0x2d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x78, 0x64, 0x6d, 0x79, 0x62, 0x6c, 0x2f, 0x67, 0x61, 0x74, 0x65, 0x2d, 0x74, 0x79,
+	0x70, 0x65, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -292,22 +500,27 @@ func file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_rawDescGZIP() [
 	return file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_rawDescData
 }
 
-var file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_goTypes = []interface{}{
-	(CommonInfo_Source)(0), // 0: common.v1.CommonInfo.Source
-	(*ResourceRef)(nil),    // 1: common.v1.ResourceRef
-	(*CommonInfo)(nil),     // 2: common.v1.CommonInfo
-	(*v1.Timestamp)(nil),   // 3: core.v1.Timestamp
+	(CommonInfo_Source)(0),    // 0: common.v1.CommonInfo.Source
+	(StatefulSession_Type)(0), // 1: common.v1.StatefulSession.Type
+	(*ResourceRef)(nil),       // 2: common.v1.ResourceRef
+	(*CommonInfo)(nil),        // 3: common.v1.CommonInfo
+	(*StatefulSession)(nil),   // 4: common.v1.StatefulSession
+	(*Endpoint)(nil),          // 5: common.v1.Endpoint
+	(*v1.Timestamp)(nil),      // 6: core.v1.Timestamp
 }
 var file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_depIdxs = []int32{
 	0, // 0: common.v1.CommonInfo.source:type_name -> common.v1.CommonInfo.Source
-	3, // 1: common.v1.CommonInfo.updatedDatetime:type_name -> core.v1.Timestamp
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	6, // 1: common.v1.CommonInfo.updatedDatetime:type_name -> core.v1.Timestamp
+	1, // 2: common.v1.StatefulSession.type:type_name -> common.v1.StatefulSession.Type
+	6, // 3: common.v1.StatefulSession.ttl:type_name -> core.v1.Timestamp
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_init() }
@@ -340,14 +553,38 @@ func file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_init() {
 				return nil
 			}
 		}
+		file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StatefulSession); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Endpoint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_github_com_xdmybl_gate_type_proto_common_v1_base_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   2,
+			NumEnums:      2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -8,3 +8,9 @@
 
     找到相应的行, 先注释 import 的那一行, 再 go mod tidy, 即可. 
 
+#### go run main.go 报错
+    找不到某包: 是因为 proto 文件的 package 填错了
+
+#### go run main.go 后生成的 golang 文件有报错
+    zz_generated.deepcopy.go, xx.pb.go 文件报错, proto 文件存放的目录有问题, 换一个目录试试.
+    

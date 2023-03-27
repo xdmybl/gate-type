@@ -47,3 +47,39 @@ message CommonInfo {
 
     core.v1.Timestamp updatedDatetime = 5;
 }
+
+message StatefulSession {
+    enum Type {
+        UNKNOWN = 0;
+        COOKIE = 1;
+        SESSION = 2;
+    }
+
+    Type type = 1 [(validate.rules).enum.defined_only = true];
+
+    string name = 2 [(validate.rules).string = {min_bytes: 1, max_bytes: 128}];
+
+    // only for COOKIE
+    core.v1.Timestamp ttl = 3;
+
+    // only for COOKIE
+    string path = 4 [(validate.rules).string = {min_bytes: 1, max_bytes: 128}];
+}
+
+message Endpoint {
+    string address = 1 [(validate.rules).string.address = true];
+
+    uint32 port = 2 [
+        (validate.rules).uint32 = {
+            gte: 1,
+            lte: 65535
+        }
+    ];
+
+    uint32 loadBalancingWeight = 3 [
+        (validate.rules).uint32 = {
+            ignore_empty: true,
+            gte: 1
+        }
+    ];
+}
