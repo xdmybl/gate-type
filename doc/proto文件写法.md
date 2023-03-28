@@ -19,3 +19,7 @@ option go_package = "github.com/example/protobuf";
 
 这将告诉编译器将生成的 Go 代码放在 `github.com/example/protobuf` 这个包中。
 
+### common core gate 目录使用方法
+core 里面存放只被引用的类型, 从不引用项目中其它文件
+common 中存放只引用 core 的类型
+gate 存放所有的 spec 对象
