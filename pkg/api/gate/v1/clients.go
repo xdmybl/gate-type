@@ -45,6 +45,8 @@ type Clientset interface {
 	SslCertificates() SslCertificateClient
 	// clienset for the gate/v1/v1 APIs
 	Upstreams() UpstreamClient
+	// clienset for the gate/v1/v1 APIs
+	Gateways() GatewayClient
 }
 
 type clientSet struct {
@@ -82,6 +84,11 @@ func (c *clientSet) SslCertificates() SslCertificateClient {
 // clienset for the gate/v1/v1 APIs
 func (c *clientSet) Upstreams() UpstreamClient {
 	return NewUpstreamClient(c.client)
+}
+
+// clienset for the gate/v1/v1 APIs
+func (c *clientSet) Gateways() GatewayClient {
+	return NewGatewayClient(c.client)
 }
 
 // Reader knows how to read and list CaCertificates.
@@ -508,4 +515,146 @@ func (m *multiclusterUpstreamClient) Cluster(cluster string) (UpstreamClient, er
 		return nil, err
 	}
 	return NewUpstreamClient(client), nil
+}
+
+// Reader knows how to read and list Gateways.
+type GatewayReader interface {
+	// Get retrieves a Gateway for the given object key
+	GetGateway(ctx context.Context, key client.ObjectKey) (*Gateway, error)
+
+	// List retrieves list of Gateways for a given namespace and list options.
+	ListGateway(ctx context.Context, opts ...client.ListOption) (*GatewayList, error)
+}
+
+// GatewayTransitionFunction instructs the GatewayWriter how to transition between an existing
+// Gateway object and a desired on an Upsert
+type GatewayTransitionFunction func(existing, desired *Gateway) error
+
+// Writer knows how to create, delete, and update Gateways.
+type GatewayWriter interface {
+	// Create saves the Gateway object.
+	CreateGateway(ctx context.Context, obj *Gateway, opts ...client.CreateOption) error
+
+	// Delete deletes the Gateway object.
+	DeleteGateway(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error
+
+	// Update updates the given Gateway object.
+	UpdateGateway(ctx context.Context, obj *Gateway, opts ...client.UpdateOption) error
+
+	// Patch patches the given Gateway object.
+	PatchGateway(ctx context.Context, obj *Gateway, patch client.Patch, opts ...client.PatchOption) error
+
+	// DeleteAllOf deletes all Gateway objects matching the given options.
+	DeleteAllOfGateway(ctx context.Context, opts ...client.DeleteAllOfOption) error
+
+	// Create or Update the Gateway object.
+	UpsertGateway(ctx context.Context, obj *Gateway, transitionFuncs ...GatewayTransitionFunction) error
+}
+
+// StatusWriter knows how to update status subresource of a Gateway object.
+type GatewayStatusWriter interface {
+	// Update updates the fields corresponding to the status subresource for the
+	// given Gateway object.
+	UpdateGatewayStatus(ctx context.Context, obj *Gateway, opts ...client.UpdateOption) error
+
+	// Patch patches the given Gateway object's subresource.
+	PatchGatewayStatus(ctx context.Context, obj *Gateway, patch client.Patch, opts ...client.PatchOption) error
+}
+
+// Client knows how to perform CRUD operations on Gateways.
+type GatewayClient interface {
+	GatewayReader
+	GatewayWriter
+	GatewayStatusWriter
+}
+
+type gatewayClient struct {
+	client client.Client
+}
+
+func NewGatewayClient(client client.Client) *gatewayClient {
+	return &gatewayClient{client: client}
+}
+
+func (c *gatewayClient) GetGateway(ctx context.Context, key client.ObjectKey) (*Gateway, error) {
+	obj := &Gateway{}
+	if err := c.client.Get(ctx, key, obj); err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
+func (c *gatewayClient) ListGateway(ctx context.Context, opts ...client.ListOption) (*GatewayList, error) {
+	list := &GatewayList{}
+	if err := c.client.List(ctx, list, opts...); err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
+func (c *gatewayClient) CreateGateway(ctx context.Context, obj *Gateway, opts ...client.CreateOption) error {
+	return c.client.Create(ctx, obj, opts...)
+}
+
+func (c *gatewayClient) DeleteGateway(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error {
+	obj := &Gateway{}
+	obj.SetName(key.Name)
+	obj.SetNamespace(key.Namespace)
+	return c.client.Delete(ctx, obj, opts...)
+}
+
+func (c *gatewayClient) UpdateGateway(ctx context.Context, obj *Gateway, opts ...client.UpdateOption) error {
+	return c.client.Update(ctx, obj, opts...)
+}
+
+func (c *gatewayClient) PatchGateway(ctx context.Context, obj *Gateway, patch client.Patch, opts ...client.PatchOption) error {
+	return c.client.Patch(ctx, obj, patch, opts...)
+}
+
+func (c *gatewayClient) DeleteAllOfGateway(ctx context.Context, opts ...client.DeleteAllOfOption) error {
+	obj := &Gateway{}
+	return c.client.DeleteAllOf(ctx, obj, opts...)
+}
+
+func (c *gatewayClient) UpsertGateway(ctx context.Context, obj *Gateway, transitionFuncs ...GatewayTransitionFunction) error {
+	genericTxFunc := func(existing, desired runtime.Object) error {
+		for _, txFunc := range transitionFuncs {
+			if err := txFunc(existing.(*Gateway), desired.(*Gateway)); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	_, err := controllerutils.Upsert(ctx, c.client, obj, genericTxFunc)
+	return err
+}
+
+func (c *gatewayClient) UpdateGatewayStatus(ctx context.Context, obj *Gateway, opts ...client.UpdateOption) error {
+	return c.client.Status().Update(ctx, obj, opts...)
+}
+
+func (c *gatewayClient) PatchGatewayStatus(ctx context.Context, obj *Gateway, patch client.Patch, opts ...client.PatchOption) error {
+	return c.client.Status().Patch(ctx, obj, patch, opts...)
+}
+
+// Provides GatewayClients for multiple clusters.
+type MulticlusterGatewayClient interface {
+	// Cluster returns a GatewayClient for the given cluster
+	Cluster(cluster string) (GatewayClient, error)
+}
+
+type multiclusterGatewayClient struct {
+	client multicluster.Client
+}
+
+func NewMulticlusterGatewayClient(client multicluster.Client) MulticlusterGatewayClient {
+	return &multiclusterGatewayClient{client: client}
+}
+
+func (m *multiclusterGatewayClient) Cluster(cluster string) (GatewayClient, error) {
+	client, err := m.client.Cluster(cluster)
+	if err != nil {
+		return nil, err
+	}
+	return NewGatewayClient(client), nil
 }

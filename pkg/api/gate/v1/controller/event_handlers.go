@@ -337,3 +337,110 @@ func (h genericUpstreamHandler) Generic(object client.Object) error {
 	}
 	return h.handler.GenericUpstream(obj)
 }
+
+// Handle events for the Gateway Resource
+// DEPRECATED: Prefer reconciler pattern.
+type GatewayEventHandler interface {
+	CreateGateway(obj *gate_v1.Gateway) error
+	UpdateGateway(old, new *gate_v1.Gateway) error
+	DeleteGateway(obj *gate_v1.Gateway) error
+	GenericGateway(obj *gate_v1.Gateway) error
+}
+
+type GatewayEventHandlerFuncs struct {
+	OnCreate  func(obj *gate_v1.Gateway) error
+	OnUpdate  func(old, new *gate_v1.Gateway) error
+	OnDelete  func(obj *gate_v1.Gateway) error
+	OnGeneric func(obj *gate_v1.Gateway) error
+}
+
+func (f *GatewayEventHandlerFuncs) CreateGateway(obj *gate_v1.Gateway) error {
+	if f.OnCreate == nil {
+		return nil
+	}
+	return f.OnCreate(obj)
+}
+
+func (f *GatewayEventHandlerFuncs) DeleteGateway(obj *gate_v1.Gateway) error {
+	if f.OnDelete == nil {
+		return nil
+	}
+	return f.OnDelete(obj)
+}
+
+func (f *GatewayEventHandlerFuncs) UpdateGateway(objOld, objNew *gate_v1.Gateway) error {
+	if f.OnUpdate == nil {
+		return nil
+	}
+	return f.OnUpdate(objOld, objNew)
+}
+
+func (f *GatewayEventHandlerFuncs) GenericGateway(obj *gate_v1.Gateway) error {
+	if f.OnGeneric == nil {
+		return nil
+	}
+	return f.OnGeneric(obj)
+}
+
+type GatewayEventWatcher interface {
+	AddEventHandler(ctx context.Context, h GatewayEventHandler, predicates ...predicate.Predicate) error
+}
+
+type gatewayEventWatcher struct {
+	watcher events.EventWatcher
+}
+
+func NewGatewayEventWatcher(name string, mgr manager.Manager) GatewayEventWatcher {
+	return &gatewayEventWatcher{
+		watcher: events.NewWatcher(name, mgr, &gate_v1.Gateway{}),
+	}
+}
+
+func (c *gatewayEventWatcher) AddEventHandler(ctx context.Context, h GatewayEventHandler, predicates ...predicate.Predicate) error {
+	handler := genericGatewayHandler{handler: h}
+	if err := c.watcher.Watch(ctx, handler, predicates...); err != nil {
+		return err
+	}
+	return nil
+}
+
+// genericGatewayHandler implements a generic events.EventHandler
+type genericGatewayHandler struct {
+	handler GatewayEventHandler
+}
+
+func (h genericGatewayHandler) Create(object client.Object) error {
+	obj, ok := object.(*gate_v1.Gateway)
+	if !ok {
+		return errors.Errorf("internal error: Gateway handler received event for %T", object)
+	}
+	return h.handler.CreateGateway(obj)
+}
+
+func (h genericGatewayHandler) Delete(object client.Object) error {
+	obj, ok := object.(*gate_v1.Gateway)
+	if !ok {
+		return errors.Errorf("internal error: Gateway handler received event for %T", object)
+	}
+	return h.handler.DeleteGateway(obj)
+}
+
+func (h genericGatewayHandler) Update(old, new client.Object) error {
+	objOld, ok := old.(*gate_v1.Gateway)
+	if !ok {
+		return errors.Errorf("internal error: Gateway handler received event for %T", old)
+	}
+	objNew, ok := new.(*gate_v1.Gateway)
+	if !ok {
+		return errors.Errorf("internal error: Gateway handler received event for %T", new)
+	}
+	return h.handler.UpdateGateway(objOld, objNew)
+}
+
+func (h genericGatewayHandler) Generic(object client.Object) error {
+	obj, ok := object.(*gate_v1.Gateway)
+	if !ok {
+		return errors.Errorf("internal error: Gateway handler received event for %T", object)
+	}
+	return h.handler.GenericGateway(obj)
+}

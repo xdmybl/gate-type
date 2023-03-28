@@ -45,6 +45,14 @@ var Group = model.Group{
 				},
 			},
 		},
+		{
+			Kind: "Gateway",
+			Spec: model.Field{
+				Type: model.Type{
+					Name: "GatewaySpec",
+				},
+			},
+		},
 	},
 	RenderManifests:         true,
 	RenderValidationSchemas: true,

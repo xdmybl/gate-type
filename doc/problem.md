@@ -12,5 +12,5 @@
     找不到某包: 是因为 proto 文件的 package 填错了
 
 #### go run main.go 后生成的 golang 文件有报错
+    file_xxx_init() 函数找不到的问题, 是因为同一个目录下的 proto 不要互相引用, 将两个文件合并.
     zz_generated.deepcopy.go, xx.pb.go 文件报错, proto 文件存放的目录有问题, 换一个目录试试.
-    

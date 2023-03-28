@@ -17,3 +17,13 @@ gen_type:
 	@echo "api/ : 保存 common 和 core 的对象"
 	@echo "pkg/api/ : 保存 gate 的对象"
 	@go run main.go
+
+
+# 在有删除对象操作时一定要执行这个, 因为有些 pb.go 文件会被删除掉.
+.PHONY: regenerate
+regenerate:
+	@echo "正在删除之前的文件...... "
+	@rm -rf pkg/api/*
+	@rm -f crds/*
+	@echo "正在重新生成 golang type 和 crd 文件"
+	@go run main.go

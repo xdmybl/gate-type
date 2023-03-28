@@ -5,12 +5,12 @@ package gate;
 option go_package = "github.com/xdmybl/gate-type/pkg/api/gate/v1";
 
 import "validate/validate.proto";
-import "proto/common/v1/base.proto";
+import "proto/core/v1/types.proto";
 import "proto/common/v1/certificate.proto";
 import "proto/common/v1/tls.proto";
 
 message CaCertificateSpec {
-    common.v1.CommonInfo commonInfo = 1;
+    core.v1.CommonInfo commonInfo = 1;
 
     common.v1.Certificate certificateInfo = 2;
 

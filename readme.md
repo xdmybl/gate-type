@@ -29,6 +29,7 @@ Kind: "Example",
 }
 ```
 3. 运行 go run main.go 
+4. **检查所有生成的文件是否报错**
 
 
 # now 

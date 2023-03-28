@@ -181,3 +181,61 @@ func (in *UpstreamList) DeepCopyObject() runtime.Object {
 	}
 	return nil
 }
+
+// Generated Deepcopy methods for Gateway
+
+func (in *Gateway) DeepCopyInto(out *Gateway) {
+	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
+
+	// deepcopy spec
+	in.Spec.DeepCopyInto(&out.Spec)
+
+	return
+}
+
+func (in *Gateway) DeepCopy() *Gateway {
+	if in == nil {
+		return nil
+	}
+	out := new(Gateway)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *Gateway) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}
+
+func (in *GatewayList) DeepCopyInto(out *GatewayList) {
+	*out = *in
+	out.TypeMeta = in.TypeMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
+	if in.Items != nil {
+		in, out := &in.Items, &out.Items
+		*out = make([]Gateway, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	return
+}
+
+func (in *GatewayList) DeepCopy() *GatewayList {
+	if in == nil {
+		return nil
+	}
+	out := new(GatewayList)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *GatewayList) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}

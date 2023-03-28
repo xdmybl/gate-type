@@ -230,3 +230,74 @@ func (g genericUpstreamMulticlusterReconciler) Reconcile(cluster string, object 
 	}
 	return g.reconciler.ReconcileUpstream(cluster, obj)
 }
+
+// Reconcile Upsert events for the Gateway Resource across clusters.
+// implemented by the user
+type MulticlusterGatewayReconciler interface {
+	ReconcileGateway(clusterName string, obj *gate_v1.Gateway) (reconcile.Result, error)
+}
+
+// Reconcile deletion events for the Gateway Resource across clusters.
+// Deletion receives a reconcile.Request as we cannot guarantee the last state of the object
+// before being deleted.
+// implemented by the user
+type MulticlusterGatewayDeletionReconciler interface {
+	ReconcileGatewayDeletion(clusterName string, req reconcile.Request) error
+}
+
+type MulticlusterGatewayReconcilerFuncs struct {
+	OnReconcileGateway         func(clusterName string, obj *gate_v1.Gateway) (reconcile.Result, error)
+	OnReconcileGatewayDeletion func(clusterName string, req reconcile.Request) error
+}
+
+func (f *MulticlusterGatewayReconcilerFuncs) ReconcileGateway(clusterName string, obj *gate_v1.Gateway) (reconcile.Result, error) {
+	if f.OnReconcileGateway == nil {
+		return reconcile.Result{}, nil
+	}
+	return f.OnReconcileGateway(clusterName, obj)
+}
+
+func (f *MulticlusterGatewayReconcilerFuncs) ReconcileGatewayDeletion(clusterName string, req reconcile.Request) error {
+	if f.OnReconcileGatewayDeletion == nil {
+		return nil
+	}
+	return f.OnReconcileGatewayDeletion(clusterName, req)
+}
+
+type MulticlusterGatewayReconcileLoop interface {
+	// AddMulticlusterGatewayReconciler adds a MulticlusterGatewayReconciler to the MulticlusterGatewayReconcileLoop.
+	AddMulticlusterGatewayReconciler(ctx context.Context, rec MulticlusterGatewayReconciler, predicates ...predicate.Predicate)
+}
+
+type multiclusterGatewayReconcileLoop struct {
+	loop multicluster.Loop
+}
+
+func (m *multiclusterGatewayReconcileLoop) AddMulticlusterGatewayReconciler(ctx context.Context, rec MulticlusterGatewayReconciler, predicates ...predicate.Predicate) {
+	genericReconciler := genericGatewayMulticlusterReconciler{reconciler: rec}
+
+	m.loop.AddReconciler(ctx, genericReconciler, predicates...)
+}
+
+func NewMulticlusterGatewayReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterGatewayReconcileLoop {
+	return &multiclusterGatewayReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_v1.Gateway{}, options)}
+}
+
+type genericGatewayMulticlusterReconciler struct {
+	reconciler MulticlusterGatewayReconciler
+}
+
+func (g genericGatewayMulticlusterReconciler) ReconcileDeletion(cluster string, req reconcile.Request) error {
+	if deletionReconciler, ok := g.reconciler.(MulticlusterGatewayDeletionReconciler); ok {
+		return deletionReconciler.ReconcileGatewayDeletion(cluster, req)
+	}
+	return nil
+}
+
+func (g genericGatewayMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
+	obj, ok := object.(*gate_v1.Gateway)
+	if !ok {
+		return reconcile.Result{}, errors.Errorf("internal error: Gateway handler received event for %T", object)
+	}
+	return g.reconciler.ReconcileGateway(cluster, obj)
+}

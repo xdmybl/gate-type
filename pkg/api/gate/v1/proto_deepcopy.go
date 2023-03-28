@@ -41,3 +41,14 @@ func (in *UpstreamSpec) DeepCopyInto(out *UpstreamSpec) {
 	}
 	*out = *p
 }
+
+// DeepCopyInto for the Gateway.Spec
+func (in *GatewaySpec) DeepCopyInto(out *GatewaySpec) {
+	var p *GatewaySpec
+	if h, ok := interface{}(in).(clone.Cloner); ok {
+		p = h.Clone().(*GatewaySpec)
+	} else {
+		p = proto.Clone(in).(*GatewaySpec)
+	}
+	*out = *p
+}

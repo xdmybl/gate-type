@@ -367,3 +367,120 @@ func (r genericUpstreamFinalizer) Finalize(object ezkube.Object) error {
 	}
 	return r.finalizingReconciler.FinalizeUpstream(obj)
 }
+
+// Reconcile Upsert events for the Gateway Resource.
+// implemented by the user
+type GatewayReconciler interface {
+	ReconcileGateway(obj *gate_v1.Gateway) (reconcile.Result, error)
+}
+
+// Reconcile deletion events for the Gateway Resource.
+// Deletion receives a reconcile.Request as we cannot guarantee the last state of the object
+// before being deleted.
+// implemented by the user
+type GatewayDeletionReconciler interface {
+	ReconcileGatewayDeletion(req reconcile.Request) error
+}
+
+type GatewayReconcilerFuncs struct {
+	OnReconcileGateway         func(obj *gate_v1.Gateway) (reconcile.Result, error)
+	OnReconcileGatewayDeletion func(req reconcile.Request) error
+}
+
+func (f *GatewayReconcilerFuncs) ReconcileGateway(obj *gate_v1.Gateway) (reconcile.Result, error) {
+	if f.OnReconcileGateway == nil {
+		return reconcile.Result{}, nil
+	}
+	return f.OnReconcileGateway(obj)
+}
+
+func (f *GatewayReconcilerFuncs) ReconcileGatewayDeletion(req reconcile.Request) error {
+	if f.OnReconcileGatewayDeletion == nil {
+		return nil
+	}
+	return f.OnReconcileGatewayDeletion(req)
+}
+
+// Reconcile and finalize the Gateway Resource
+// implemented by the user
+type GatewayFinalizer interface {
+	GatewayReconciler
+
+	// name of the finalizer used by this handler.
+	// finalizer names should be unique for a single task
+	GatewayFinalizerName() string
+
+	// finalize the object before it is deleted.
+	// Watchers created with a finalizing handler will a
+	FinalizeGateway(obj *gate_v1.Gateway) error
+}
+
+type GatewayReconcileLoop interface {
+	RunGatewayReconciler(ctx context.Context, rec GatewayReconciler, predicates ...predicate.Predicate) error
+}
+
+type gatewayReconcileLoop struct {
+	loop reconcile.Loop
+}
+
+func NewGatewayReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) GatewayReconcileLoop {
+	return &gatewayReconcileLoop{
+		// empty cluster indicates this reconciler is built for the local cluster
+		loop: reconcile.NewLoop(name, "", mgr, &gate_v1.Gateway{}, options),
+	}
+}
+
+func (c *gatewayReconcileLoop) RunGatewayReconciler(ctx context.Context, reconciler GatewayReconciler, predicates ...predicate.Predicate) error {
+	genericReconciler := genericGatewayReconciler{
+		reconciler: reconciler,
+	}
+
+	var reconcilerWrapper reconcile.Reconciler
+	if finalizingReconciler, ok := reconciler.(GatewayFinalizer); ok {
+		reconcilerWrapper = genericGatewayFinalizer{
+			genericGatewayReconciler: genericReconciler,
+			finalizingReconciler:     finalizingReconciler,
+		}
+	} else {
+		reconcilerWrapper = genericReconciler
+	}
+	return c.loop.RunReconciler(ctx, reconcilerWrapper, predicates...)
+}
+
+// genericGatewayHandler implements a generic reconcile.Reconciler
+type genericGatewayReconciler struct {
+	reconciler GatewayReconciler
+}
+
+func (r genericGatewayReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
+	obj, ok := object.(*gate_v1.Gateway)
+	if !ok {
+		return reconcile.Result{}, errors.Errorf("internal error: Gateway handler received event for %T", object)
+	}
+	return r.reconciler.ReconcileGateway(obj)
+}
+
+func (r genericGatewayReconciler) ReconcileDeletion(request reconcile.Request) error {
+	if deletionReconciler, ok := r.reconciler.(GatewayDeletionReconciler); ok {
+		return deletionReconciler.ReconcileGatewayDeletion(request)
+	}
+	return nil
+}
+
+// genericGatewayFinalizer implements a generic reconcile.FinalizingReconciler
+type genericGatewayFinalizer struct {
+	genericGatewayReconciler
+	finalizingReconciler GatewayFinalizer
+}
+
+func (r genericGatewayFinalizer) FinalizerName() string {
+	return r.finalizingReconciler.GatewayFinalizerName()
+}
+
+func (r genericGatewayFinalizer) Finalize(object ezkube.Object) error {
+	obj, ok := object.(*gate_v1.Gateway)
+	if !ok {
+		return errors.Errorf("internal error: Gateway handler received event for %T", object)
+	}
+	return r.finalizingReconciler.FinalizeGateway(obj)
+}

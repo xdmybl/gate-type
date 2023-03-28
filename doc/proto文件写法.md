@@ -23,3 +23,13 @@ option go_package = "github.com/example/protobuf";
 core 里面存放只被引用的类型, 从不引用项目中其它文件
 common 中存放只引用 core 的类型
 gate 存放所有的 spec 对象
+把必须抽取的放到一个文件内, 能合并到一个文件的尽量放一个文件里, 因为同级目录下的 proto 不能直接引用
+
+### spec proto 文件的定义示例
+1.     
+```shell
+# 引用 types
+import "proto/core/v1/types.proto";
+# 引用 commonInfo , 这是没个 spec 都有的
+core.v1.CommonInfo commonInfo = 1;
+``` 

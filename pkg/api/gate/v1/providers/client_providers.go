@@ -100,3 +100,31 @@ func UpstreamClientFromConfigFactoryProvider() UpstreamClientFromConfigFactory {
 		return clients.Upstreams(), nil
 	}
 }
+
+// Provider for GatewayClient from Clientset
+func GatewayClientFromClientsetProvider(clients gate_v1.Clientset) gate_v1.GatewayClient {
+	return clients.Gateways()
+}
+
+// Provider for Gateway Client from Client
+func GatewayClientProvider(client client.Client) gate_v1.GatewayClient {
+	return gate_v1.NewGatewayClient(client)
+}
+
+type GatewayClientFactory func(client client.Client) gate_v1.GatewayClient
+
+func GatewayClientFactoryProvider() GatewayClientFactory {
+	return GatewayClientProvider
+}
+
+type GatewayClientFromConfigFactory func(cfg *rest.Config) (gate_v1.GatewayClient, error)
+
+func GatewayClientFromConfigFactoryProvider() GatewayClientFromConfigFactory {
+	return func(cfg *rest.Config) (gate_v1.GatewayClient, error) {
+		clients, err := gate_v1.NewClientsetFromConfig(cfg)
+		if err != nil {
+			return nil, err
+		}
+		return clients.Gateways(), nil
+	}
+}

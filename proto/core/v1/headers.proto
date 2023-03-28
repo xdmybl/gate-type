@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package common.v1;
+package core.v1;
 
-option go_package = "github.com/xdmybl/gate-type/pkg/api/common/v1";
+option go_package = "github.com/xdmybl/gate-type/pkg/api/core/v1";
 
 import "validate/validate.proto";
 

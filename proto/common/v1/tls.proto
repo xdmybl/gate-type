@@ -5,7 +5,7 @@ package common.v1;
 option go_package = "github.com/xdmybl/gate-type/pkg/api/common/v1";
 
 import "validate/validate.proto";
-import "proto/common/v1/base.proto";
+import "proto/core/v1/types.proto";
 
 enum TlsMode {
     TLS_NONE = 0;
@@ -19,9 +19,9 @@ enum TlsMode {
 message TlsServer {
     TlsMode tlsMode = 1 [(validate.rules).enum.defined_only = true];
 
-    common.v1.ResourceRef caCertRef = 2;
+    core.v1.ResourceRef caCertRef = 2;
 
-    common.v1.ResourceRef sslCertRef = 3;
+    core.v1.ResourceRef sslCertRef = 3;
 
     // optional. the SNI domains that should be considered for TLS connections
     repeated string sniDomains = 4 [
@@ -46,9 +46,9 @@ message TlsServer {
 message TlsClient {
     TlsMode tlsMode = 1;
 
-    common.v1.ResourceRef caCertRef = 2;
+    core.v1.ResourceRef caCertRef = 2;
 
-    common.v1.ResourceRef sslCertRef = 3;
+    core.v1.ResourceRef sslCertRef = 3;
 
     // Optional
     string sni = 4 [

@@ -675,3 +675,224 @@ func (s *upstreamSet) Clone() UpstreamSet {
 	}
 	return &upstreamSet{set: sksets.NewResourceSet(s.Generic().Clone().List()...)}
 }
+
+type GatewaySet interface {
+	// Get the set stored keys
+	Keys() sets.String
+	// List of resources stored in the set. Pass an optional filter function to filter on the list.
+	List(filterResource ...func(*gate_v1.Gateway) bool) []*gate_v1.Gateway
+	// Unsorted list of resources stored in the set. Pass an optional filter function to filter on the list.
+	UnsortedList(filterResource ...func(*gate_v1.Gateway) bool) []*gate_v1.Gateway
+	// Return the Set as a map of key to resource.
+	Map() map[string]*gate_v1.Gateway
+	// Insert a resource into the set.
+	Insert(gateway ...*gate_v1.Gateway)
+	// Compare the equality of the keys in two sets (not the resources themselves)
+	Equal(gatewaySet GatewaySet) bool
+	// Check if the set contains a key matching the resource (not the resource itself)
+	Has(gateway ezkube.ResourceId) bool
+	// Delete the key matching the resource
+	Delete(gateway ezkube.ResourceId)
+	// Return the union with the provided set
+	Union(set GatewaySet) GatewaySet
+	// Return the difference with the provided set
+	Difference(set GatewaySet) GatewaySet
+	// Return the intersection with the provided set
+	Intersection(set GatewaySet) GatewaySet
+	// Find the resource with the given ID
+	Find(id ezkube.ResourceId) (*gate_v1.Gateway, error)
+	// Get the length of the set
+	Length() int
+	// returns the generic implementation of the set
+	Generic() sksets.ResourceSet
+	// returns the delta between this and and another GatewaySet
+	Delta(newSet GatewaySet) sksets.ResourceDelta
+	// Create a deep copy of the current GatewaySet
+	Clone() GatewaySet
+}
+
+func makeGenericGatewaySet(gatewayList []*gate_v1.Gateway) sksets.ResourceSet {
+	var genericResources []ezkube.ResourceId
+	for _, obj := range gatewayList {
+		genericResources = append(genericResources, obj)
+	}
+	return sksets.NewResourceSet(genericResources...)
+}
+
+type gatewaySet struct {
+	set sksets.ResourceSet
+}
+
+func NewGatewaySet(gatewayList ...*gate_v1.Gateway) GatewaySet {
+	return &gatewaySet{set: makeGenericGatewaySet(gatewayList)}
+}
+
+func NewGatewaySetFromList(gatewayList *gate_v1.GatewayList) GatewaySet {
+	list := make([]*gate_v1.Gateway, 0, len(gatewayList.Items))
+	for idx := range gatewayList.Items {
+		list = append(list, &gatewayList.Items[idx])
+	}
+	return &gatewaySet{set: makeGenericGatewaySet(list)}
+}
+
+func (s *gatewaySet) Keys() sets.String {
+	if s == nil {
+		return sets.String{}
+	}
+	return s.Generic().Keys()
+}
+
+func (s *gatewaySet) List(filterResource ...func(*gate_v1.Gateway) bool) []*gate_v1.Gateway {
+	if s == nil {
+		return nil
+	}
+	var genericFilters []func(ezkube.ResourceId) bool
+	for _, filter := range filterResource {
+		filter := filter
+		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
+			return filter(obj.(*gate_v1.Gateway))
+		})
+	}
+
+	objs := s.Generic().List(genericFilters...)
+	gatewayList := make([]*gate_v1.Gateway, 0, len(objs))
+	for _, obj := range objs {
+		gatewayList = append(gatewayList, obj.(*gate_v1.Gateway))
+	}
+	return gatewayList
+}
+
+func (s *gatewaySet) UnsortedList(filterResource ...func(*gate_v1.Gateway) bool) []*gate_v1.Gateway {
+	if s == nil {
+		return nil
+	}
+	var genericFilters []func(ezkube.ResourceId) bool
+	for _, filter := range filterResource {
+		filter := filter
+		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
+			return filter(obj.(*gate_v1.Gateway))
+		})
+	}
+
+	var gatewayList []*gate_v1.Gateway
+	for _, obj := range s.Generic().UnsortedList(genericFilters...) {
+		gatewayList = append(gatewayList, obj.(*gate_v1.Gateway))
+	}
+	return gatewayList
+}
+
+func (s *gatewaySet) Map() map[string]*gate_v1.Gateway {
+	if s == nil {
+		return nil
+	}
+
+	newMap := map[string]*gate_v1.Gateway{}
+	for k, v := range s.Generic().Map() {
+		newMap[k] = v.(*gate_v1.Gateway)
+	}
+	return newMap
+}
+
+func (s *gatewaySet) Insert(
+	gatewayList ...*gate_v1.Gateway,
+) {
+	if s == nil {
+		panic("cannot insert into nil set")
+	}
+
+	for _, obj := range gatewayList {
+		s.Generic().Insert(obj)
+	}
+}
+
+func (s *gatewaySet) Has(gateway ezkube.ResourceId) bool {
+	if s == nil {
+		return false
+	}
+	return s.Generic().Has(gateway)
+}
+
+func (s *gatewaySet) Equal(
+	gatewaySet GatewaySet,
+) bool {
+	if s == nil {
+		return gatewaySet == nil
+	}
+	return s.Generic().Equal(gatewaySet.Generic())
+}
+
+func (s *gatewaySet) Delete(Gateway ezkube.ResourceId) {
+	if s == nil {
+		return
+	}
+	s.Generic().Delete(Gateway)
+}
+
+func (s *gatewaySet) Union(set GatewaySet) GatewaySet {
+	if s == nil {
+		return set
+	}
+	return NewGatewaySet(append(s.List(), set.List()...)...)
+}
+
+func (s *gatewaySet) Difference(set GatewaySet) GatewaySet {
+	if s == nil {
+		return set
+	}
+	newSet := s.Generic().Difference(set.Generic())
+	return &gatewaySet{set: newSet}
+}
+
+func (s *gatewaySet) Intersection(set GatewaySet) GatewaySet {
+	if s == nil {
+		return nil
+	}
+	newSet := s.Generic().Intersection(set.Generic())
+	var gatewayList []*gate_v1.Gateway
+	for _, obj := range newSet.List() {
+		gatewayList = append(gatewayList, obj.(*gate_v1.Gateway))
+	}
+	return NewGatewaySet(gatewayList...)
+}
+
+func (s *gatewaySet) Find(id ezkube.ResourceId) (*gate_v1.Gateway, error) {
+	if s == nil {
+		return nil, eris.Errorf("empty set, cannot find Gateway %v", sksets.Key(id))
+	}
+	obj, err := s.Generic().Find(&gate_v1.Gateway{}, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return obj.(*gate_v1.Gateway), nil
+}
+
+func (s *gatewaySet) Length() int {
+	if s == nil {
+		return 0
+	}
+	return s.Generic().Length()
+}
+
+func (s *gatewaySet) Generic() sksets.ResourceSet {
+	if s == nil {
+		return nil
+	}
+	return s.set
+}
+
+func (s *gatewaySet) Delta(newSet GatewaySet) sksets.ResourceDelta {
+	if s == nil {
+		return sksets.ResourceDelta{
+			Inserted: newSet.Generic(),
+		}
+	}
+	return s.Generic().Delta(newSet.Generic())
+}
+
+func (s *gatewaySet) Clone() GatewaySet {
+	if s == nil {
+		return nil
+	}
+	return &gatewaySet{set: sksets.NewResourceSet(s.Generic().Clone().List()...)}
+}

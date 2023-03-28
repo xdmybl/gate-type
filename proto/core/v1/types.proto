@@ -4,6 +4,7 @@ package core.v1;
 
 option go_package = "github.com/xdmybl/gate-type/pkg/api/core/v1";
 
+import "validate/validate.proto";
 
 message Int64Range {
     // start of the range (inclusive)
@@ -44,4 +45,79 @@ message Timestamp {
     // that count forward in time. Must be from 0 to 999,999,999
     // inclusive.
     int32 nanos = 2;
+}
+
+message ResourceRef {
+    // Defaults to `default`
+    string namespace = 1 [
+        (validate.rules).string = {
+            pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+            max_len: 63
+        }
+    ];
+
+    string name = 2 [
+        (validate.rules).string = {
+            pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+            max_len: 63
+        }
+    ];
+
+    string group = 3;
+
+    string version = 4;
+
+    string kind = 5;
+}
+
+message CommonInfo {
+    string name = 1 [(validate.rules).string = {max_len: 128}];
+
+    string description = 2 [(validate.rules).string = {max_len: 512}];
+
+    enum Source {
+        CustomDefinition = 0;
+
+        AdminDefinition = 1;
+    }
+
+    Source source = 3 [(validate.rules).enum.defined_only = true];
+
+    Timestamp updatedDatetime = 4;
+}
+
+message StatefulSession {
+    enum Type {
+        UNKNOWN = 0;
+        COOKIE = 1;
+        SESSION = 2;
+    }
+
+    Type type = 1 [(validate.rules).enum.defined_only = true];
+
+    string name = 2 [(validate.rules).string = {min_bytes: 1, max_bytes: 128}];
+
+    // only for COOKIE
+    Timestamp ttl = 3;
+
+    // only for COOKIE
+    string path = 4 [(validate.rules).string = {min_bytes: 1, max_bytes: 128}];
+}
+
+message Endpoint {
+    string address = 1 [(validate.rules).string.address = true];
+
+    uint32 port = 2 [
+        (validate.rules).uint32 = {
+            gte: 1,
+            lte: 65535
+        }
+    ];
+
+    uint32 loadBalancingWeight = 3 [
+        (validate.rules).uint32 = {
+            ignore_empty: true,
+            gte: 1
+        }
+    ];
 }
