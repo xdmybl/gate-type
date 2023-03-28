@@ -17,11 +17,23 @@ protoc --go_out="paths=source_relative:tmp" -I . --proto_path=/home/xiaoy/go/pkg
 执行 make install_tools
 
 ## how to use
-在改变了 proto 目录下的 proto 文件后, 执行 make run , tmp 目录将出现生成的 golang 代码, 然后执行 make copy , 将 tmp 代码拷贝 api 目录中
+### 根据 proto 文件生成 golang type 和 crd
+1. 编写 proto, 定义好 spec . 如 ExampleSpec
+2. 编写 main.go , 新增 model.Resource 对象, 补充 Kind Spec
+```
+Kind: "Example", 
+    Spec: model.Field{
+        Type: model.Type{
+            Name: "ExampleSpec",
+    },
+}
+```
+3. 运行 go run main.go 
+
 
 # now 
 ## 各工具版本及下载链接
     protoc v3.18.1  https://github.com/protocolbuffers/protobuf/releases/download/v3.18.1/protoc-3.18.1-linux-x86_64.zip
-    protoc-gen-go v1.28.1  go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
+    protoc-gen-go v1.26.0  go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26.0
 
 ## 问题
