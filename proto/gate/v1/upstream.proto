@@ -11,7 +11,11 @@ import "validate/validate.proto";
 import "proto/core/v1/types.proto";
 import "proto/core/v1/headers.proto";
 import "proto/common/v1/tls.proto";
+import "extproto/ext.proto";
 
+option (extproto.equal_all) = true;
+option (extproto.hash_all) = true;
+option (extproto.clone_all) = true;
 
 message UpstreamSpec {
   core.v1.CommonInfo commonInfo = 1;
