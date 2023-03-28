@@ -454,3 +454,224 @@ func (s *sslCertificateSet) Clone() SslCertificateSet {
 	}
 	return &sslCertificateSet{set: sksets.NewResourceSet(s.Generic().Clone().List()...)}
 }
+
+type UpstreamSet interface {
+	// Get the set stored keys
+	Keys() sets.String
+	// List of resources stored in the set. Pass an optional filter function to filter on the list.
+	List(filterResource ...func(*gate_v1.Upstream) bool) []*gate_v1.Upstream
+	// Unsorted list of resources stored in the set. Pass an optional filter function to filter on the list.
+	UnsortedList(filterResource ...func(*gate_v1.Upstream) bool) []*gate_v1.Upstream
+	// Return the Set as a map of key to resource.
+	Map() map[string]*gate_v1.Upstream
+	// Insert a resource into the set.
+	Insert(upstream ...*gate_v1.Upstream)
+	// Compare the equality of the keys in two sets (not the resources themselves)
+	Equal(upstreamSet UpstreamSet) bool
+	// Check if the set contains a key matching the resource (not the resource itself)
+	Has(upstream ezkube.ResourceId) bool
+	// Delete the key matching the resource
+	Delete(upstream ezkube.ResourceId)
+	// Return the union with the provided set
+	Union(set UpstreamSet) UpstreamSet
+	// Return the difference with the provided set
+	Difference(set UpstreamSet) UpstreamSet
+	// Return the intersection with the provided set
+	Intersection(set UpstreamSet) UpstreamSet
+	// Find the resource with the given ID
+	Find(id ezkube.ResourceId) (*gate_v1.Upstream, error)
+	// Get the length of the set
+	Length() int
+	// returns the generic implementation of the set
+	Generic() sksets.ResourceSet
+	// returns the delta between this and and another UpstreamSet
+	Delta(newSet UpstreamSet) sksets.ResourceDelta
+	// Create a deep copy of the current UpstreamSet
+	Clone() UpstreamSet
+}
+
+func makeGenericUpstreamSet(upstreamList []*gate_v1.Upstream) sksets.ResourceSet {
+	var genericResources []ezkube.ResourceId
+	for _, obj := range upstreamList {
+		genericResources = append(genericResources, obj)
+	}
+	return sksets.NewResourceSet(genericResources...)
+}
+
+type upstreamSet struct {
+	set sksets.ResourceSet
+}
+
+func NewUpstreamSet(upstreamList ...*gate_v1.Upstream) UpstreamSet {
+	return &upstreamSet{set: makeGenericUpstreamSet(upstreamList)}
+}
+
+func NewUpstreamSetFromList(upstreamList *gate_v1.UpstreamList) UpstreamSet {
+	list := make([]*gate_v1.Upstream, 0, len(upstreamList.Items))
+	for idx := range upstreamList.Items {
+		list = append(list, &upstreamList.Items[idx])
+	}
+	return &upstreamSet{set: makeGenericUpstreamSet(list)}
+}
+
+func (s *upstreamSet) Keys() sets.String {
+	if s == nil {
+		return sets.String{}
+	}
+	return s.Generic().Keys()
+}
+
+func (s *upstreamSet) List(filterResource ...func(*gate_v1.Upstream) bool) []*gate_v1.Upstream {
+	if s == nil {
+		return nil
+	}
+	var genericFilters []func(ezkube.ResourceId) bool
+	for _, filter := range filterResource {
+		filter := filter
+		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
+			return filter(obj.(*gate_v1.Upstream))
+		})
+	}
+
+	objs := s.Generic().List(genericFilters...)
+	upstreamList := make([]*gate_v1.Upstream, 0, len(objs))
+	for _, obj := range objs {
+		upstreamList = append(upstreamList, obj.(*gate_v1.Upstream))
+	}
+	return upstreamList
+}
+
+func (s *upstreamSet) UnsortedList(filterResource ...func(*gate_v1.Upstream) bool) []*gate_v1.Upstream {
+	if s == nil {
+		return nil
+	}
+	var genericFilters []func(ezkube.ResourceId) bool
+	for _, filter := range filterResource {
+		filter := filter
+		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
+			return filter(obj.(*gate_v1.Upstream))
+		})
+	}
+
+	var upstreamList []*gate_v1.Upstream
+	for _, obj := range s.Generic().UnsortedList(genericFilters...) {
+		upstreamList = append(upstreamList, obj.(*gate_v1.Upstream))
+	}
+	return upstreamList
+}
+
+func (s *upstreamSet) Map() map[string]*gate_v1.Upstream {
+	if s == nil {
+		return nil
+	}
+
+	newMap := map[string]*gate_v1.Upstream{}
+	for k, v := range s.Generic().Map() {
+		newMap[k] = v.(*gate_v1.Upstream)
+	}
+	return newMap
+}
+
+func (s *upstreamSet) Insert(
+	upstreamList ...*gate_v1.Upstream,
+) {
+	if s == nil {
+		panic("cannot insert into nil set")
+	}
+
+	for _, obj := range upstreamList {
+		s.Generic().Insert(obj)
+	}
+}
+
+func (s *upstreamSet) Has(upstream ezkube.ResourceId) bool {
+	if s == nil {
+		return false
+	}
+	return s.Generic().Has(upstream)
+}
+
+func (s *upstreamSet) Equal(
+	upstreamSet UpstreamSet,
+) bool {
+	if s == nil {
+		return upstreamSet == nil
+	}
+	return s.Generic().Equal(upstreamSet.Generic())
+}
+
+func (s *upstreamSet) Delete(Upstream ezkube.ResourceId) {
+	if s == nil {
+		return
+	}
+	s.Generic().Delete(Upstream)
+}
+
+func (s *upstreamSet) Union(set UpstreamSet) UpstreamSet {
+	if s == nil {
+		return set
+	}
+	return NewUpstreamSet(append(s.List(), set.List()...)...)
+}
+
+func (s *upstreamSet) Difference(set UpstreamSet) UpstreamSet {
+	if s == nil {
+		return set
+	}
+	newSet := s.Generic().Difference(set.Generic())
+	return &upstreamSet{set: newSet}
+}
+
+func (s *upstreamSet) Intersection(set UpstreamSet) UpstreamSet {
+	if s == nil {
+		return nil
+	}
+	newSet := s.Generic().Intersection(set.Generic())
+	var upstreamList []*gate_v1.Upstream
+	for _, obj := range newSet.List() {
+		upstreamList = append(upstreamList, obj.(*gate_v1.Upstream))
+	}
+	return NewUpstreamSet(upstreamList...)
+}
+
+func (s *upstreamSet) Find(id ezkube.ResourceId) (*gate_v1.Upstream, error) {
+	if s == nil {
+		return nil, eris.Errorf("empty set, cannot find Upstream %v", sksets.Key(id))
+	}
+	obj, err := s.Generic().Find(&gate_v1.Upstream{}, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return obj.(*gate_v1.Upstream), nil
+}
+
+func (s *upstreamSet) Length() int {
+	if s == nil {
+		return 0
+	}
+	return s.Generic().Length()
+}
+
+func (s *upstreamSet) Generic() sksets.ResourceSet {
+	if s == nil {
+		return nil
+	}
+	return s.set
+}
+
+func (s *upstreamSet) Delta(newSet UpstreamSet) sksets.ResourceDelta {
+	if s == nil {
+		return sksets.ResourceDelta{
+			Inserted: newSet.Generic(),
+		}
+	}
+	return s.Generic().Delta(newSet.Generic())
+}
+
+func (s *upstreamSet) Clone() UpstreamSet {
+	if s == nil {
+		return nil
+	}
+	return &upstreamSet{set: sksets.NewResourceSet(s.Generic().Clone().List()...)}
+}

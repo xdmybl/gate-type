@@ -3,8 +3,13 @@
 // Definitions for the Kubernetes types
 package v1
 
+import ()
+
 // CaCertificateSlice represents a slice of *CaCertificate
 type CaCertificateSlice []*CaCertificate
 
 // SslCertificateSlice represents a slice of *SslCertificate
 type SslCertificateSlice []*SslCertificate
+
+// UpstreamSlice represents a slice of *Upstream
+type UpstreamSlice []*Upstream

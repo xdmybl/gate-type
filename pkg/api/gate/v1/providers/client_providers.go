@@ -72,3 +72,31 @@ func SslCertificateClientFromConfigFactoryProvider() SslCertificateClientFromCon
 		return clients.SslCertificates(), nil
 	}
 }
+
+// Provider for UpstreamClient from Clientset
+func UpstreamClientFromClientsetProvider(clients gate_v1.Clientset) gate_v1.UpstreamClient {
+	return clients.Upstreams()
+}
+
+// Provider for Upstream Client from Client
+func UpstreamClientProvider(client client.Client) gate_v1.UpstreamClient {
+	return gate_v1.NewUpstreamClient(client)
+}
+
+type UpstreamClientFactory func(client client.Client) gate_v1.UpstreamClient
+
+func UpstreamClientFactoryProvider() UpstreamClientFactory {
+	return UpstreamClientProvider
+}
+
+type UpstreamClientFromConfigFactory func(cfg *rest.Config) (gate_v1.UpstreamClient, error)
+
+func UpstreamClientFromConfigFactoryProvider() UpstreamClientFromConfigFactory {
+	return func(cfg *rest.Config) (gate_v1.UpstreamClient, error) {
+		clients, err := gate_v1.NewClientsetFromConfig(cfg)
+		if err != nil {
+			return nil, err
+		}
+		return clients.Upstreams(), nil
+	}
+}

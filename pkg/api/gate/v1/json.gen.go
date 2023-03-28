@@ -48,3 +48,14 @@ func (this *SslCertificateSpec) MarshalJSON() ([]byte, error) {
 func (this *SslCertificateSpec) UnmarshalJSON(b []byte) error {
 	return unmarshaller.Unmarshal(bytes.NewReader(b), this)
 }
+
+// MarshalJSON is a custom marshaler for UpstreamSpec
+func (this *UpstreamSpec) MarshalJSON() ([]byte, error) {
+	str, err := marshaller.MarshalToString(this)
+	return []byte(str), err
+}
+
+// UnmarshalJSON is a custom unmarshaler for UpstreamSpec
+func (this *UpstreamSpec) UnmarshalJSON(b []byte) error {
+	return unmarshaller.Unmarshal(bytes.NewReader(b), this)
+}

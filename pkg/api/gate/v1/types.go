@@ -76,7 +76,42 @@ type SslCertificateList struct {
 	Items           []SslCertificate `json:"items"`
 }
 
+// +genclient
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:openapi-gen=true
+// +genclient:noStatus
+
+// GroupVersionKind for Upstream
+var UpstreamGVK = schema.GroupVersionKind{
+	Group:   "gate",
+	Version: "v1",
+	Kind:    "Upstream",
+}
+
+// Upstream is the Schema for the upstream API
+type Upstream struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec UpstreamSpec `json:"spec,omitempty"`
+}
+
+// GVK returns the GroupVersionKind associated with the resource type.
+func (Upstream) GVK() schema.GroupVersionKind {
+	return UpstreamGVK
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// UpstreamList contains a list of Upstream
+type UpstreamList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []Upstream `json:"items"`
+}
+
 func init() {
 	SchemeBuilder.Register(&CaCertificate{}, &CaCertificateList{})
 	SchemeBuilder.Register(&SslCertificate{}, &SslCertificateList{})
+	SchemeBuilder.Register(&Upstream{}, &UpstreamList{})
 }

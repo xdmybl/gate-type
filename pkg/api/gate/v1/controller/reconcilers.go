@@ -250,3 +250,120 @@ func (r genericSslCertificateFinalizer) Finalize(object ezkube.Object) error {
 	}
 	return r.finalizingReconciler.FinalizeSslCertificate(obj)
 }
+
+// Reconcile Upsert events for the Upstream Resource.
+// implemented by the user
+type UpstreamReconciler interface {
+	ReconcileUpstream(obj *gate_v1.Upstream) (reconcile.Result, error)
+}
+
+// Reconcile deletion events for the Upstream Resource.
+// Deletion receives a reconcile.Request as we cannot guarantee the last state of the object
+// before being deleted.
+// implemented by the user
+type UpstreamDeletionReconciler interface {
+	ReconcileUpstreamDeletion(req reconcile.Request) error
+}
+
+type UpstreamReconcilerFuncs struct {
+	OnReconcileUpstream         func(obj *gate_v1.Upstream) (reconcile.Result, error)
+	OnReconcileUpstreamDeletion func(req reconcile.Request) error
+}
+
+func (f *UpstreamReconcilerFuncs) ReconcileUpstream(obj *gate_v1.Upstream) (reconcile.Result, error) {
+	if f.OnReconcileUpstream == nil {
+		return reconcile.Result{}, nil
+	}
+	return f.OnReconcileUpstream(obj)
+}
+
+func (f *UpstreamReconcilerFuncs) ReconcileUpstreamDeletion(req reconcile.Request) error {
+	if f.OnReconcileUpstreamDeletion == nil {
+		return nil
+	}
+	return f.OnReconcileUpstreamDeletion(req)
+}
+
+// Reconcile and finalize the Upstream Resource
+// implemented by the user
+type UpstreamFinalizer interface {
+	UpstreamReconciler
+
+	// name of the finalizer used by this handler.
+	// finalizer names should be unique for a single task
+	UpstreamFinalizerName() string
+
+	// finalize the object before it is deleted.
+	// Watchers created with a finalizing handler will a
+	FinalizeUpstream(obj *gate_v1.Upstream) error
+}
+
+type UpstreamReconcileLoop interface {
+	RunUpstreamReconciler(ctx context.Context, rec UpstreamReconciler, predicates ...predicate.Predicate) error
+}
+
+type upstreamReconcileLoop struct {
+	loop reconcile.Loop
+}
+
+func NewUpstreamReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) UpstreamReconcileLoop {
+	return &upstreamReconcileLoop{
+		// empty cluster indicates this reconciler is built for the local cluster
+		loop: reconcile.NewLoop(name, "", mgr, &gate_v1.Upstream{}, options),
+	}
+}
+
+func (c *upstreamReconcileLoop) RunUpstreamReconciler(ctx context.Context, reconciler UpstreamReconciler, predicates ...predicate.Predicate) error {
+	genericReconciler := genericUpstreamReconciler{
+		reconciler: reconciler,
+	}
+
+	var reconcilerWrapper reconcile.Reconciler
+	if finalizingReconciler, ok := reconciler.(UpstreamFinalizer); ok {
+		reconcilerWrapper = genericUpstreamFinalizer{
+			genericUpstreamReconciler: genericReconciler,
+			finalizingReconciler:      finalizingReconciler,
+		}
+	} else {
+		reconcilerWrapper = genericReconciler
+	}
+	return c.loop.RunReconciler(ctx, reconcilerWrapper, predicates...)
+}
+
+// genericUpstreamHandler implements a generic reconcile.Reconciler
+type genericUpstreamReconciler struct {
+	reconciler UpstreamReconciler
+}
+
+func (r genericUpstreamReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
+	obj, ok := object.(*gate_v1.Upstream)
+	if !ok {
+		return reconcile.Result{}, errors.Errorf("internal error: Upstream handler received event for %T", object)
+	}
+	return r.reconciler.ReconcileUpstream(obj)
+}
+
+func (r genericUpstreamReconciler) ReconcileDeletion(request reconcile.Request) error {
+	if deletionReconciler, ok := r.reconciler.(UpstreamDeletionReconciler); ok {
+		return deletionReconciler.ReconcileUpstreamDeletion(request)
+	}
+	return nil
+}
+
+// genericUpstreamFinalizer implements a generic reconcile.FinalizingReconciler
+type genericUpstreamFinalizer struct {
+	genericUpstreamReconciler
+	finalizingReconciler UpstreamFinalizer
+}
+
+func (r genericUpstreamFinalizer) FinalizerName() string {
+	return r.finalizingReconciler.UpstreamFinalizerName()
+}
+
+func (r genericUpstreamFinalizer) Finalize(object ezkube.Object) error {
+	obj, ok := object.(*gate_v1.Upstream)
+	if !ok {
+		return errors.Errorf("internal error: Upstream handler received event for %T", object)
+	}
+	return r.finalizingReconciler.FinalizeUpstream(obj)
+}

@@ -43,6 +43,8 @@ type Clientset interface {
 	CaCertificates() CaCertificateClient
 	// clienset for the gate/v1/v1 APIs
 	SslCertificates() SslCertificateClient
+	// clienset for the gate/v1/v1 APIs
+	Upstreams() UpstreamClient
 }
 
 type clientSet struct {
@@ -75,6 +77,11 @@ func (c *clientSet) CaCertificates() CaCertificateClient {
 // clienset for the gate/v1/v1 APIs
 func (c *clientSet) SslCertificates() SslCertificateClient {
 	return NewSslCertificateClient(c.client)
+}
+
+// clienset for the gate/v1/v1 APIs
+func (c *clientSet) Upstreams() UpstreamClient {
+	return NewUpstreamClient(c.client)
 }
 
 // Reader knows how to read and list CaCertificates.
@@ -359,4 +366,146 @@ func (m *multiclusterSslCertificateClient) Cluster(cluster string) (SslCertifica
 		return nil, err
 	}
 	return NewSslCertificateClient(client), nil
+}
+
+// Reader knows how to read and list Upstreams.
+type UpstreamReader interface {
+	// Get retrieves a Upstream for the given object key
+	GetUpstream(ctx context.Context, key client.ObjectKey) (*Upstream, error)
+
+	// List retrieves list of Upstreams for a given namespace and list options.
+	ListUpstream(ctx context.Context, opts ...client.ListOption) (*UpstreamList, error)
+}
+
+// UpstreamTransitionFunction instructs the UpstreamWriter how to transition between an existing
+// Upstream object and a desired on an Upsert
+type UpstreamTransitionFunction func(existing, desired *Upstream) error
+
+// Writer knows how to create, delete, and update Upstreams.
+type UpstreamWriter interface {
+	// Create saves the Upstream object.
+	CreateUpstream(ctx context.Context, obj *Upstream, opts ...client.CreateOption) error
+
+	// Delete deletes the Upstream object.
+	DeleteUpstream(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error
+
+	// Update updates the given Upstream object.
+	UpdateUpstream(ctx context.Context, obj *Upstream, opts ...client.UpdateOption) error
+
+	// Patch patches the given Upstream object.
+	PatchUpstream(ctx context.Context, obj *Upstream, patch client.Patch, opts ...client.PatchOption) error
+
+	// DeleteAllOf deletes all Upstream objects matching the given options.
+	DeleteAllOfUpstream(ctx context.Context, opts ...client.DeleteAllOfOption) error
+
+	// Create or Update the Upstream object.
+	UpsertUpstream(ctx context.Context, obj *Upstream, transitionFuncs ...UpstreamTransitionFunction) error
+}
+
+// StatusWriter knows how to update status subresource of a Upstream object.
+type UpstreamStatusWriter interface {
+	// Update updates the fields corresponding to the status subresource for the
+	// given Upstream object.
+	UpdateUpstreamStatus(ctx context.Context, obj *Upstream, opts ...client.UpdateOption) error
+
+	// Patch patches the given Upstream object's subresource.
+	PatchUpstreamStatus(ctx context.Context, obj *Upstream, patch client.Patch, opts ...client.PatchOption) error
+}
+
+// Client knows how to perform CRUD operations on Upstreams.
+type UpstreamClient interface {
+	UpstreamReader
+	UpstreamWriter
+	UpstreamStatusWriter
+}
+
+type upstreamClient struct {
+	client client.Client
+}
+
+func NewUpstreamClient(client client.Client) *upstreamClient {
+	return &upstreamClient{client: client}
+}
+
+func (c *upstreamClient) GetUpstream(ctx context.Context, key client.ObjectKey) (*Upstream, error) {
+	obj := &Upstream{}
+	if err := c.client.Get(ctx, key, obj); err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
+func (c *upstreamClient) ListUpstream(ctx context.Context, opts ...client.ListOption) (*UpstreamList, error) {
+	list := &UpstreamList{}
+	if err := c.client.List(ctx, list, opts...); err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
+func (c *upstreamClient) CreateUpstream(ctx context.Context, obj *Upstream, opts ...client.CreateOption) error {
+	return c.client.Create(ctx, obj, opts...)
+}
+
+func (c *upstreamClient) DeleteUpstream(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error {
+	obj := &Upstream{}
+	obj.SetName(key.Name)
+	obj.SetNamespace(key.Namespace)
+	return c.client.Delete(ctx, obj, opts...)
+}
+
+func (c *upstreamClient) UpdateUpstream(ctx context.Context, obj *Upstream, opts ...client.UpdateOption) error {
+	return c.client.Update(ctx, obj, opts...)
+}
+
+func (c *upstreamClient) PatchUpstream(ctx context.Context, obj *Upstream, patch client.Patch, opts ...client.PatchOption) error {
+	return c.client.Patch(ctx, obj, patch, opts...)
+}
+
+func (c *upstreamClient) DeleteAllOfUpstream(ctx context.Context, opts ...client.DeleteAllOfOption) error {
+	obj := &Upstream{}
+	return c.client.DeleteAllOf(ctx, obj, opts...)
+}
+
+func (c *upstreamClient) UpsertUpstream(ctx context.Context, obj *Upstream, transitionFuncs ...UpstreamTransitionFunction) error {
+	genericTxFunc := func(existing, desired runtime.Object) error {
+		for _, txFunc := range transitionFuncs {
+			if err := txFunc(existing.(*Upstream), desired.(*Upstream)); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	_, err := controllerutils.Upsert(ctx, c.client, obj, genericTxFunc)
+	return err
+}
+
+func (c *upstreamClient) UpdateUpstreamStatus(ctx context.Context, obj *Upstream, opts ...client.UpdateOption) error {
+	return c.client.Status().Update(ctx, obj, opts...)
+}
+
+func (c *upstreamClient) PatchUpstreamStatus(ctx context.Context, obj *Upstream, patch client.Patch, opts ...client.PatchOption) error {
+	return c.client.Status().Patch(ctx, obj, patch, opts...)
+}
+
+// Provides UpstreamClients for multiple clusters.
+type MulticlusterUpstreamClient interface {
+	// Cluster returns a UpstreamClient for the given cluster
+	Cluster(cluster string) (UpstreamClient, error)
+}
+
+type multiclusterUpstreamClient struct {
+	client multicluster.Client
+}
+
+func NewMulticlusterUpstreamClient(client multicluster.Client) MulticlusterUpstreamClient {
+	return &multiclusterUpstreamClient{client: client}
+}
+
+func (m *multiclusterUpstreamClient) Cluster(cluster string) (UpstreamClient, error) {
+	client, err := m.client.Cluster(cluster)
+	if err != nil {
+		return nil, err
+	}
+	return NewUpstreamClient(client), nil
 }

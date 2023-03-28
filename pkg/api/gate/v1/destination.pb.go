@@ -271,61 +271,6 @@ func (x *ConnPoll) GetOutboundSourceAddress() string {
 	return ""
 }
 
-type UpstreamGroupSpec struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CommonInfo   *v1.CommonInfo          `protobuf:"bytes,1,opt,name=commonInfo,proto3" json:"commonInfo,omitempty"`
-	UpstreamList []*WeightedUpstreamList `protobuf:"bytes,2,rep,name=upstreamList,proto3" json:"upstreamList,omitempty"`
-}
-
-func (x *UpstreamGroupSpec) Reset() {
-	*x = UpstreamGroupSpec{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *UpstreamGroupSpec) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpstreamGroupSpec) ProtoMessage() {}
-
-func (x *UpstreamGroupSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpstreamGroupSpec.ProtoReflect.Descriptor instead.
-func (*UpstreamGroupSpec) Descriptor() ([]byte, []int) {
-	return file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *UpstreamGroupSpec) GetCommonInfo() *v1.CommonInfo {
-	if x != nil {
-		return x.CommonInfo
-	}
-	return nil
-}
-
-func (x *UpstreamGroupSpec) GetUpstreamList() []*WeightedUpstreamList {
-	if x != nil {
-		return x.UpstreamList
-	}
-	return nil
-}
-
 type WeightedUpstreamList struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -339,7 +284,7 @@ type WeightedUpstreamList struct {
 func (x *WeightedUpstreamList) Reset() {
 	*x = WeightedUpstreamList{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes[3]
+		mi := &file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -352,7 +297,7 @@ func (x *WeightedUpstreamList) String() string {
 func (*WeightedUpstreamList) ProtoMessage() {}
 
 func (x *WeightedUpstreamList) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes[3]
+	mi := &file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -365,7 +310,7 @@ func (x *WeightedUpstreamList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WeightedUpstreamList.ProtoReflect.Descriptor instead.
 func (*WeightedUpstreamList) Descriptor() ([]byte, []int) {
-	return file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_rawDescGZIP(), []int{3}
+	return file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *WeightedUpstreamList) GetWeight() uint32 {
@@ -457,17 +402,7 @@ var file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_rawDesc = [
 	0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x06, 0x20,
 	0x01, 0x28, 0x09, 0x42, 0x0a, 0xfa, 0x42, 0x07, 0x72, 0x05, 0x70, 0x01, 0xd0, 0x01, 0x01, 0x52,
 	0x15, 0x6f, 0x75, 0x74, 0x62, 0x6f, 0x75, 0x6e, 0x64, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x9d, 0x01, 0x0a, 0x11, 0x55, 0x70, 0x73, 0x74, 0x72,
-	0x65, 0x61, 0x6d, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x53, 0x70, 0x65, 0x63, 0x12, 0x35, 0x0a, 0x0a,
-	0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x49, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x15, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6d,
-	0x6d, 0x6f, 0x6e, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0a, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x49,
-	0x6e, 0x66, 0x6f, 0x12, 0x51, 0x0a, 0x0c, 0x75, 0x70, 0x73, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x4c,
-	0x69, 0x73, 0x74, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x61, 0x74, 0x65,
-	0x2e, 0x57, 0x65, 0x69, 0x67, 0x68, 0x74, 0x65, 0x64, 0x55, 0x70, 0x73, 0x74, 0x72, 0x65, 0x61,
-	0x6d, 0x4c, 0x69, 0x73, 0x74, 0x42, 0x11, 0xfa, 0x42, 0x0e, 0x92, 0x01, 0x0b, 0x08, 0x01, 0x10,
-	0x40, 0x22, 0x05, 0x8a, 0x01, 0x02, 0x10, 0x01, 0x52, 0x0c, 0x75, 0x70, 0x73, 0x74, 0x72, 0x65,
-	0x61, 0x6d, 0x4c, 0x69, 0x73, 0x74, 0x22, 0xca, 0x01, 0x0a, 0x14, 0x57, 0x65, 0x69, 0x67, 0x68,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0xca, 0x01, 0x0a, 0x14, 0x57, 0x65, 0x69, 0x67, 0x68,
 	0x74, 0x65, 0x64, 0x55, 0x70, 0x73, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x4c, 0x69, 0x73, 0x74, 0x12,
 	0x1f, 0x0a, 0x06, 0x77, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x42,
 	0x07, 0xfa, 0x42, 0x04, 0x2a, 0x02, 0x28, 0x01, 0x52, 0x06, 0x77, 0x65, 0x69, 0x67, 0x68, 0x74,
@@ -499,37 +434,34 @@ func file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_rawDescGZI
 }
 
 var file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_goTypes = []interface{}{
 	(UpstreamSpec_LbPolicy)(0),    // 0: gate.UpstreamSpec.LbPolicy
 	(*UpstreamSpec)(nil),          // 1: gate.UpstreamSpec
 	(*ConnPoll)(nil),              // 2: gate.ConnPoll
-	(*UpstreamGroupSpec)(nil),     // 3: gate.UpstreamGroupSpec
-	(*WeightedUpstreamList)(nil),  // 4: gate.WeightedUpstreamList
-	(*v1.CommonInfo)(nil),         // 5: common.v1.CommonInfo
-	(*v1.TlsClient)(nil),          // 6: common.v1.TlsClient
-	(*v1.ResourceRef)(nil),        // 7: common.v1.ResourceRef
-	(*v1.StatefulSession)(nil),    // 8: common.v1.StatefulSession
-	(*v1.Endpoint)(nil),           // 9: common.v1.Endpoint
-	(*v1.HeaderManipulation)(nil), // 10: common.v1.HeaderManipulation
+	(*WeightedUpstreamList)(nil),  // 3: gate.WeightedUpstreamList
+	(*v1.CommonInfo)(nil),         // 4: common.v1.CommonInfo
+	(*v1.TlsClient)(nil),          // 5: common.v1.TlsClient
+	(*v1.ResourceRef)(nil),        // 6: common.v1.ResourceRef
+	(*v1.StatefulSession)(nil),    // 7: common.v1.StatefulSession
+	(*v1.Endpoint)(nil),           // 8: common.v1.Endpoint
+	(*v1.HeaderManipulation)(nil), // 9: common.v1.HeaderManipulation
 }
 var file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_depIdxs = []int32{
-	5,  // 0: gate.UpstreamSpec.commonInfo:type_name -> common.v1.CommonInfo
-	0,  // 1: gate.UpstreamSpec.lbAlg:type_name -> gate.UpstreamSpec.LbPolicy
-	6,  // 2: gate.UpstreamSpec.sslConfigurations:type_name -> common.v1.TlsClient
-	2,  // 3: gate.UpstreamSpec.connPoll:type_name -> gate.ConnPoll
-	7,  // 4: gate.UpstreamSpec.healthCheckRef:type_name -> common.v1.ResourceRef
-	8,  // 5: gate.UpstreamSpec.statefulSession:type_name -> common.v1.StatefulSession
-	9,  // 6: gate.UpstreamSpec.endpoints:type_name -> common.v1.Endpoint
-	5,  // 7: gate.UpstreamGroupSpec.commonInfo:type_name -> common.v1.CommonInfo
-	4,  // 8: gate.UpstreamGroupSpec.upstreamList:type_name -> gate.WeightedUpstreamList
-	7,  // 9: gate.WeightedUpstreamList.upstreamRef:type_name -> common.v1.ResourceRef
-	10, // 10: gate.WeightedUpstreamList.headerManipulation:type_name -> common.v1.HeaderManipulation
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	4, // 0: gate.UpstreamSpec.commonInfo:type_name -> common.v1.CommonInfo
+	0, // 1: gate.UpstreamSpec.lbAlg:type_name -> gate.UpstreamSpec.LbPolicy
+	5, // 2: gate.UpstreamSpec.sslConfigurations:type_name -> common.v1.TlsClient
+	2, // 3: gate.UpstreamSpec.connPoll:type_name -> gate.ConnPoll
+	6, // 4: gate.UpstreamSpec.healthCheckRef:type_name -> common.v1.ResourceRef
+	7, // 5: gate.UpstreamSpec.statefulSession:type_name -> common.v1.StatefulSession
+	8, // 6: gate.UpstreamSpec.endpoints:type_name -> common.v1.Endpoint
+	6, // 7: gate.WeightedUpstreamList.upstreamRef:type_name -> common.v1.ResourceRef
+	9, // 8: gate.WeightedUpstreamList.headerManipulation:type_name -> common.v1.HeaderManipulation
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_init() }
@@ -563,18 +495,6 @@ func file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_init() {
 			}
 		}
 		file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpstreamGroupSpec); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*WeightedUpstreamList); i {
 			case 0:
 				return &v.state
@@ -593,7 +513,7 @@ func file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_github_com_xdmybl_gate_type_proto_gate_v1_destination_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

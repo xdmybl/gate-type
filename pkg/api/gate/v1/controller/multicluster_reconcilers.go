@@ -159,3 +159,74 @@ func (g genericSslCertificateMulticlusterReconciler) Reconcile(cluster string, o
 	}
 	return g.reconciler.ReconcileSslCertificate(cluster, obj)
 }
+
+// Reconcile Upsert events for the Upstream Resource across clusters.
+// implemented by the user
+type MulticlusterUpstreamReconciler interface {
+	ReconcileUpstream(clusterName string, obj *gate_v1.Upstream) (reconcile.Result, error)
+}
+
+// Reconcile deletion events for the Upstream Resource across clusters.
+// Deletion receives a reconcile.Request as we cannot guarantee the last state of the object
+// before being deleted.
+// implemented by the user
+type MulticlusterUpstreamDeletionReconciler interface {
+	ReconcileUpstreamDeletion(clusterName string, req reconcile.Request) error
+}
+
+type MulticlusterUpstreamReconcilerFuncs struct {
+	OnReconcileUpstream         func(clusterName string, obj *gate_v1.Upstream) (reconcile.Result, error)
+	OnReconcileUpstreamDeletion func(clusterName string, req reconcile.Request) error
+}
+
+func (f *MulticlusterUpstreamReconcilerFuncs) ReconcileUpstream(clusterName string, obj *gate_v1.Upstream) (reconcile.Result, error) {
+	if f.OnReconcileUpstream == nil {
+		return reconcile.Result{}, nil
+	}
+	return f.OnReconcileUpstream(clusterName, obj)
+}
+
+func (f *MulticlusterUpstreamReconcilerFuncs) ReconcileUpstreamDeletion(clusterName string, req reconcile.Request) error {
+	if f.OnReconcileUpstreamDeletion == nil {
+		return nil
+	}
+	return f.OnReconcileUpstreamDeletion(clusterName, req)
+}
+
+type MulticlusterUpstreamReconcileLoop interface {
+	// AddMulticlusterUpstreamReconciler adds a MulticlusterUpstreamReconciler to the MulticlusterUpstreamReconcileLoop.
+	AddMulticlusterUpstreamReconciler(ctx context.Context, rec MulticlusterUpstreamReconciler, predicates ...predicate.Predicate)
+}
+
+type multiclusterUpstreamReconcileLoop struct {
+	loop multicluster.Loop
+}
+
+func (m *multiclusterUpstreamReconcileLoop) AddMulticlusterUpstreamReconciler(ctx context.Context, rec MulticlusterUpstreamReconciler, predicates ...predicate.Predicate) {
+	genericReconciler := genericUpstreamMulticlusterReconciler{reconciler: rec}
+
+	m.loop.AddReconciler(ctx, genericReconciler, predicates...)
+}
+
+func NewMulticlusterUpstreamReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterUpstreamReconcileLoop {
+	return &multiclusterUpstreamReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_v1.Upstream{}, options)}
+}
+
+type genericUpstreamMulticlusterReconciler struct {
+	reconciler MulticlusterUpstreamReconciler
+}
+
+func (g genericUpstreamMulticlusterReconciler) ReconcileDeletion(cluster string, req reconcile.Request) error {
+	if deletionReconciler, ok := g.reconciler.(MulticlusterUpstreamDeletionReconciler); ok {
+		return deletionReconciler.ReconcileUpstreamDeletion(cluster, req)
+	}
+	return nil
+}
+
+func (g genericUpstreamMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
+	obj, ok := object.(*gate_v1.Upstream)
+	if !ok {
+		return reconcile.Result{}, errors.Errorf("internal error: Upstream handler received event for %T", object)
+	}
+	return g.reconciler.ReconcileUpstream(cluster, obj)
+}

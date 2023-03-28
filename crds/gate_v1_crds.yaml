@@ -461,3 +461,205 @@ spec:
     served: true
     storage: true
     subresources: {}
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    crd.solo.io/specHash: a7790a7817127562
+  labels:
+    app: engine-gate
+    app.kubernetes.io/name: engine-gate
+  name: upstreams.gate
+spec:
+  group: gate
+  names:
+    kind: Upstream
+    listKind: UpstreamList
+    plural: upstreams
+    singular: upstream
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          spec:
+            properties:
+              commonInfo:
+                properties:
+                  description:
+                    type: string
+                  disabled:
+                    type: boolean
+                  name:
+                    type: string
+                  source:
+                    enum:
+                    - CustomDefinition
+                    - AdminDefinition
+                    type: string
+                  updatedDatetime:
+                    properties:
+                      nanos:
+                        description: |-
+                          Non-negative fractions of a second at nanosecond resolution. Negative
+                          second values with fractions must still have non-negative nanos values
+                          that count forward in time. Must be from 0 to 999,999,999
+                          inclusive.
+                        format: int32
+                        type: integer
+                      seconds:
+                        description: |-
+                          Represents seconds of UTC time since Unix epoch
+                          1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+                          9999-12-31T23:59:59Z inclusive.
+                        format: int64
+                        type: integer
+                    type: object
+                type: object
+              connPoll:
+                properties:
+                  maxConnections:
+                    description: 访问该集群的最大发连接数，默认值-1 (2^32-1 = 4294967295)。
+                    format: int64
+                    type: integer
+                  maxPendingRequests:
+                    description: 最大阻塞的请求数，默认值-1(2^32-1)。
+                    format: int64
+                    type: integer
+                  maxRequests:
+                    description: 访问该集群的最大并发请求数，默认值-1(2^32-1)。
+                    format: int64
+                    type: integer
+                  maxRequestsPerConnection:
+                    description: |-
+                      限制每个连接可以承载的连接个数，0表示不受限制，1表示一个连接服务一个请求后就被关闭，
+                      也就是禁用连接复用。默认值为0。
+                    maximum: 4294967295
+                    minimum: 0
+                    type: integer
+                  outboundSourceAddress:
+                    description: 指定出口网卡, 通过IP来指定网卡
+                    type: string
+                type: object
+              endpoints:
+                items:
+                  properties:
+                    address:
+                      type: string
+                    loadBalancingWeight:
+                      maximum: 4294967295
+                      minimum: 0
+                      type: integer
+                    port:
+                      maximum: 4294967295
+                      minimum: 0
+                      type: integer
+                  type: object
+                type: array
+              healthCheckRef:
+                properties:
+                  group:
+                    type: string
+                  kind:
+                    type: string
+                  name:
+                    type: string
+                  namespace:
+                    description: Defaults to `default`
+                    type: string
+                  version:
+                    type: string
+                type: object
+              lbAlg:
+                enum:
+                - ROUND_ROBIN
+                - LEAST_REQUEST
+                - RING_HASH
+                - RANDOM
+                - MAGLEV
+                type: string
+              sslConfigurations:
+                properties:
+                  allowRenegotiation:
+                    type: boolean
+                  caCertRef:
+                    properties:
+                      group:
+                        type: string
+                      kind:
+                        type: string
+                      name:
+                        type: string
+                      namespace:
+                        description: Defaults to `default`
+                        type: string
+                      version:
+                        type: string
+                    type: object
+                  sni:
+                    description: Optional
+                    type: string
+                  sslCertRef:
+                    properties:
+                      group:
+                        type: string
+                      kind:
+                        type: string
+                      name:
+                        type: string
+                      namespace:
+                        description: Defaults to `default`
+                        type: string
+                      version:
+                        type: string
+                    type: object
+                  tlsMode:
+                    enum:
+                    - TLS_NONE
+                    - TLS_V1_SIMPLE
+                    - TLS_V1_MUTUAL
+                    - TLS_V1_PASS_THROUGH
+                    - TLS_V1_AUTO_PASS_THROUGH
+                    type: string
+                type: object
+              statefulSession:
+                properties:
+                  name:
+                    type: string
+                  path:
+                    description: only for COOKIE
+                    type: string
+                  ttl:
+                    description: only for COOKIE
+                    properties:
+                      nanos:
+                        description: |-
+                          Non-negative fractions of a second at nanosecond resolution. Negative
+                          second values with fractions must still have non-negative nanos values
+                          that count forward in time. Must be from 0 to 999,999,999
+                          inclusive.
+                        format: int32
+                        type: integer
+                      seconds:
+                        description: |-
+                          Represents seconds of UTC time since Unix epoch
+                          1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+                          9999-12-31T23:59:59Z inclusive.
+                        format: int64
+                        type: integer
+                    type: object
+                  type:
+                    enum:
+                    - UNKNOWN
+                    - COOKIE
+                    - SESSION
+                    type: string
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources: {}

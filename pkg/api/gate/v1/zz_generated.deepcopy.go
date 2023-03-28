@@ -123,3 +123,61 @@ func (in *SslCertificateList) DeepCopyObject() runtime.Object {
 	}
 	return nil
 }
+
+// Generated Deepcopy methods for Upstream
+
+func (in *Upstream) DeepCopyInto(out *Upstream) {
+	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
+
+	// deepcopy spec
+	in.Spec.DeepCopyInto(&out.Spec)
+
+	return
+}
+
+func (in *Upstream) DeepCopy() *Upstream {
+	if in == nil {
+		return nil
+	}
+	out := new(Upstream)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *Upstream) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}
+
+func (in *UpstreamList) DeepCopyInto(out *UpstreamList) {
+	*out = *in
+	out.TypeMeta = in.TypeMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
+	if in.Items != nil {
+		in, out := &in.Items, &out.Items
+		*out = make([]Upstream, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	return
+}
+
+func (in *UpstreamList) DeepCopy() *UpstreamList {
+	if in == nil {
+		return nil
+	}
+	out := new(UpstreamList)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *UpstreamList) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}

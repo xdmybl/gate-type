@@ -30,3 +30,14 @@ func (in *SslCertificateSpec) DeepCopyInto(out *SslCertificateSpec) {
 	}
 	*out = *p
 }
+
+// DeepCopyInto for the Upstream.Spec
+func (in *UpstreamSpec) DeepCopyInto(out *UpstreamSpec) {
+	var p *UpstreamSpec
+	if h, ok := interface{}(in).(clone.Cloner); ok {
+		p = h.Clone().(*UpstreamSpec)
+	} else {
+		p = proto.Clone(in).(*UpstreamSpec)
+	}
+	*out = *p
+}

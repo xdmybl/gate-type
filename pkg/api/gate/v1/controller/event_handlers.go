@@ -230,3 +230,110 @@ func (h genericSslCertificateHandler) Generic(object client.Object) error {
 	}
 	return h.handler.GenericSslCertificate(obj)
 }
+
+// Handle events for the Upstream Resource
+// DEPRECATED: Prefer reconciler pattern.
+type UpstreamEventHandler interface {
+	CreateUpstream(obj *gate_v1.Upstream) error
+	UpdateUpstream(old, new *gate_v1.Upstream) error
+	DeleteUpstream(obj *gate_v1.Upstream) error
+	GenericUpstream(obj *gate_v1.Upstream) error
+}
+
+type UpstreamEventHandlerFuncs struct {
+	OnCreate  func(obj *gate_v1.Upstream) error
+	OnUpdate  func(old, new *gate_v1.Upstream) error
+	OnDelete  func(obj *gate_v1.Upstream) error
+	OnGeneric func(obj *gate_v1.Upstream) error
+}
+
+func (f *UpstreamEventHandlerFuncs) CreateUpstream(obj *gate_v1.Upstream) error {
+	if f.OnCreate == nil {
+		return nil
+	}
+	return f.OnCreate(obj)
+}
+
+func (f *UpstreamEventHandlerFuncs) DeleteUpstream(obj *gate_v1.Upstream) error {
+	if f.OnDelete == nil {
+		return nil
+	}
+	return f.OnDelete(obj)
+}
+
+func (f *UpstreamEventHandlerFuncs) UpdateUpstream(objOld, objNew *gate_v1.Upstream) error {
+	if f.OnUpdate == nil {
+		return nil
+	}
+	return f.OnUpdate(objOld, objNew)
+}
+
+func (f *UpstreamEventHandlerFuncs) GenericUpstream(obj *gate_v1.Upstream) error {
+	if f.OnGeneric == nil {
+		return nil
+	}
+	return f.OnGeneric(obj)
+}
+
+type UpstreamEventWatcher interface {
+	AddEventHandler(ctx context.Context, h UpstreamEventHandler, predicates ...predicate.Predicate) error
+}
+
+type upstreamEventWatcher struct {
+	watcher events.EventWatcher
+}
+
+func NewUpstreamEventWatcher(name string, mgr manager.Manager) UpstreamEventWatcher {
+	return &upstreamEventWatcher{
+		watcher: events.NewWatcher(name, mgr, &gate_v1.Upstream{}),
+	}
+}
+
+func (c *upstreamEventWatcher) AddEventHandler(ctx context.Context, h UpstreamEventHandler, predicates ...predicate.Predicate) error {
+	handler := genericUpstreamHandler{handler: h}
+	if err := c.watcher.Watch(ctx, handler, predicates...); err != nil {
+		return err
+	}
+	return nil
+}
+
+// genericUpstreamHandler implements a generic events.EventHandler
+type genericUpstreamHandler struct {
+	handler UpstreamEventHandler
+}
+
+func (h genericUpstreamHandler) Create(object client.Object) error {
+	obj, ok := object.(*gate_v1.Upstream)
+	if !ok {
+		return errors.Errorf("internal error: Upstream handler received event for %T", object)
+	}
+	return h.handler.CreateUpstream(obj)
+}
+
+func (h genericUpstreamHandler) Delete(object client.Object) error {
+	obj, ok := object.(*gate_v1.Upstream)
+	if !ok {
+		return errors.Errorf("internal error: Upstream handler received event for %T", object)
+	}
+	return h.handler.DeleteUpstream(obj)
+}
+
+func (h genericUpstreamHandler) Update(old, new client.Object) error {
+	objOld, ok := old.(*gate_v1.Upstream)
+	if !ok {
+		return errors.Errorf("internal error: Upstream handler received event for %T", old)
+	}
+	objNew, ok := new.(*gate_v1.Upstream)
+	if !ok {
+		return errors.Errorf("internal error: Upstream handler received event for %T", new)
+	}
+	return h.handler.UpdateUpstream(objOld, objNew)
+}
+
+func (h genericUpstreamHandler) Generic(object client.Object) error {
+	obj, ok := object.(*gate_v1.Upstream)
+	if !ok {
+		return errors.Errorf("internal error: Upstream handler received event for %T", object)
+	}
+	return h.handler.GenericUpstream(obj)
+}

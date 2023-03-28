@@ -36,11 +36,14 @@ var Group = model.Group{
 					Name: "SslCertificateSpec",
 				},
 			},
-			//Status: &model.Field{
-			//	Type: model.Type{
-			//		Name: "KubernetesClusterStatus",
-			//	},
-			//},
+		},
+		{
+			Kind: "Upstream",
+			Spec: model.Field{
+				Type: model.Type{
+					Name: "UpstreamSpec",
+				},
+			},
 		},
 	},
 	RenderManifests:         true,
