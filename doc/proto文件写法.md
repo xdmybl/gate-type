@@ -26,10 +26,18 @@ gate 存放所有的 spec 对象
 把必须抽取的放到一个文件内, 能合并到一个文件的尽量放一个文件里, 因为同级目录下的 proto 不能直接引用
 
 ### spec proto 文件的定义示例
-1.     
 ```shell
 # 引用 types
 import "proto/core/v1/types.proto";
-# 引用 commonInfo , 这是没个 spec 都有的
-core.v1.CommonInfo commonInfo = 1;
+# 引用 extproto
+import "extproto/ext.proto";
+# 为所有对象创建 clone equal hash 方法 
+option (extproto.equal_all) = true;
+option (extproto.hash_all) = true;
+option (extproto.clone_all) = true;
+# 定义 spec
+message exampleSpec {
+  # 引用 commonInfo , 这是没个 spec 都有的
+  core.v1.CommonInfo commonInfo = 1;
+}
 ``` 
