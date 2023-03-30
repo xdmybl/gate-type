@@ -301,3 +301,74 @@ func (g genericGatewayMulticlusterReconciler) Reconcile(cluster string, object e
 	}
 	return g.reconciler.ReconcileGateway(cluster, obj)
 }
+
+// Reconcile Upsert events for the Filter Resource across clusters.
+// implemented by the user
+type MulticlusterFilterReconciler interface {
+	ReconcileFilter(clusterName string, obj *gate_v1.Filter) (reconcile.Result, error)
+}
+
+// Reconcile deletion events for the Filter Resource across clusters.
+// Deletion receives a reconcile.Request as we cannot guarantee the last state of the object
+// before being deleted.
+// implemented by the user
+type MulticlusterFilterDeletionReconciler interface {
+	ReconcileFilterDeletion(clusterName string, req reconcile.Request) error
+}
+
+type MulticlusterFilterReconcilerFuncs struct {
+	OnReconcileFilter         func(clusterName string, obj *gate_v1.Filter) (reconcile.Result, error)
+	OnReconcileFilterDeletion func(clusterName string, req reconcile.Request) error
+}
+
+func (f *MulticlusterFilterReconcilerFuncs) ReconcileFilter(clusterName string, obj *gate_v1.Filter) (reconcile.Result, error) {
+	if f.OnReconcileFilter == nil {
+		return reconcile.Result{}, nil
+	}
+	return f.OnReconcileFilter(clusterName, obj)
+}
+
+func (f *MulticlusterFilterReconcilerFuncs) ReconcileFilterDeletion(clusterName string, req reconcile.Request) error {
+	if f.OnReconcileFilterDeletion == nil {
+		return nil
+	}
+	return f.OnReconcileFilterDeletion(clusterName, req)
+}
+
+type MulticlusterFilterReconcileLoop interface {
+	// AddMulticlusterFilterReconciler adds a MulticlusterFilterReconciler to the MulticlusterFilterReconcileLoop.
+	AddMulticlusterFilterReconciler(ctx context.Context, rec MulticlusterFilterReconciler, predicates ...predicate.Predicate)
+}
+
+type multiclusterFilterReconcileLoop struct {
+	loop multicluster.Loop
+}
+
+func (m *multiclusterFilterReconcileLoop) AddMulticlusterFilterReconciler(ctx context.Context, rec MulticlusterFilterReconciler, predicates ...predicate.Predicate) {
+	genericReconciler := genericFilterMulticlusterReconciler{reconciler: rec}
+
+	m.loop.AddReconciler(ctx, genericReconciler, predicates...)
+}
+
+func NewMulticlusterFilterReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterFilterReconcileLoop {
+	return &multiclusterFilterReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_v1.Filter{}, options)}
+}
+
+type genericFilterMulticlusterReconciler struct {
+	reconciler MulticlusterFilterReconciler
+}
+
+func (g genericFilterMulticlusterReconciler) ReconcileDeletion(cluster string, req reconcile.Request) error {
+	if deletionReconciler, ok := g.reconciler.(MulticlusterFilterDeletionReconciler); ok {
+		return deletionReconciler.ReconcileFilterDeletion(cluster, req)
+	}
+	return nil
+}
+
+func (g genericFilterMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
+	obj, ok := object.(*gate_v1.Filter)
+	if !ok {
+		return reconcile.Result{}, errors.Errorf("internal error: Filter handler received event for %T", object)
+	}
+	return g.reconciler.ReconcileFilter(cluster, obj)
+}

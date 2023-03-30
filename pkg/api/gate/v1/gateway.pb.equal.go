@@ -73,183 +73,18 @@ func (m *GatewaySpec) Equal(that interface{}) bool {
 
 	}
 
-	if len(m.GetNgNames()) != len(target.GetNgNames()) {
-		return false
-	}
-	for idx, v := range m.GetNgNames() {
-
-		if strings.Compare(v, target.GetNgNames()[idx]) != 0 {
-			return false
-		}
-
-	}
-
 	return true
 }
 
 // Equal function
-func (m *GwTcpServer) Equal(that interface{}) bool {
+func (m *GatewayListener) Equal(that interface{}) bool {
 	if that == nil {
 		return m == nil
 	}
 
-	target, ok := that.(*GwTcpServer)
+	target, ok := that.(*GatewayListener)
 	if !ok {
-		that2, ok := that.(GwTcpServer)
-		if ok {
-			target = &that2
-		} else {
-			return false
-		}
-	}
-	if target == nil {
-		return m == nil
-	} else if m == nil {
-		return false
-	}
-
-	return true
-}
-
-// Equal function
-func (m *GwHttpServer) Equal(that interface{}) bool {
-	if that == nil {
-		return m == nil
-	}
-
-	target, ok := that.(*GwHttpServer)
-	if !ok {
-		that2, ok := that.(GwHttpServer)
-		if ok {
-			target = &that2
-		} else {
-			return false
-		}
-	}
-	if target == nil {
-		return m == nil
-	} else if m == nil {
-		return false
-	}
-
-	if h, ok := interface{}(m.GetOptions()).(equality.Equalizer); ok {
-		if !h.Equal(target.GetOptions()) {
-			return false
-		}
-	} else {
-		if !proto.Equal(m.GetOptions(), target.GetOptions()) {
-			return false
-		}
-	}
-
-	if len(m.GetVirtualServices()) != len(target.GetVirtualServices()) {
-		return false
-	}
-	for idx, v := range m.GetVirtualServices() {
-
-		if strings.Compare(v, target.GetVirtualServices()[idx]) != 0 {
-			return false
-		}
-
-	}
-
-	if strings.Compare(m.GetAccessLogUpstreamName(), target.GetAccessLogUpstreamName()) != 0 {
-		return false
-	}
-
-	if strings.Compare(m.GetAccessLogAccount(), target.GetAccessLogAccount()) != 0 {
-		return false
-	}
-
-	if strings.Compare(m.GetTracingUpstreamName(), target.GetTracingUpstreamName()) != 0 {
-		return false
-	}
-
-	return true
-}
-
-// Equal function
-func (m *GwServer) Equal(that interface{}) bool {
-	if that == nil {
-		return m == nil
-	}
-
-	target, ok := that.(*GwServer)
-	if !ok {
-		that2, ok := that.(GwServer)
-		if ok {
-			target = &that2
-		} else {
-			return false
-		}
-	}
-	if target == nil {
-		return m == nil
-	} else if m == nil {
-		return false
-	}
-
-	if h, ok := interface{}(m.GetSslConfigurations()).(equality.Equalizer); ok {
-		if !h.Equal(target.GetSslConfigurations()) {
-			return false
-		}
-	} else {
-		if !proto.Equal(m.GetSslConfigurations(), target.GetSslConfigurations()) {
-			return false
-		}
-	}
-
-	switch m.ServerType.(type) {
-
-	case *GwServer_HttpServer:
-		if _, ok := target.ServerType.(*GwServer_HttpServer); !ok {
-			return false
-		}
-
-		if h, ok := interface{}(m.GetHttpServer()).(equality.Equalizer); ok {
-			if !h.Equal(target.GetHttpServer()) {
-				return false
-			}
-		} else {
-			if !proto.Equal(m.GetHttpServer(), target.GetHttpServer()) {
-				return false
-			}
-		}
-
-	case *GwServer_TcpServer:
-		if _, ok := target.ServerType.(*GwServer_TcpServer); !ok {
-			return false
-		}
-
-		if h, ok := interface{}(m.GetTcpServer()).(equality.Equalizer); ok {
-			if !h.Equal(target.GetTcpServer()) {
-				return false
-			}
-		} else {
-			if !proto.Equal(m.GetTcpServer(), target.GetTcpServer()) {
-				return false
-			}
-		}
-
-	default:
-		// m is nil but target is not nil
-		if m.ServerType != target.ServerType {
-			return false
-		}
-	}
-
-	return true
-}
-
-// Equal function
-func (m *GwListener) Equal(that interface{}) bool {
-	if that == nil {
-		return m == nil
-	}
-
-	target, ok := that.(*GwListener)
-	if !ok {
-		that2, ok := that.(GwListener)
+		that2, ok := that.(GatewayListener)
 		if ok {
 			target = &that2
 		} else {
@@ -274,19 +109,13 @@ func (m *GwListener) Equal(that interface{}) bool {
 		return false
 	}
 
-	if len(m.GetServer()) != len(target.GetServer()) {
+	if len(m.GetFilterName()) != len(target.GetFilterName()) {
 		return false
 	}
-	for idx, v := range m.GetServer() {
+	for idx, v := range m.GetFilterName() {
 
-		if h, ok := interface{}(v).(equality.Equalizer); ok {
-			if !h.Equal(target.GetServer()[idx]) {
-				return false
-			}
-		} else {
-			if !proto.Equal(v, target.GetServer()[idx]) {
-				return false
-			}
+		if strings.Compare(v, target.GetFilterName()[idx]) != 0 {
+			return false
 		}
 
 	}
@@ -336,42 +165,6 @@ func (m *ListenerOptions) Equal(that interface{}) bool {
 	}
 
 	if m.GetPerConnectionBufferLimitBytes() != target.GetPerConnectionBufferLimitBytes() {
-		return false
-	}
-
-	return true
-}
-
-// Equal function
-func (m *HttpServerOptions) Equal(that interface{}) bool {
-	if that == nil {
-		return m == nil
-	}
-
-	target, ok := that.(*HttpServerOptions)
-	if !ok {
-		that2, ok := that.(HttpServerOptions)
-		if ok {
-			target = &that2
-		} else {
-			return false
-		}
-	}
-	if target == nil {
-		return m == nil
-	} else if m == nil {
-		return false
-	}
-
-	if m.GetMergeSlashes() != target.GetMergeSlashes() {
-		return false
-	}
-
-	if m.GetSkipXffAppend() != target.GetSkipXffAppend() {
-		return false
-	}
-
-	if m.GetUpgradeType() != target.GetUpgradeType() {
 		return false
 	}
 

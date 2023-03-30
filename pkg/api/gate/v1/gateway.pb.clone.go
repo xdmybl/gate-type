@@ -13,10 +13,6 @@ import (
 	"github.com/solo-io/protoc-gen-ext/pkg/clone"
 	"google.golang.org/protobuf/proto"
 
-	github_com_golang_protobuf_ptypes_struct "github.com/golang/protobuf/ptypes/struct"
-
-	github_com_xdmybl_gate_type_pkg_api_common_v1 "github.com/xdmybl/gate-type/pkg/api/common/v1"
-
 	github_com_xdmybl_gate_type_pkg_api_core_v1 "github.com/xdmybl/gate-type/pkg/api/core/v1"
 )
 
@@ -46,23 +42,14 @@ func (m *GatewaySpec) Clone() proto.Message {
 	}
 
 	if m.GetListeners() != nil {
-		target.Listeners = make([]*GwListener, len(m.GetListeners()))
+		target.Listeners = make([]*GatewayListener, len(m.GetListeners()))
 		for idx, v := range m.GetListeners() {
 
 			if h, ok := interface{}(v).(clone.Cloner); ok {
-				target.Listeners[idx] = h.Clone().(*GwListener)
+				target.Listeners[idx] = h.Clone().(*GatewayListener)
 			} else {
-				target.Listeners[idx] = proto.Clone(v).(*GwListener)
+				target.Listeners[idx] = proto.Clone(v).(*GatewayListener)
 			}
-
-		}
-	}
-
-	if m.GetNgNames() != nil {
-		target.NgNames = make([]string, len(m.GetNgNames()))
-		for idx, v := range m.GetNgNames() {
-
-			target.NgNames[idx] = v
 
 		}
 	}
@@ -71,100 +58,12 @@ func (m *GatewaySpec) Clone() proto.Message {
 }
 
 // Clone function
-func (m *GwTcpServer) Clone() proto.Message {
-	var target *GwTcpServer
+func (m *GatewayListener) Clone() proto.Message {
+	var target *GatewayListener
 	if m == nil {
 		return target
 	}
-	target = &GwTcpServer{}
-
-	return target
-}
-
-// Clone function
-func (m *GwHttpServer) Clone() proto.Message {
-	var target *GwHttpServer
-	if m == nil {
-		return target
-	}
-	target = &GwHttpServer{}
-
-	if h, ok := interface{}(m.GetOptions()).(clone.Cloner); ok {
-		target.Options = h.Clone().(*HttpServerOptions)
-	} else {
-		target.Options = proto.Clone(m.GetOptions()).(*HttpServerOptions)
-	}
-
-	if m.GetVirtualServices() != nil {
-		target.VirtualServices = make([]string, len(m.GetVirtualServices()))
-		for idx, v := range m.GetVirtualServices() {
-
-			target.VirtualServices[idx] = v
-
-		}
-	}
-
-	target.AccessLogUpstreamName = m.GetAccessLogUpstreamName()
-
-	target.AccessLogAccount = m.GetAccessLogAccount()
-
-	target.TracingUpstreamName = m.GetTracingUpstreamName()
-
-	return target
-}
-
-// Clone function
-func (m *GwServer) Clone() proto.Message {
-	var target *GwServer
-	if m == nil {
-		return target
-	}
-	target = &GwServer{}
-
-	if h, ok := interface{}(m.GetSslConfigurations()).(clone.Cloner); ok {
-		target.SslConfigurations = h.Clone().(*github_com_xdmybl_gate_type_pkg_api_common_v1.TlsServer)
-	} else {
-		target.SslConfigurations = proto.Clone(m.GetSslConfigurations()).(*github_com_xdmybl_gate_type_pkg_api_common_v1.TlsServer)
-	}
-
-	switch m.ServerType.(type) {
-
-	case *GwServer_HttpServer:
-
-		if h, ok := interface{}(m.GetHttpServer()).(clone.Cloner); ok {
-			target.ServerType = &GwServer_HttpServer{
-				HttpServer: h.Clone().(*GwHttpServer),
-			}
-		} else {
-			target.ServerType = &GwServer_HttpServer{
-				HttpServer: proto.Clone(m.GetHttpServer()).(*GwHttpServer),
-			}
-		}
-
-	case *GwServer_TcpServer:
-
-		if h, ok := interface{}(m.GetTcpServer()).(clone.Cloner); ok {
-			target.ServerType = &GwServer_TcpServer{
-				TcpServer: h.Clone().(*GwTcpServer),
-			}
-		} else {
-			target.ServerType = &GwServer_TcpServer{
-				TcpServer: proto.Clone(m.GetTcpServer()).(*GwTcpServer),
-			}
-		}
-
-	}
-
-	return target
-}
-
-// Clone function
-func (m *GwListener) Clone() proto.Message {
-	var target *GwListener
-	if m == nil {
-		return target
-	}
-	target = &GwListener{}
+	target = &GatewayListener{}
 
 	target.BindAddress = m.GetBindAddress()
 
@@ -172,15 +71,11 @@ func (m *GwListener) Clone() proto.Message {
 
 	target.BindToPort = m.GetBindToPort()
 
-	if m.GetServer() != nil {
-		target.Server = make([]*GwServer, len(m.GetServer()))
-		for idx, v := range m.GetServer() {
+	if m.GetFilterName() != nil {
+		target.FilterName = make([]string, len(m.GetFilterName()))
+		for idx, v := range m.GetFilterName() {
 
-			if h, ok := interface{}(v).(clone.Cloner); ok {
-				target.Server[idx] = h.Clone().(*GwServer)
-			} else {
-				target.Server[idx] = proto.Clone(v).(*GwServer)
-			}
+			target.FilterName[idx] = v
 
 		}
 	}
@@ -192,9 +87,9 @@ func (m *GwListener) Clone() proto.Message {
 	}
 
 	if h, ok := interface{}(m.GetMetadata()).(clone.Cloner); ok {
-		target.Metadata = h.Clone().(*github_com_golang_protobuf_ptypes_struct.Struct)
+		target.Metadata = h.Clone().(*github_com_xdmybl_gate_type_pkg_api_core_v1.GateMetadata)
 	} else {
-		target.Metadata = proto.Clone(m.GetMetadata()).(*github_com_golang_protobuf_ptypes_struct.Struct)
+		target.Metadata = proto.Clone(m.GetMetadata()).(*github_com_xdmybl_gate_type_pkg_api_core_v1.GateMetadata)
 	}
 
 	return target
@@ -209,23 +104,6 @@ func (m *ListenerOptions) Clone() proto.Message {
 	target = &ListenerOptions{}
 
 	target.PerConnectionBufferLimitBytes = m.GetPerConnectionBufferLimitBytes()
-
-	return target
-}
-
-// Clone function
-func (m *HttpServerOptions) Clone() proto.Message {
-	var target *HttpServerOptions
-	if m == nil {
-		return target
-	}
-	target = &HttpServerOptions{}
-
-	target.MergeSlashes = m.GetMergeSlashes()
-
-	target.SkipXffAppend = m.GetSkipXffAppend()
-
-	target.UpgradeType = m.GetUpgradeType()
 
 	return target
 }

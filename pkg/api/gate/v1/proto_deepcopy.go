@@ -52,3 +52,14 @@ func (in *GatewaySpec) DeepCopyInto(out *GatewaySpec) {
 	}
 	*out = *p
 }
+
+// DeepCopyInto for the Filter.Spec
+func (in *FilterSpec) DeepCopyInto(out *FilterSpec) {
+	var p *FilterSpec
+	if h, ok := interface{}(in).(clone.Cloner); ok {
+		p = h.Clone().(*FilterSpec)
+	} else {
+		p = proto.Clone(in).(*FilterSpec)
+	}
+	*out = *p
+}

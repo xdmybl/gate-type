@@ -82,19 +82,11 @@ func (m *GatewaySpec) Hash(hasher hash.Hash64) (uint64, error) {
 
 	}
 
-	for _, v := range m.GetNgNames() {
-
-		if _, err = hasher.Write([]byte(v)); err != nil {
-			return 0, err
-		}
-
-	}
-
 	return hasher.Sum64(), nil
 }
 
 // Hash function
-func (m *GwTcpServer) Hash(hasher hash.Hash64) (uint64, error) {
+func (m *GatewayListener) Hash(hasher hash.Hash64) (uint64, error) {
 	if m == nil {
 		return 0, nil
 	}
@@ -102,163 +94,7 @@ func (m *GwTcpServer) Hash(hasher hash.Hash64) (uint64, error) {
 		hasher = fnv.New64()
 	}
 	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.GwTcpServer")); err != nil {
-		return 0, err
-	}
-
-	return hasher.Sum64(), nil
-}
-
-// Hash function
-func (m *GwHttpServer) Hash(hasher hash.Hash64) (uint64, error) {
-	if m == nil {
-		return 0, nil
-	}
-	if hasher == nil {
-		hasher = fnv.New64()
-	}
-	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.GwHttpServer")); err != nil {
-		return 0, err
-	}
-
-	if h, ok := interface{}(m.GetOptions()).(safe_hasher.SafeHasher); ok {
-		if _, err = hasher.Write([]byte("Options")); err != nil {
-			return 0, err
-		}
-		if _, err = h.Hash(hasher); err != nil {
-			return 0, err
-		}
-	} else {
-		if fieldValue, err := hashstructure.Hash(m.GetOptions(), nil); err != nil {
-			return 0, err
-		} else {
-			if _, err = hasher.Write([]byte("Options")); err != nil {
-				return 0, err
-			}
-			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	for _, v := range m.GetVirtualServices() {
-
-		if _, err = hasher.Write([]byte(v)); err != nil {
-			return 0, err
-		}
-
-	}
-
-	if _, err = hasher.Write([]byte(m.GetAccessLogUpstreamName())); err != nil {
-		return 0, err
-	}
-
-	if _, err = hasher.Write([]byte(m.GetAccessLogAccount())); err != nil {
-		return 0, err
-	}
-
-	if _, err = hasher.Write([]byte(m.GetTracingUpstreamName())); err != nil {
-		return 0, err
-	}
-
-	return hasher.Sum64(), nil
-}
-
-// Hash function
-func (m *GwServer) Hash(hasher hash.Hash64) (uint64, error) {
-	if m == nil {
-		return 0, nil
-	}
-	if hasher == nil {
-		hasher = fnv.New64()
-	}
-	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.GwServer")); err != nil {
-		return 0, err
-	}
-
-	if h, ok := interface{}(m.GetSslConfigurations()).(safe_hasher.SafeHasher); ok {
-		if _, err = hasher.Write([]byte("SslConfigurations")); err != nil {
-			return 0, err
-		}
-		if _, err = h.Hash(hasher); err != nil {
-			return 0, err
-		}
-	} else {
-		if fieldValue, err := hashstructure.Hash(m.GetSslConfigurations(), nil); err != nil {
-			return 0, err
-		} else {
-			if _, err = hasher.Write([]byte("SslConfigurations")); err != nil {
-				return 0, err
-			}
-			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	switch m.ServerType.(type) {
-
-	case *GwServer_HttpServer:
-
-		if h, ok := interface{}(m.GetHttpServer()).(safe_hasher.SafeHasher); ok {
-			if _, err = hasher.Write([]byte("HttpServer")); err != nil {
-				return 0, err
-			}
-			if _, err = h.Hash(hasher); err != nil {
-				return 0, err
-			}
-		} else {
-			if fieldValue, err := hashstructure.Hash(m.GetHttpServer(), nil); err != nil {
-				return 0, err
-			} else {
-				if _, err = hasher.Write([]byte("HttpServer")); err != nil {
-					return 0, err
-				}
-				if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
-					return 0, err
-				}
-			}
-		}
-
-	case *GwServer_TcpServer:
-
-		if h, ok := interface{}(m.GetTcpServer()).(safe_hasher.SafeHasher); ok {
-			if _, err = hasher.Write([]byte("TcpServer")); err != nil {
-				return 0, err
-			}
-			if _, err = h.Hash(hasher); err != nil {
-				return 0, err
-			}
-		} else {
-			if fieldValue, err := hashstructure.Hash(m.GetTcpServer(), nil); err != nil {
-				return 0, err
-			} else {
-				if _, err = hasher.Write([]byte("TcpServer")); err != nil {
-					return 0, err
-				}
-				if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
-					return 0, err
-				}
-			}
-		}
-
-	}
-
-	return hasher.Sum64(), nil
-}
-
-// Hash function
-func (m *GwListener) Hash(hasher hash.Hash64) (uint64, error) {
-	if m == nil {
-		return 0, nil
-	}
-	if hasher == nil {
-		hasher = fnv.New64()
-	}
-	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.GwListener")); err != nil {
+	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.GatewayListener")); err != nil {
 		return 0, err
 	}
 
@@ -276,26 +112,10 @@ func (m *GwListener) Hash(hasher hash.Hash64) (uint64, error) {
 		return 0, err
 	}
 
-	for _, v := range m.GetServer() {
+	for _, v := range m.GetFilterName() {
 
-		if h, ok := interface{}(v).(safe_hasher.SafeHasher); ok {
-			if _, err = hasher.Write([]byte("")); err != nil {
-				return 0, err
-			}
-			if _, err = h.Hash(hasher); err != nil {
-				return 0, err
-			}
-		} else {
-			if fieldValue, err := hashstructure.Hash(v, nil); err != nil {
-				return 0, err
-			} else {
-				if _, err = hasher.Write([]byte("")); err != nil {
-					return 0, err
-				}
-				if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
-					return 0, err
-				}
-			}
+		if _, err = hasher.Write([]byte(v)); err != nil {
+			return 0, err
 		}
 
 	}
@@ -337,37 +157,6 @@ func (m *ListenerOptions) Hash(hasher hash.Hash64) (uint64, error) {
 	}
 
 	err = binary.Write(hasher, binary.LittleEndian, m.GetPerConnectionBufferLimitBytes())
-	if err != nil {
-		return 0, err
-	}
-
-	return hasher.Sum64(), nil
-}
-
-// Hash function
-func (m *HttpServerOptions) Hash(hasher hash.Hash64) (uint64, error) {
-	if m == nil {
-		return 0, nil
-	}
-	if hasher == nil {
-		hasher = fnv.New64()
-	}
-	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.HttpServerOptions")); err != nil {
-		return 0, err
-	}
-
-	err = binary.Write(hasher, binary.LittleEndian, m.GetMergeSlashes())
-	if err != nil {
-		return 0, err
-	}
-
-	err = binary.Write(hasher, binary.LittleEndian, m.GetSkipXffAppend())
-	if err != nil {
-		return 0, err
-	}
-
-	err = binary.Write(hasher, binary.LittleEndian, m.GetUpgradeType())
 	if err != nil {
 		return 0, err
 	}

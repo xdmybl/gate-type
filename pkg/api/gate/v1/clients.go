@@ -47,6 +47,8 @@ type Clientset interface {
 	Upstreams() UpstreamClient
 	// clienset for the gate/v1/v1 APIs
 	Gateways() GatewayClient
+	// clienset for the gate/v1/v1 APIs
+	Filters() FilterClient
 }
 
 type clientSet struct {
@@ -89,6 +91,11 @@ func (c *clientSet) Upstreams() UpstreamClient {
 // clienset for the gate/v1/v1 APIs
 func (c *clientSet) Gateways() GatewayClient {
 	return NewGatewayClient(c.client)
+}
+
+// clienset for the gate/v1/v1 APIs
+func (c *clientSet) Filters() FilterClient {
+	return NewFilterClient(c.client)
 }
 
 // Reader knows how to read and list CaCertificates.
@@ -657,4 +664,146 @@ func (m *multiclusterGatewayClient) Cluster(cluster string) (GatewayClient, erro
 		return nil, err
 	}
 	return NewGatewayClient(client), nil
+}
+
+// Reader knows how to read and list Filters.
+type FilterReader interface {
+	// Get retrieves a Filter for the given object key
+	GetFilter(ctx context.Context, key client.ObjectKey) (*Filter, error)
+
+	// List retrieves list of Filters for a given namespace and list options.
+	ListFilter(ctx context.Context, opts ...client.ListOption) (*FilterList, error)
+}
+
+// FilterTransitionFunction instructs the FilterWriter how to transition between an existing
+// Filter object and a desired on an Upsert
+type FilterTransitionFunction func(existing, desired *Filter) error
+
+// Writer knows how to create, delete, and update Filters.
+type FilterWriter interface {
+	// Create saves the Filter object.
+	CreateFilter(ctx context.Context, obj *Filter, opts ...client.CreateOption) error
+
+	// Delete deletes the Filter object.
+	DeleteFilter(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error
+
+	// Update updates the given Filter object.
+	UpdateFilter(ctx context.Context, obj *Filter, opts ...client.UpdateOption) error
+
+	// Patch patches the given Filter object.
+	PatchFilter(ctx context.Context, obj *Filter, patch client.Patch, opts ...client.PatchOption) error
+
+	// DeleteAllOf deletes all Filter objects matching the given options.
+	DeleteAllOfFilter(ctx context.Context, opts ...client.DeleteAllOfOption) error
+
+	// Create or Update the Filter object.
+	UpsertFilter(ctx context.Context, obj *Filter, transitionFuncs ...FilterTransitionFunction) error
+}
+
+// StatusWriter knows how to update status subresource of a Filter object.
+type FilterStatusWriter interface {
+	// Update updates the fields corresponding to the status subresource for the
+	// given Filter object.
+	UpdateFilterStatus(ctx context.Context, obj *Filter, opts ...client.UpdateOption) error
+
+	// Patch patches the given Filter object's subresource.
+	PatchFilterStatus(ctx context.Context, obj *Filter, patch client.Patch, opts ...client.PatchOption) error
+}
+
+// Client knows how to perform CRUD operations on Filters.
+type FilterClient interface {
+	FilterReader
+	FilterWriter
+	FilterStatusWriter
+}
+
+type filterClient struct {
+	client client.Client
+}
+
+func NewFilterClient(client client.Client) *filterClient {
+	return &filterClient{client: client}
+}
+
+func (c *filterClient) GetFilter(ctx context.Context, key client.ObjectKey) (*Filter, error) {
+	obj := &Filter{}
+	if err := c.client.Get(ctx, key, obj); err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
+func (c *filterClient) ListFilter(ctx context.Context, opts ...client.ListOption) (*FilterList, error) {
+	list := &FilterList{}
+	if err := c.client.List(ctx, list, opts...); err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
+func (c *filterClient) CreateFilter(ctx context.Context, obj *Filter, opts ...client.CreateOption) error {
+	return c.client.Create(ctx, obj, opts...)
+}
+
+func (c *filterClient) DeleteFilter(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error {
+	obj := &Filter{}
+	obj.SetName(key.Name)
+	obj.SetNamespace(key.Namespace)
+	return c.client.Delete(ctx, obj, opts...)
+}
+
+func (c *filterClient) UpdateFilter(ctx context.Context, obj *Filter, opts ...client.UpdateOption) error {
+	return c.client.Update(ctx, obj, opts...)
+}
+
+func (c *filterClient) PatchFilter(ctx context.Context, obj *Filter, patch client.Patch, opts ...client.PatchOption) error {
+	return c.client.Patch(ctx, obj, patch, opts...)
+}
+
+func (c *filterClient) DeleteAllOfFilter(ctx context.Context, opts ...client.DeleteAllOfOption) error {
+	obj := &Filter{}
+	return c.client.DeleteAllOf(ctx, obj, opts...)
+}
+
+func (c *filterClient) UpsertFilter(ctx context.Context, obj *Filter, transitionFuncs ...FilterTransitionFunction) error {
+	genericTxFunc := func(existing, desired runtime.Object) error {
+		for _, txFunc := range transitionFuncs {
+			if err := txFunc(existing.(*Filter), desired.(*Filter)); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	_, err := controllerutils.Upsert(ctx, c.client, obj, genericTxFunc)
+	return err
+}
+
+func (c *filterClient) UpdateFilterStatus(ctx context.Context, obj *Filter, opts ...client.UpdateOption) error {
+	return c.client.Status().Update(ctx, obj, opts...)
+}
+
+func (c *filterClient) PatchFilterStatus(ctx context.Context, obj *Filter, patch client.Patch, opts ...client.PatchOption) error {
+	return c.client.Status().Patch(ctx, obj, patch, opts...)
+}
+
+// Provides FilterClients for multiple clusters.
+type MulticlusterFilterClient interface {
+	// Cluster returns a FilterClient for the given cluster
+	Cluster(cluster string) (FilterClient, error)
+}
+
+type multiclusterFilterClient struct {
+	client multicluster.Client
+}
+
+func NewMulticlusterFilterClient(client multicluster.Client) MulticlusterFilterClient {
+	return &multiclusterFilterClient{client: client}
+}
+
+func (m *multiclusterFilterClient) Cluster(cluster string) (FilterClient, error) {
+	client, err := m.client.Cluster(cluster)
+	if err != nil {
+		return nil, err
+	}
+	return NewFilterClient(client), nil
 }

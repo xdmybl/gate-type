@@ -444,3 +444,110 @@ func (h genericGatewayHandler) Generic(object client.Object) error {
 	}
 	return h.handler.GenericGateway(obj)
 }
+
+// Handle events for the Filter Resource
+// DEPRECATED: Prefer reconciler pattern.
+type FilterEventHandler interface {
+	CreateFilter(obj *gate_v1.Filter) error
+	UpdateFilter(old, new *gate_v1.Filter) error
+	DeleteFilter(obj *gate_v1.Filter) error
+	GenericFilter(obj *gate_v1.Filter) error
+}
+
+type FilterEventHandlerFuncs struct {
+	OnCreate  func(obj *gate_v1.Filter) error
+	OnUpdate  func(old, new *gate_v1.Filter) error
+	OnDelete  func(obj *gate_v1.Filter) error
+	OnGeneric func(obj *gate_v1.Filter) error
+}
+
+func (f *FilterEventHandlerFuncs) CreateFilter(obj *gate_v1.Filter) error {
+	if f.OnCreate == nil {
+		return nil
+	}
+	return f.OnCreate(obj)
+}
+
+func (f *FilterEventHandlerFuncs) DeleteFilter(obj *gate_v1.Filter) error {
+	if f.OnDelete == nil {
+		return nil
+	}
+	return f.OnDelete(obj)
+}
+
+func (f *FilterEventHandlerFuncs) UpdateFilter(objOld, objNew *gate_v1.Filter) error {
+	if f.OnUpdate == nil {
+		return nil
+	}
+	return f.OnUpdate(objOld, objNew)
+}
+
+func (f *FilterEventHandlerFuncs) GenericFilter(obj *gate_v1.Filter) error {
+	if f.OnGeneric == nil {
+		return nil
+	}
+	return f.OnGeneric(obj)
+}
+
+type FilterEventWatcher interface {
+	AddEventHandler(ctx context.Context, h FilterEventHandler, predicates ...predicate.Predicate) error
+}
+
+type filterEventWatcher struct {
+	watcher events.EventWatcher
+}
+
+func NewFilterEventWatcher(name string, mgr manager.Manager) FilterEventWatcher {
+	return &filterEventWatcher{
+		watcher: events.NewWatcher(name, mgr, &gate_v1.Filter{}),
+	}
+}
+
+func (c *filterEventWatcher) AddEventHandler(ctx context.Context, h FilterEventHandler, predicates ...predicate.Predicate) error {
+	handler := genericFilterHandler{handler: h}
+	if err := c.watcher.Watch(ctx, handler, predicates...); err != nil {
+		return err
+	}
+	return nil
+}
+
+// genericFilterHandler implements a generic events.EventHandler
+type genericFilterHandler struct {
+	handler FilterEventHandler
+}
+
+func (h genericFilterHandler) Create(object client.Object) error {
+	obj, ok := object.(*gate_v1.Filter)
+	if !ok {
+		return errors.Errorf("internal error: Filter handler received event for %T", object)
+	}
+	return h.handler.CreateFilter(obj)
+}
+
+func (h genericFilterHandler) Delete(object client.Object) error {
+	obj, ok := object.(*gate_v1.Filter)
+	if !ok {
+		return errors.Errorf("internal error: Filter handler received event for %T", object)
+	}
+	return h.handler.DeleteFilter(obj)
+}
+
+func (h genericFilterHandler) Update(old, new client.Object) error {
+	objOld, ok := old.(*gate_v1.Filter)
+	if !ok {
+		return errors.Errorf("internal error: Filter handler received event for %T", old)
+	}
+	objNew, ok := new.(*gate_v1.Filter)
+	if !ok {
+		return errors.Errorf("internal error: Filter handler received event for %T", new)
+	}
+	return h.handler.UpdateFilter(objOld, objNew)
+}
+
+func (h genericFilterHandler) Generic(object client.Object) error {
+	obj, ok := object.(*gate_v1.Filter)
+	if !ok {
+		return errors.Errorf("internal error: Filter handler received event for %T", object)
+	}
+	return h.handler.GenericFilter(obj)
+}

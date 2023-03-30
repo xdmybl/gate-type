@@ -239,3 +239,61 @@ func (in *GatewayList) DeepCopyObject() runtime.Object {
 	}
 	return nil
 }
+
+// Generated Deepcopy methods for Filter
+
+func (in *Filter) DeepCopyInto(out *Filter) {
+	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
+
+	// deepcopy spec
+	in.Spec.DeepCopyInto(&out.Spec)
+
+	return
+}
+
+func (in *Filter) DeepCopy() *Filter {
+	if in == nil {
+		return nil
+	}
+	out := new(Filter)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *Filter) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}
+
+func (in *FilterList) DeepCopyInto(out *FilterList) {
+	*out = *in
+	out.TypeMeta = in.TypeMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
+	if in.Items != nil {
+		in, out := &in.Items, &out.Items
+		*out = make([]Filter, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	return
+}
+
+func (in *FilterList) DeepCopy() *FilterList {
+	if in == nil {
+		return nil
+	}
+	out := new(FilterList)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *FilterList) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}

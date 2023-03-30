@@ -896,3 +896,224 @@ func (s *gatewaySet) Clone() GatewaySet {
 	}
 	return &gatewaySet{set: sksets.NewResourceSet(s.Generic().Clone().List()...)}
 }
+
+type FilterSet interface {
+	// Get the set stored keys
+	Keys() sets.String
+	// List of resources stored in the set. Pass an optional filter function to filter on the list.
+	List(filterResource ...func(*gate_v1.Filter) bool) []*gate_v1.Filter
+	// Unsorted list of resources stored in the set. Pass an optional filter function to filter on the list.
+	UnsortedList(filterResource ...func(*gate_v1.Filter) bool) []*gate_v1.Filter
+	// Return the Set as a map of key to resource.
+	Map() map[string]*gate_v1.Filter
+	// Insert a resource into the set.
+	Insert(filter ...*gate_v1.Filter)
+	// Compare the equality of the keys in two sets (not the resources themselves)
+	Equal(filterSet FilterSet) bool
+	// Check if the set contains a key matching the resource (not the resource itself)
+	Has(filter ezkube.ResourceId) bool
+	// Delete the key matching the resource
+	Delete(filter ezkube.ResourceId)
+	// Return the union with the provided set
+	Union(set FilterSet) FilterSet
+	// Return the difference with the provided set
+	Difference(set FilterSet) FilterSet
+	// Return the intersection with the provided set
+	Intersection(set FilterSet) FilterSet
+	// Find the resource with the given ID
+	Find(id ezkube.ResourceId) (*gate_v1.Filter, error)
+	// Get the length of the set
+	Length() int
+	// returns the generic implementation of the set
+	Generic() sksets.ResourceSet
+	// returns the delta between this and and another FilterSet
+	Delta(newSet FilterSet) sksets.ResourceDelta
+	// Create a deep copy of the current FilterSet
+	Clone() FilterSet
+}
+
+func makeGenericFilterSet(filterList []*gate_v1.Filter) sksets.ResourceSet {
+	var genericResources []ezkube.ResourceId
+	for _, obj := range filterList {
+		genericResources = append(genericResources, obj)
+	}
+	return sksets.NewResourceSet(genericResources...)
+}
+
+type filterSet struct {
+	set sksets.ResourceSet
+}
+
+func NewFilterSet(filterList ...*gate_v1.Filter) FilterSet {
+	return &filterSet{set: makeGenericFilterSet(filterList)}
+}
+
+func NewFilterSetFromList(filterList *gate_v1.FilterList) FilterSet {
+	list := make([]*gate_v1.Filter, 0, len(filterList.Items))
+	for idx := range filterList.Items {
+		list = append(list, &filterList.Items[idx])
+	}
+	return &filterSet{set: makeGenericFilterSet(list)}
+}
+
+func (s *filterSet) Keys() sets.String {
+	if s == nil {
+		return sets.String{}
+	}
+	return s.Generic().Keys()
+}
+
+func (s *filterSet) List(filterResource ...func(*gate_v1.Filter) bool) []*gate_v1.Filter {
+	if s == nil {
+		return nil
+	}
+	var genericFilters []func(ezkube.ResourceId) bool
+	for _, filter := range filterResource {
+		filter := filter
+		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
+			return filter(obj.(*gate_v1.Filter))
+		})
+	}
+
+	objs := s.Generic().List(genericFilters...)
+	filterList := make([]*gate_v1.Filter, 0, len(objs))
+	for _, obj := range objs {
+		filterList = append(filterList, obj.(*gate_v1.Filter))
+	}
+	return filterList
+}
+
+func (s *filterSet) UnsortedList(filterResource ...func(*gate_v1.Filter) bool) []*gate_v1.Filter {
+	if s == nil {
+		return nil
+	}
+	var genericFilters []func(ezkube.ResourceId) bool
+	for _, filter := range filterResource {
+		filter := filter
+		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
+			return filter(obj.(*gate_v1.Filter))
+		})
+	}
+
+	var filterList []*gate_v1.Filter
+	for _, obj := range s.Generic().UnsortedList(genericFilters...) {
+		filterList = append(filterList, obj.(*gate_v1.Filter))
+	}
+	return filterList
+}
+
+func (s *filterSet) Map() map[string]*gate_v1.Filter {
+	if s == nil {
+		return nil
+	}
+
+	newMap := map[string]*gate_v1.Filter{}
+	for k, v := range s.Generic().Map() {
+		newMap[k] = v.(*gate_v1.Filter)
+	}
+	return newMap
+}
+
+func (s *filterSet) Insert(
+	filterList ...*gate_v1.Filter,
+) {
+	if s == nil {
+		panic("cannot insert into nil set")
+	}
+
+	for _, obj := range filterList {
+		s.Generic().Insert(obj)
+	}
+}
+
+func (s *filterSet) Has(filter ezkube.ResourceId) bool {
+	if s == nil {
+		return false
+	}
+	return s.Generic().Has(filter)
+}
+
+func (s *filterSet) Equal(
+	filterSet FilterSet,
+) bool {
+	if s == nil {
+		return filterSet == nil
+	}
+	return s.Generic().Equal(filterSet.Generic())
+}
+
+func (s *filterSet) Delete(Filter ezkube.ResourceId) {
+	if s == nil {
+		return
+	}
+	s.Generic().Delete(Filter)
+}
+
+func (s *filterSet) Union(set FilterSet) FilterSet {
+	if s == nil {
+		return set
+	}
+	return NewFilterSet(append(s.List(), set.List()...)...)
+}
+
+func (s *filterSet) Difference(set FilterSet) FilterSet {
+	if s == nil {
+		return set
+	}
+	newSet := s.Generic().Difference(set.Generic())
+	return &filterSet{set: newSet}
+}
+
+func (s *filterSet) Intersection(set FilterSet) FilterSet {
+	if s == nil {
+		return nil
+	}
+	newSet := s.Generic().Intersection(set.Generic())
+	var filterList []*gate_v1.Filter
+	for _, obj := range newSet.List() {
+		filterList = append(filterList, obj.(*gate_v1.Filter))
+	}
+	return NewFilterSet(filterList...)
+}
+
+func (s *filterSet) Find(id ezkube.ResourceId) (*gate_v1.Filter, error) {
+	if s == nil {
+		return nil, eris.Errorf("empty set, cannot find Filter %v", sksets.Key(id))
+	}
+	obj, err := s.Generic().Find(&gate_v1.Filter{}, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return obj.(*gate_v1.Filter), nil
+}
+
+func (s *filterSet) Length() int {
+	if s == nil {
+		return 0
+	}
+	return s.Generic().Length()
+}
+
+func (s *filterSet) Generic() sksets.ResourceSet {
+	if s == nil {
+		return nil
+	}
+	return s.set
+}
+
+func (s *filterSet) Delta(newSet FilterSet) sksets.ResourceDelta {
+	if s == nil {
+		return sksets.ResourceDelta{
+			Inserted: newSet.Generic(),
+		}
+	}
+	return s.Generic().Delta(newSet.Generic())
+}
+
+func (s *filterSet) Clone() FilterSet {
+	if s == nil {
+		return nil
+	}
+	return &filterSet{set: sksets.NewResourceSet(s.Generic().Clone().List()...)}
+}

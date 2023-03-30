@@ -144,9 +144,44 @@ type GatewayList struct {
 	Items           []Gateway `json:"items"`
 }
 
+// +genclient
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:openapi-gen=true
+// +genclient:noStatus
+
+// GroupVersionKind for Filter
+var FilterGVK = schema.GroupVersionKind{
+	Group:   "gate",
+	Version: "v1",
+	Kind:    "Filter",
+}
+
+// Filter is the Schema for the filter API
+type Filter struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec FilterSpec `json:"spec,omitempty"`
+}
+
+// GVK returns the GroupVersionKind associated with the resource type.
+func (Filter) GVK() schema.GroupVersionKind {
+	return FilterGVK
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// FilterList contains a list of Filter
+type FilterList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []Filter `json:"items"`
+}
+
 func init() {
 	SchemeBuilder.Register(&CaCertificate{}, &CaCertificateList{})
 	SchemeBuilder.Register(&SslCertificate{}, &SslCertificateList{})
 	SchemeBuilder.Register(&Upstream{}, &UpstreamList{})
 	SchemeBuilder.Register(&Gateway{}, &GatewayList{})
+	SchemeBuilder.Register(&Filter{}, &FilterList{})
 }

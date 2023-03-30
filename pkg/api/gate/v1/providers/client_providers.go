@@ -128,3 +128,31 @@ func GatewayClientFromConfigFactoryProvider() GatewayClientFromConfigFactory {
 		return clients.Gateways(), nil
 	}
 }
+
+// Provider for FilterClient from Clientset
+func FilterClientFromClientsetProvider(clients gate_v1.Clientset) gate_v1.FilterClient {
+	return clients.Filters()
+}
+
+// Provider for Filter Client from Client
+func FilterClientProvider(client client.Client) gate_v1.FilterClient {
+	return gate_v1.NewFilterClient(client)
+}
+
+type FilterClientFactory func(client client.Client) gate_v1.FilterClient
+
+func FilterClientFactoryProvider() FilterClientFactory {
+	return FilterClientProvider
+}
+
+type FilterClientFromConfigFactory func(cfg *rest.Config) (gate_v1.FilterClient, error)
+
+func FilterClientFromConfigFactoryProvider() FilterClientFromConfigFactory {
+	return func(cfg *rest.Config) (gate_v1.FilterClient, error) {
+		clients, err := gate_v1.NewClientsetFromConfig(cfg)
+		if err != nil {
+			return nil, err
+		}
+		return clients.Filters(), nil
+	}
+}

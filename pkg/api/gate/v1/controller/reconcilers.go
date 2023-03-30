@@ -484,3 +484,120 @@ func (r genericGatewayFinalizer) Finalize(object ezkube.Object) error {
 	}
 	return r.finalizingReconciler.FinalizeGateway(obj)
 }
+
+// Reconcile Upsert events for the Filter Resource.
+// implemented by the user
+type FilterReconciler interface {
+	ReconcileFilter(obj *gate_v1.Filter) (reconcile.Result, error)
+}
+
+// Reconcile deletion events for the Filter Resource.
+// Deletion receives a reconcile.Request as we cannot guarantee the last state of the object
+// before being deleted.
+// implemented by the user
+type FilterDeletionReconciler interface {
+	ReconcileFilterDeletion(req reconcile.Request) error
+}
+
+type FilterReconcilerFuncs struct {
+	OnReconcileFilter         func(obj *gate_v1.Filter) (reconcile.Result, error)
+	OnReconcileFilterDeletion func(req reconcile.Request) error
+}
+
+func (f *FilterReconcilerFuncs) ReconcileFilter(obj *gate_v1.Filter) (reconcile.Result, error) {
+	if f.OnReconcileFilter == nil {
+		return reconcile.Result{}, nil
+	}
+	return f.OnReconcileFilter(obj)
+}
+
+func (f *FilterReconcilerFuncs) ReconcileFilterDeletion(req reconcile.Request) error {
+	if f.OnReconcileFilterDeletion == nil {
+		return nil
+	}
+	return f.OnReconcileFilterDeletion(req)
+}
+
+// Reconcile and finalize the Filter Resource
+// implemented by the user
+type FilterFinalizer interface {
+	FilterReconciler
+
+	// name of the finalizer used by this handler.
+	// finalizer names should be unique for a single task
+	FilterFinalizerName() string
+
+	// finalize the object before it is deleted.
+	// Watchers created with a finalizing handler will a
+	FinalizeFilter(obj *gate_v1.Filter) error
+}
+
+type FilterReconcileLoop interface {
+	RunFilterReconciler(ctx context.Context, rec FilterReconciler, predicates ...predicate.Predicate) error
+}
+
+type filterReconcileLoop struct {
+	loop reconcile.Loop
+}
+
+func NewFilterReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) FilterReconcileLoop {
+	return &filterReconcileLoop{
+		// empty cluster indicates this reconciler is built for the local cluster
+		loop: reconcile.NewLoop(name, "", mgr, &gate_v1.Filter{}, options),
+	}
+}
+
+func (c *filterReconcileLoop) RunFilterReconciler(ctx context.Context, reconciler FilterReconciler, predicates ...predicate.Predicate) error {
+	genericReconciler := genericFilterReconciler{
+		reconciler: reconciler,
+	}
+
+	var reconcilerWrapper reconcile.Reconciler
+	if finalizingReconciler, ok := reconciler.(FilterFinalizer); ok {
+		reconcilerWrapper = genericFilterFinalizer{
+			genericFilterReconciler: genericReconciler,
+			finalizingReconciler:    finalizingReconciler,
+		}
+	} else {
+		reconcilerWrapper = genericReconciler
+	}
+	return c.loop.RunReconciler(ctx, reconcilerWrapper, predicates...)
+}
+
+// genericFilterHandler implements a generic reconcile.Reconciler
+type genericFilterReconciler struct {
+	reconciler FilterReconciler
+}
+
+func (r genericFilterReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
+	obj, ok := object.(*gate_v1.Filter)
+	if !ok {
+		return reconcile.Result{}, errors.Errorf("internal error: Filter handler received event for %T", object)
+	}
+	return r.reconciler.ReconcileFilter(obj)
+}
+
+func (r genericFilterReconciler) ReconcileDeletion(request reconcile.Request) error {
+	if deletionReconciler, ok := r.reconciler.(FilterDeletionReconciler); ok {
+		return deletionReconciler.ReconcileFilterDeletion(request)
+	}
+	return nil
+}
+
+// genericFilterFinalizer implements a generic reconcile.FinalizingReconciler
+type genericFilterFinalizer struct {
+	genericFilterReconciler
+	finalizingReconciler FilterFinalizer
+}
+
+func (r genericFilterFinalizer) FinalizerName() string {
+	return r.finalizingReconciler.FilterFinalizerName()
+}
+
+func (r genericFilterFinalizer) Finalize(object ezkube.Object) error {
+	obj, ok := object.(*gate_v1.Filter)
+	if !ok {
+		return errors.Errorf("internal error: Filter handler received event for %T", object)
+	}
+	return r.finalizingReconciler.FinalizeFilter(obj)
+}

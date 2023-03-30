@@ -4,7 +4,7 @@ package common.v1;
 
 option go_package = "github.com/xdmybl/gate-type/pkg/api/common/v1";
 
-import "proto/core/v1/types.proto";
+import "proto/core/v1/gate.proto";
 
 message Certificate {
     // 证书文件bytes

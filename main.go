@@ -53,6 +53,14 @@ var Group = model.Group{
 				},
 			},
 		},
+		{
+			Kind: "Filter",
+			Spec: model.Field{
+				Type: model.Type{
+					Name: "FilterSpec",
+				},
+			},
+		},
 	},
 	RenderManifests:         true,
 	RenderValidationSchemas: true,
@@ -67,15 +75,22 @@ var Group = model.Group{
 // TODO: 解决 找不到 CaCertificateSpec proto 问题
 func main() {
 	skv2Imports := skv2_anyvendor.CreateDefaultMatchOptions([]string{
-		//"proto/common/v1/certificate.proto",
-		//"proto/gate/v1/ca_certificate.proto",
-
-		//"proto/gate/v1/*.proto",
 		"proto/**/*.proto",
 	})
 	skv2Imports.External["github.com/envoyproxy/protoc-gen-validate"] = []string{
 		"validate/*.proto",
 	}
+
+	// skv2 允许通过本地导入 proto 库 , 如下
+	// 一定要注意路径问题, 如 a/b/c/d/e.proto,
+	//
+	//skv2Imports.Local = []string{
+	// a/b/**/*.proto
+	//}
+	//
+	// import 时 则要填
+	// import c/d/e.proto 不然找不到相应的文件
+	// 要么全填相对路径, 要么全填绝对路径
 
 	groups := []model.Group{
 		Group,

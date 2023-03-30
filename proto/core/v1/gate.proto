@@ -5,6 +5,8 @@ package core.v1;
 option go_package = "github.com/xdmybl/gate-type/pkg/api/core/v1";
 
 import "validate/validate.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/any.proto";
 
 message Int64Range {
     // start of the range (inclusive)
@@ -120,4 +122,10 @@ message Endpoint {
             gte: 1
         }
     ];
+}
+
+// https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/core/v3/base.proto#config-core-v3-metadata
+message GateMetadata {
+    map<string, google.protobuf.Struct> filter_metadata = 1;
+    map<string, google.protobuf.Any> typed_filter_metadata = 2;
 }
