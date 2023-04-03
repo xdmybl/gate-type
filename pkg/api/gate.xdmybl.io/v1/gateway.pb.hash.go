@@ -34,7 +34,7 @@ func (m *GatewaySpec) Hash(hasher hash.Hash64) (uint64, error) {
 		hasher = fnv.New64()
 	}
 	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.GatewaySpec")); err != nil {
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.GatewaySpec")); err != nil {
 		return 0, err
 	}
 
@@ -94,7 +94,7 @@ func (m *GatewayListener) Hash(hasher hash.Hash64) (uint64, error) {
 		hasher = fnv.New64()
 	}
 	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.GatewayListener")); err != nil {
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.GatewayListener")); err != nil {
 		return 0, err
 	}
 
@@ -152,7 +152,7 @@ func (m *ListenerOptions) Hash(hasher hash.Hash64) (uint64, error) {
 		hasher = fnv.New64()
 	}
 	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.ListenerOptions")); err != nil {
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.ListenerOptions")); err != nil {
 		return 0, err
 	}
 

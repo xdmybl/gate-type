@@ -5,7 +5,7 @@
 package v1sets
 
 import (
-	gate_v1 "github.com/xdmybl/gate-type/pkg/api/gate/v1"
+	gate_xdmybl_io_v1 "github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1"
 
 	"github.com/rotisserie/eris"
 	sksets "github.com/solo-io/skv2/contrib/pkg/sets"
@@ -17,13 +17,13 @@ type CaCertificateSet interface {
 	// Get the set stored keys
 	Keys() sets.String
 	// List of resources stored in the set. Pass an optional filter function to filter on the list.
-	List(filterResource ...func(*gate_v1.CaCertificate) bool) []*gate_v1.CaCertificate
+	List(filterResource ...func(*gate_xdmybl_io_v1.CaCertificate) bool) []*gate_xdmybl_io_v1.CaCertificate
 	// Unsorted list of resources stored in the set. Pass an optional filter function to filter on the list.
-	UnsortedList(filterResource ...func(*gate_v1.CaCertificate) bool) []*gate_v1.CaCertificate
+	UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.CaCertificate) bool) []*gate_xdmybl_io_v1.CaCertificate
 	// Return the Set as a map of key to resource.
-	Map() map[string]*gate_v1.CaCertificate
+	Map() map[string]*gate_xdmybl_io_v1.CaCertificate
 	// Insert a resource into the set.
-	Insert(caCertificate ...*gate_v1.CaCertificate)
+	Insert(caCertificate ...*gate_xdmybl_io_v1.CaCertificate)
 	// Compare the equality of the keys in two sets (not the resources themselves)
 	Equal(caCertificateSet CaCertificateSet) bool
 	// Check if the set contains a key matching the resource (not the resource itself)
@@ -37,7 +37,7 @@ type CaCertificateSet interface {
 	// Return the intersection with the provided set
 	Intersection(set CaCertificateSet) CaCertificateSet
 	// Find the resource with the given ID
-	Find(id ezkube.ResourceId) (*gate_v1.CaCertificate, error)
+	Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.CaCertificate, error)
 	// Get the length of the set
 	Length() int
 	// returns the generic implementation of the set
@@ -48,7 +48,7 @@ type CaCertificateSet interface {
 	Clone() CaCertificateSet
 }
 
-func makeGenericCaCertificateSet(caCertificateList []*gate_v1.CaCertificate) sksets.ResourceSet {
+func makeGenericCaCertificateSet(caCertificateList []*gate_xdmybl_io_v1.CaCertificate) sksets.ResourceSet {
 	var genericResources []ezkube.ResourceId
 	for _, obj := range caCertificateList {
 		genericResources = append(genericResources, obj)
@@ -60,12 +60,12 @@ type caCertificateSet struct {
 	set sksets.ResourceSet
 }
 
-func NewCaCertificateSet(caCertificateList ...*gate_v1.CaCertificate) CaCertificateSet {
+func NewCaCertificateSet(caCertificateList ...*gate_xdmybl_io_v1.CaCertificate) CaCertificateSet {
 	return &caCertificateSet{set: makeGenericCaCertificateSet(caCertificateList)}
 }
 
-func NewCaCertificateSetFromList(caCertificateList *gate_v1.CaCertificateList) CaCertificateSet {
-	list := make([]*gate_v1.CaCertificate, 0, len(caCertificateList.Items))
+func NewCaCertificateSetFromList(caCertificateList *gate_xdmybl_io_v1.CaCertificateList) CaCertificateSet {
+	list := make([]*gate_xdmybl_io_v1.CaCertificate, 0, len(caCertificateList.Items))
 	for idx := range caCertificateList.Items {
 		list = append(list, &caCertificateList.Items[idx])
 	}
@@ -79,7 +79,7 @@ func (s *caCertificateSet) Keys() sets.String {
 	return s.Generic().Keys()
 }
 
-func (s *caCertificateSet) List(filterResource ...func(*gate_v1.CaCertificate) bool) []*gate_v1.CaCertificate {
+func (s *caCertificateSet) List(filterResource ...func(*gate_xdmybl_io_v1.CaCertificate) bool) []*gate_xdmybl_io_v1.CaCertificate {
 	if s == nil {
 		return nil
 	}
@@ -87,19 +87,19 @@ func (s *caCertificateSet) List(filterResource ...func(*gate_v1.CaCertificate) b
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.CaCertificate))
+			return filter(obj.(*gate_xdmybl_io_v1.CaCertificate))
 		})
 	}
 
 	objs := s.Generic().List(genericFilters...)
-	caCertificateList := make([]*gate_v1.CaCertificate, 0, len(objs))
+	caCertificateList := make([]*gate_xdmybl_io_v1.CaCertificate, 0, len(objs))
 	for _, obj := range objs {
-		caCertificateList = append(caCertificateList, obj.(*gate_v1.CaCertificate))
+		caCertificateList = append(caCertificateList, obj.(*gate_xdmybl_io_v1.CaCertificate))
 	}
 	return caCertificateList
 }
 
-func (s *caCertificateSet) UnsortedList(filterResource ...func(*gate_v1.CaCertificate) bool) []*gate_v1.CaCertificate {
+func (s *caCertificateSet) UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.CaCertificate) bool) []*gate_xdmybl_io_v1.CaCertificate {
 	if s == nil {
 		return nil
 	}
@@ -107,31 +107,31 @@ func (s *caCertificateSet) UnsortedList(filterResource ...func(*gate_v1.CaCertif
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.CaCertificate))
+			return filter(obj.(*gate_xdmybl_io_v1.CaCertificate))
 		})
 	}
 
-	var caCertificateList []*gate_v1.CaCertificate
+	var caCertificateList []*gate_xdmybl_io_v1.CaCertificate
 	for _, obj := range s.Generic().UnsortedList(genericFilters...) {
-		caCertificateList = append(caCertificateList, obj.(*gate_v1.CaCertificate))
+		caCertificateList = append(caCertificateList, obj.(*gate_xdmybl_io_v1.CaCertificate))
 	}
 	return caCertificateList
 }
 
-func (s *caCertificateSet) Map() map[string]*gate_v1.CaCertificate {
+func (s *caCertificateSet) Map() map[string]*gate_xdmybl_io_v1.CaCertificate {
 	if s == nil {
 		return nil
 	}
 
-	newMap := map[string]*gate_v1.CaCertificate{}
+	newMap := map[string]*gate_xdmybl_io_v1.CaCertificate{}
 	for k, v := range s.Generic().Map() {
-		newMap[k] = v.(*gate_v1.CaCertificate)
+		newMap[k] = v.(*gate_xdmybl_io_v1.CaCertificate)
 	}
 	return newMap
 }
 
 func (s *caCertificateSet) Insert(
-	caCertificateList ...*gate_v1.CaCertificate,
+	caCertificateList ...*gate_xdmybl_io_v1.CaCertificate,
 ) {
 	if s == nil {
 		panic("cannot insert into nil set")
@@ -185,23 +185,23 @@ func (s *caCertificateSet) Intersection(set CaCertificateSet) CaCertificateSet {
 		return nil
 	}
 	newSet := s.Generic().Intersection(set.Generic())
-	var caCertificateList []*gate_v1.CaCertificate
+	var caCertificateList []*gate_xdmybl_io_v1.CaCertificate
 	for _, obj := range newSet.List() {
-		caCertificateList = append(caCertificateList, obj.(*gate_v1.CaCertificate))
+		caCertificateList = append(caCertificateList, obj.(*gate_xdmybl_io_v1.CaCertificate))
 	}
 	return NewCaCertificateSet(caCertificateList...)
 }
 
-func (s *caCertificateSet) Find(id ezkube.ResourceId) (*gate_v1.CaCertificate, error) {
+func (s *caCertificateSet) Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.CaCertificate, error) {
 	if s == nil {
 		return nil, eris.Errorf("empty set, cannot find CaCertificate %v", sksets.Key(id))
 	}
-	obj, err := s.Generic().Find(&gate_v1.CaCertificate{}, id)
+	obj, err := s.Generic().Find(&gate_xdmybl_io_v1.CaCertificate{}, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return obj.(*gate_v1.CaCertificate), nil
+	return obj.(*gate_xdmybl_io_v1.CaCertificate), nil
 }
 
 func (s *caCertificateSet) Length() int {
@@ -238,13 +238,13 @@ type SslCertificateSet interface {
 	// Get the set stored keys
 	Keys() sets.String
 	// List of resources stored in the set. Pass an optional filter function to filter on the list.
-	List(filterResource ...func(*gate_v1.SslCertificate) bool) []*gate_v1.SslCertificate
+	List(filterResource ...func(*gate_xdmybl_io_v1.SslCertificate) bool) []*gate_xdmybl_io_v1.SslCertificate
 	// Unsorted list of resources stored in the set. Pass an optional filter function to filter on the list.
-	UnsortedList(filterResource ...func(*gate_v1.SslCertificate) bool) []*gate_v1.SslCertificate
+	UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.SslCertificate) bool) []*gate_xdmybl_io_v1.SslCertificate
 	// Return the Set as a map of key to resource.
-	Map() map[string]*gate_v1.SslCertificate
+	Map() map[string]*gate_xdmybl_io_v1.SslCertificate
 	// Insert a resource into the set.
-	Insert(sslCertificate ...*gate_v1.SslCertificate)
+	Insert(sslCertificate ...*gate_xdmybl_io_v1.SslCertificate)
 	// Compare the equality of the keys in two sets (not the resources themselves)
 	Equal(sslCertificateSet SslCertificateSet) bool
 	// Check if the set contains a key matching the resource (not the resource itself)
@@ -258,7 +258,7 @@ type SslCertificateSet interface {
 	// Return the intersection with the provided set
 	Intersection(set SslCertificateSet) SslCertificateSet
 	// Find the resource with the given ID
-	Find(id ezkube.ResourceId) (*gate_v1.SslCertificate, error)
+	Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.SslCertificate, error)
 	// Get the length of the set
 	Length() int
 	// returns the generic implementation of the set
@@ -269,7 +269,7 @@ type SslCertificateSet interface {
 	Clone() SslCertificateSet
 }
 
-func makeGenericSslCertificateSet(sslCertificateList []*gate_v1.SslCertificate) sksets.ResourceSet {
+func makeGenericSslCertificateSet(sslCertificateList []*gate_xdmybl_io_v1.SslCertificate) sksets.ResourceSet {
 	var genericResources []ezkube.ResourceId
 	for _, obj := range sslCertificateList {
 		genericResources = append(genericResources, obj)
@@ -281,12 +281,12 @@ type sslCertificateSet struct {
 	set sksets.ResourceSet
 }
 
-func NewSslCertificateSet(sslCertificateList ...*gate_v1.SslCertificate) SslCertificateSet {
+func NewSslCertificateSet(sslCertificateList ...*gate_xdmybl_io_v1.SslCertificate) SslCertificateSet {
 	return &sslCertificateSet{set: makeGenericSslCertificateSet(sslCertificateList)}
 }
 
-func NewSslCertificateSetFromList(sslCertificateList *gate_v1.SslCertificateList) SslCertificateSet {
-	list := make([]*gate_v1.SslCertificate, 0, len(sslCertificateList.Items))
+func NewSslCertificateSetFromList(sslCertificateList *gate_xdmybl_io_v1.SslCertificateList) SslCertificateSet {
+	list := make([]*gate_xdmybl_io_v1.SslCertificate, 0, len(sslCertificateList.Items))
 	for idx := range sslCertificateList.Items {
 		list = append(list, &sslCertificateList.Items[idx])
 	}
@@ -300,7 +300,7 @@ func (s *sslCertificateSet) Keys() sets.String {
 	return s.Generic().Keys()
 }
 
-func (s *sslCertificateSet) List(filterResource ...func(*gate_v1.SslCertificate) bool) []*gate_v1.SslCertificate {
+func (s *sslCertificateSet) List(filterResource ...func(*gate_xdmybl_io_v1.SslCertificate) bool) []*gate_xdmybl_io_v1.SslCertificate {
 	if s == nil {
 		return nil
 	}
@@ -308,19 +308,19 @@ func (s *sslCertificateSet) List(filterResource ...func(*gate_v1.SslCertificate)
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.SslCertificate))
+			return filter(obj.(*gate_xdmybl_io_v1.SslCertificate))
 		})
 	}
 
 	objs := s.Generic().List(genericFilters...)
-	sslCertificateList := make([]*gate_v1.SslCertificate, 0, len(objs))
+	sslCertificateList := make([]*gate_xdmybl_io_v1.SslCertificate, 0, len(objs))
 	for _, obj := range objs {
-		sslCertificateList = append(sslCertificateList, obj.(*gate_v1.SslCertificate))
+		sslCertificateList = append(sslCertificateList, obj.(*gate_xdmybl_io_v1.SslCertificate))
 	}
 	return sslCertificateList
 }
 
-func (s *sslCertificateSet) UnsortedList(filterResource ...func(*gate_v1.SslCertificate) bool) []*gate_v1.SslCertificate {
+func (s *sslCertificateSet) UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.SslCertificate) bool) []*gate_xdmybl_io_v1.SslCertificate {
 	if s == nil {
 		return nil
 	}
@@ -328,31 +328,31 @@ func (s *sslCertificateSet) UnsortedList(filterResource ...func(*gate_v1.SslCert
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.SslCertificate))
+			return filter(obj.(*gate_xdmybl_io_v1.SslCertificate))
 		})
 	}
 
-	var sslCertificateList []*gate_v1.SslCertificate
+	var sslCertificateList []*gate_xdmybl_io_v1.SslCertificate
 	for _, obj := range s.Generic().UnsortedList(genericFilters...) {
-		sslCertificateList = append(sslCertificateList, obj.(*gate_v1.SslCertificate))
+		sslCertificateList = append(sslCertificateList, obj.(*gate_xdmybl_io_v1.SslCertificate))
 	}
 	return sslCertificateList
 }
 
-func (s *sslCertificateSet) Map() map[string]*gate_v1.SslCertificate {
+func (s *sslCertificateSet) Map() map[string]*gate_xdmybl_io_v1.SslCertificate {
 	if s == nil {
 		return nil
 	}
 
-	newMap := map[string]*gate_v1.SslCertificate{}
+	newMap := map[string]*gate_xdmybl_io_v1.SslCertificate{}
 	for k, v := range s.Generic().Map() {
-		newMap[k] = v.(*gate_v1.SslCertificate)
+		newMap[k] = v.(*gate_xdmybl_io_v1.SslCertificate)
 	}
 	return newMap
 }
 
 func (s *sslCertificateSet) Insert(
-	sslCertificateList ...*gate_v1.SslCertificate,
+	sslCertificateList ...*gate_xdmybl_io_v1.SslCertificate,
 ) {
 	if s == nil {
 		panic("cannot insert into nil set")
@@ -406,23 +406,23 @@ func (s *sslCertificateSet) Intersection(set SslCertificateSet) SslCertificateSe
 		return nil
 	}
 	newSet := s.Generic().Intersection(set.Generic())
-	var sslCertificateList []*gate_v1.SslCertificate
+	var sslCertificateList []*gate_xdmybl_io_v1.SslCertificate
 	for _, obj := range newSet.List() {
-		sslCertificateList = append(sslCertificateList, obj.(*gate_v1.SslCertificate))
+		sslCertificateList = append(sslCertificateList, obj.(*gate_xdmybl_io_v1.SslCertificate))
 	}
 	return NewSslCertificateSet(sslCertificateList...)
 }
 
-func (s *sslCertificateSet) Find(id ezkube.ResourceId) (*gate_v1.SslCertificate, error) {
+func (s *sslCertificateSet) Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.SslCertificate, error) {
 	if s == nil {
 		return nil, eris.Errorf("empty set, cannot find SslCertificate %v", sksets.Key(id))
 	}
-	obj, err := s.Generic().Find(&gate_v1.SslCertificate{}, id)
+	obj, err := s.Generic().Find(&gate_xdmybl_io_v1.SslCertificate{}, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return obj.(*gate_v1.SslCertificate), nil
+	return obj.(*gate_xdmybl_io_v1.SslCertificate), nil
 }
 
 func (s *sslCertificateSet) Length() int {
@@ -459,13 +459,13 @@ type UpstreamSet interface {
 	// Get the set stored keys
 	Keys() sets.String
 	// List of resources stored in the set. Pass an optional filter function to filter on the list.
-	List(filterResource ...func(*gate_v1.Upstream) bool) []*gate_v1.Upstream
+	List(filterResource ...func(*gate_xdmybl_io_v1.Upstream) bool) []*gate_xdmybl_io_v1.Upstream
 	// Unsorted list of resources stored in the set. Pass an optional filter function to filter on the list.
-	UnsortedList(filterResource ...func(*gate_v1.Upstream) bool) []*gate_v1.Upstream
+	UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.Upstream) bool) []*gate_xdmybl_io_v1.Upstream
 	// Return the Set as a map of key to resource.
-	Map() map[string]*gate_v1.Upstream
+	Map() map[string]*gate_xdmybl_io_v1.Upstream
 	// Insert a resource into the set.
-	Insert(upstream ...*gate_v1.Upstream)
+	Insert(upstream ...*gate_xdmybl_io_v1.Upstream)
 	// Compare the equality of the keys in two sets (not the resources themselves)
 	Equal(upstreamSet UpstreamSet) bool
 	// Check if the set contains a key matching the resource (not the resource itself)
@@ -479,7 +479,7 @@ type UpstreamSet interface {
 	// Return the intersection with the provided set
 	Intersection(set UpstreamSet) UpstreamSet
 	// Find the resource with the given ID
-	Find(id ezkube.ResourceId) (*gate_v1.Upstream, error)
+	Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.Upstream, error)
 	// Get the length of the set
 	Length() int
 	// returns the generic implementation of the set
@@ -490,7 +490,7 @@ type UpstreamSet interface {
 	Clone() UpstreamSet
 }
 
-func makeGenericUpstreamSet(upstreamList []*gate_v1.Upstream) sksets.ResourceSet {
+func makeGenericUpstreamSet(upstreamList []*gate_xdmybl_io_v1.Upstream) sksets.ResourceSet {
 	var genericResources []ezkube.ResourceId
 	for _, obj := range upstreamList {
 		genericResources = append(genericResources, obj)
@@ -502,12 +502,12 @@ type upstreamSet struct {
 	set sksets.ResourceSet
 }
 
-func NewUpstreamSet(upstreamList ...*gate_v1.Upstream) UpstreamSet {
+func NewUpstreamSet(upstreamList ...*gate_xdmybl_io_v1.Upstream) UpstreamSet {
 	return &upstreamSet{set: makeGenericUpstreamSet(upstreamList)}
 }
 
-func NewUpstreamSetFromList(upstreamList *gate_v1.UpstreamList) UpstreamSet {
-	list := make([]*gate_v1.Upstream, 0, len(upstreamList.Items))
+func NewUpstreamSetFromList(upstreamList *gate_xdmybl_io_v1.UpstreamList) UpstreamSet {
+	list := make([]*gate_xdmybl_io_v1.Upstream, 0, len(upstreamList.Items))
 	for idx := range upstreamList.Items {
 		list = append(list, &upstreamList.Items[idx])
 	}
@@ -521,7 +521,7 @@ func (s *upstreamSet) Keys() sets.String {
 	return s.Generic().Keys()
 }
 
-func (s *upstreamSet) List(filterResource ...func(*gate_v1.Upstream) bool) []*gate_v1.Upstream {
+func (s *upstreamSet) List(filterResource ...func(*gate_xdmybl_io_v1.Upstream) bool) []*gate_xdmybl_io_v1.Upstream {
 	if s == nil {
 		return nil
 	}
@@ -529,19 +529,19 @@ func (s *upstreamSet) List(filterResource ...func(*gate_v1.Upstream) bool) []*ga
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.Upstream))
+			return filter(obj.(*gate_xdmybl_io_v1.Upstream))
 		})
 	}
 
 	objs := s.Generic().List(genericFilters...)
-	upstreamList := make([]*gate_v1.Upstream, 0, len(objs))
+	upstreamList := make([]*gate_xdmybl_io_v1.Upstream, 0, len(objs))
 	for _, obj := range objs {
-		upstreamList = append(upstreamList, obj.(*gate_v1.Upstream))
+		upstreamList = append(upstreamList, obj.(*gate_xdmybl_io_v1.Upstream))
 	}
 	return upstreamList
 }
 
-func (s *upstreamSet) UnsortedList(filterResource ...func(*gate_v1.Upstream) bool) []*gate_v1.Upstream {
+func (s *upstreamSet) UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.Upstream) bool) []*gate_xdmybl_io_v1.Upstream {
 	if s == nil {
 		return nil
 	}
@@ -549,31 +549,31 @@ func (s *upstreamSet) UnsortedList(filterResource ...func(*gate_v1.Upstream) boo
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.Upstream))
+			return filter(obj.(*gate_xdmybl_io_v1.Upstream))
 		})
 	}
 
-	var upstreamList []*gate_v1.Upstream
+	var upstreamList []*gate_xdmybl_io_v1.Upstream
 	for _, obj := range s.Generic().UnsortedList(genericFilters...) {
-		upstreamList = append(upstreamList, obj.(*gate_v1.Upstream))
+		upstreamList = append(upstreamList, obj.(*gate_xdmybl_io_v1.Upstream))
 	}
 	return upstreamList
 }
 
-func (s *upstreamSet) Map() map[string]*gate_v1.Upstream {
+func (s *upstreamSet) Map() map[string]*gate_xdmybl_io_v1.Upstream {
 	if s == nil {
 		return nil
 	}
 
-	newMap := map[string]*gate_v1.Upstream{}
+	newMap := map[string]*gate_xdmybl_io_v1.Upstream{}
 	for k, v := range s.Generic().Map() {
-		newMap[k] = v.(*gate_v1.Upstream)
+		newMap[k] = v.(*gate_xdmybl_io_v1.Upstream)
 	}
 	return newMap
 }
 
 func (s *upstreamSet) Insert(
-	upstreamList ...*gate_v1.Upstream,
+	upstreamList ...*gate_xdmybl_io_v1.Upstream,
 ) {
 	if s == nil {
 		panic("cannot insert into nil set")
@@ -627,23 +627,23 @@ func (s *upstreamSet) Intersection(set UpstreamSet) UpstreamSet {
 		return nil
 	}
 	newSet := s.Generic().Intersection(set.Generic())
-	var upstreamList []*gate_v1.Upstream
+	var upstreamList []*gate_xdmybl_io_v1.Upstream
 	for _, obj := range newSet.List() {
-		upstreamList = append(upstreamList, obj.(*gate_v1.Upstream))
+		upstreamList = append(upstreamList, obj.(*gate_xdmybl_io_v1.Upstream))
 	}
 	return NewUpstreamSet(upstreamList...)
 }
 
-func (s *upstreamSet) Find(id ezkube.ResourceId) (*gate_v1.Upstream, error) {
+func (s *upstreamSet) Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.Upstream, error) {
 	if s == nil {
 		return nil, eris.Errorf("empty set, cannot find Upstream %v", sksets.Key(id))
 	}
-	obj, err := s.Generic().Find(&gate_v1.Upstream{}, id)
+	obj, err := s.Generic().Find(&gate_xdmybl_io_v1.Upstream{}, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return obj.(*gate_v1.Upstream), nil
+	return obj.(*gate_xdmybl_io_v1.Upstream), nil
 }
 
 func (s *upstreamSet) Length() int {
@@ -680,13 +680,13 @@ type GatewaySet interface {
 	// Get the set stored keys
 	Keys() sets.String
 	// List of resources stored in the set. Pass an optional filter function to filter on the list.
-	List(filterResource ...func(*gate_v1.Gateway) bool) []*gate_v1.Gateway
+	List(filterResource ...func(*gate_xdmybl_io_v1.Gateway) bool) []*gate_xdmybl_io_v1.Gateway
 	// Unsorted list of resources stored in the set. Pass an optional filter function to filter on the list.
-	UnsortedList(filterResource ...func(*gate_v1.Gateway) bool) []*gate_v1.Gateway
+	UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.Gateway) bool) []*gate_xdmybl_io_v1.Gateway
 	// Return the Set as a map of key to resource.
-	Map() map[string]*gate_v1.Gateway
+	Map() map[string]*gate_xdmybl_io_v1.Gateway
 	// Insert a resource into the set.
-	Insert(gateway ...*gate_v1.Gateway)
+	Insert(gateway ...*gate_xdmybl_io_v1.Gateway)
 	// Compare the equality of the keys in two sets (not the resources themselves)
 	Equal(gatewaySet GatewaySet) bool
 	// Check if the set contains a key matching the resource (not the resource itself)
@@ -700,7 +700,7 @@ type GatewaySet interface {
 	// Return the intersection with the provided set
 	Intersection(set GatewaySet) GatewaySet
 	// Find the resource with the given ID
-	Find(id ezkube.ResourceId) (*gate_v1.Gateway, error)
+	Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.Gateway, error)
 	// Get the length of the set
 	Length() int
 	// returns the generic implementation of the set
@@ -711,7 +711,7 @@ type GatewaySet interface {
 	Clone() GatewaySet
 }
 
-func makeGenericGatewaySet(gatewayList []*gate_v1.Gateway) sksets.ResourceSet {
+func makeGenericGatewaySet(gatewayList []*gate_xdmybl_io_v1.Gateway) sksets.ResourceSet {
 	var genericResources []ezkube.ResourceId
 	for _, obj := range gatewayList {
 		genericResources = append(genericResources, obj)
@@ -723,12 +723,12 @@ type gatewaySet struct {
 	set sksets.ResourceSet
 }
 
-func NewGatewaySet(gatewayList ...*gate_v1.Gateway) GatewaySet {
+func NewGatewaySet(gatewayList ...*gate_xdmybl_io_v1.Gateway) GatewaySet {
 	return &gatewaySet{set: makeGenericGatewaySet(gatewayList)}
 }
 
-func NewGatewaySetFromList(gatewayList *gate_v1.GatewayList) GatewaySet {
-	list := make([]*gate_v1.Gateway, 0, len(gatewayList.Items))
+func NewGatewaySetFromList(gatewayList *gate_xdmybl_io_v1.GatewayList) GatewaySet {
+	list := make([]*gate_xdmybl_io_v1.Gateway, 0, len(gatewayList.Items))
 	for idx := range gatewayList.Items {
 		list = append(list, &gatewayList.Items[idx])
 	}
@@ -742,7 +742,7 @@ func (s *gatewaySet) Keys() sets.String {
 	return s.Generic().Keys()
 }
 
-func (s *gatewaySet) List(filterResource ...func(*gate_v1.Gateway) bool) []*gate_v1.Gateway {
+func (s *gatewaySet) List(filterResource ...func(*gate_xdmybl_io_v1.Gateway) bool) []*gate_xdmybl_io_v1.Gateway {
 	if s == nil {
 		return nil
 	}
@@ -750,19 +750,19 @@ func (s *gatewaySet) List(filterResource ...func(*gate_v1.Gateway) bool) []*gate
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.Gateway))
+			return filter(obj.(*gate_xdmybl_io_v1.Gateway))
 		})
 	}
 
 	objs := s.Generic().List(genericFilters...)
-	gatewayList := make([]*gate_v1.Gateway, 0, len(objs))
+	gatewayList := make([]*gate_xdmybl_io_v1.Gateway, 0, len(objs))
 	for _, obj := range objs {
-		gatewayList = append(gatewayList, obj.(*gate_v1.Gateway))
+		gatewayList = append(gatewayList, obj.(*gate_xdmybl_io_v1.Gateway))
 	}
 	return gatewayList
 }
 
-func (s *gatewaySet) UnsortedList(filterResource ...func(*gate_v1.Gateway) bool) []*gate_v1.Gateway {
+func (s *gatewaySet) UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.Gateway) bool) []*gate_xdmybl_io_v1.Gateway {
 	if s == nil {
 		return nil
 	}
@@ -770,31 +770,31 @@ func (s *gatewaySet) UnsortedList(filterResource ...func(*gate_v1.Gateway) bool)
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.Gateway))
+			return filter(obj.(*gate_xdmybl_io_v1.Gateway))
 		})
 	}
 
-	var gatewayList []*gate_v1.Gateway
+	var gatewayList []*gate_xdmybl_io_v1.Gateway
 	for _, obj := range s.Generic().UnsortedList(genericFilters...) {
-		gatewayList = append(gatewayList, obj.(*gate_v1.Gateway))
+		gatewayList = append(gatewayList, obj.(*gate_xdmybl_io_v1.Gateway))
 	}
 	return gatewayList
 }
 
-func (s *gatewaySet) Map() map[string]*gate_v1.Gateway {
+func (s *gatewaySet) Map() map[string]*gate_xdmybl_io_v1.Gateway {
 	if s == nil {
 		return nil
 	}
 
-	newMap := map[string]*gate_v1.Gateway{}
+	newMap := map[string]*gate_xdmybl_io_v1.Gateway{}
 	for k, v := range s.Generic().Map() {
-		newMap[k] = v.(*gate_v1.Gateway)
+		newMap[k] = v.(*gate_xdmybl_io_v1.Gateway)
 	}
 	return newMap
 }
 
 func (s *gatewaySet) Insert(
-	gatewayList ...*gate_v1.Gateway,
+	gatewayList ...*gate_xdmybl_io_v1.Gateway,
 ) {
 	if s == nil {
 		panic("cannot insert into nil set")
@@ -848,23 +848,23 @@ func (s *gatewaySet) Intersection(set GatewaySet) GatewaySet {
 		return nil
 	}
 	newSet := s.Generic().Intersection(set.Generic())
-	var gatewayList []*gate_v1.Gateway
+	var gatewayList []*gate_xdmybl_io_v1.Gateway
 	for _, obj := range newSet.List() {
-		gatewayList = append(gatewayList, obj.(*gate_v1.Gateway))
+		gatewayList = append(gatewayList, obj.(*gate_xdmybl_io_v1.Gateway))
 	}
 	return NewGatewaySet(gatewayList...)
 }
 
-func (s *gatewaySet) Find(id ezkube.ResourceId) (*gate_v1.Gateway, error) {
+func (s *gatewaySet) Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.Gateway, error) {
 	if s == nil {
 		return nil, eris.Errorf("empty set, cannot find Gateway %v", sksets.Key(id))
 	}
-	obj, err := s.Generic().Find(&gate_v1.Gateway{}, id)
+	obj, err := s.Generic().Find(&gate_xdmybl_io_v1.Gateway{}, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return obj.(*gate_v1.Gateway), nil
+	return obj.(*gate_xdmybl_io_v1.Gateway), nil
 }
 
 func (s *gatewaySet) Length() int {
@@ -901,13 +901,13 @@ type FilterSet interface {
 	// Get the set stored keys
 	Keys() sets.String
 	// List of resources stored in the set. Pass an optional filter function to filter on the list.
-	List(filterResource ...func(*gate_v1.Filter) bool) []*gate_v1.Filter
+	List(filterResource ...func(*gate_xdmybl_io_v1.Filter) bool) []*gate_xdmybl_io_v1.Filter
 	// Unsorted list of resources stored in the set. Pass an optional filter function to filter on the list.
-	UnsortedList(filterResource ...func(*gate_v1.Filter) bool) []*gate_v1.Filter
+	UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.Filter) bool) []*gate_xdmybl_io_v1.Filter
 	// Return the Set as a map of key to resource.
-	Map() map[string]*gate_v1.Filter
+	Map() map[string]*gate_xdmybl_io_v1.Filter
 	// Insert a resource into the set.
-	Insert(filter ...*gate_v1.Filter)
+	Insert(filter ...*gate_xdmybl_io_v1.Filter)
 	// Compare the equality of the keys in two sets (not the resources themselves)
 	Equal(filterSet FilterSet) bool
 	// Check if the set contains a key matching the resource (not the resource itself)
@@ -921,7 +921,7 @@ type FilterSet interface {
 	// Return the intersection with the provided set
 	Intersection(set FilterSet) FilterSet
 	// Find the resource with the given ID
-	Find(id ezkube.ResourceId) (*gate_v1.Filter, error)
+	Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.Filter, error)
 	// Get the length of the set
 	Length() int
 	// returns the generic implementation of the set
@@ -932,7 +932,7 @@ type FilterSet interface {
 	Clone() FilterSet
 }
 
-func makeGenericFilterSet(filterList []*gate_v1.Filter) sksets.ResourceSet {
+func makeGenericFilterSet(filterList []*gate_xdmybl_io_v1.Filter) sksets.ResourceSet {
 	var genericResources []ezkube.ResourceId
 	for _, obj := range filterList {
 		genericResources = append(genericResources, obj)
@@ -944,12 +944,12 @@ type filterSet struct {
 	set sksets.ResourceSet
 }
 
-func NewFilterSet(filterList ...*gate_v1.Filter) FilterSet {
+func NewFilterSet(filterList ...*gate_xdmybl_io_v1.Filter) FilterSet {
 	return &filterSet{set: makeGenericFilterSet(filterList)}
 }
 
-func NewFilterSetFromList(filterList *gate_v1.FilterList) FilterSet {
-	list := make([]*gate_v1.Filter, 0, len(filterList.Items))
+func NewFilterSetFromList(filterList *gate_xdmybl_io_v1.FilterList) FilterSet {
+	list := make([]*gate_xdmybl_io_v1.Filter, 0, len(filterList.Items))
 	for idx := range filterList.Items {
 		list = append(list, &filterList.Items[idx])
 	}
@@ -963,7 +963,7 @@ func (s *filterSet) Keys() sets.String {
 	return s.Generic().Keys()
 }
 
-func (s *filterSet) List(filterResource ...func(*gate_v1.Filter) bool) []*gate_v1.Filter {
+func (s *filterSet) List(filterResource ...func(*gate_xdmybl_io_v1.Filter) bool) []*gate_xdmybl_io_v1.Filter {
 	if s == nil {
 		return nil
 	}
@@ -971,19 +971,19 @@ func (s *filterSet) List(filterResource ...func(*gate_v1.Filter) bool) []*gate_v
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.Filter))
+			return filter(obj.(*gate_xdmybl_io_v1.Filter))
 		})
 	}
 
 	objs := s.Generic().List(genericFilters...)
-	filterList := make([]*gate_v1.Filter, 0, len(objs))
+	filterList := make([]*gate_xdmybl_io_v1.Filter, 0, len(objs))
 	for _, obj := range objs {
-		filterList = append(filterList, obj.(*gate_v1.Filter))
+		filterList = append(filterList, obj.(*gate_xdmybl_io_v1.Filter))
 	}
 	return filterList
 }
 
-func (s *filterSet) UnsortedList(filterResource ...func(*gate_v1.Filter) bool) []*gate_v1.Filter {
+func (s *filterSet) UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.Filter) bool) []*gate_xdmybl_io_v1.Filter {
 	if s == nil {
 		return nil
 	}
@@ -991,31 +991,31 @@ func (s *filterSet) UnsortedList(filterResource ...func(*gate_v1.Filter) bool) [
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_v1.Filter))
+			return filter(obj.(*gate_xdmybl_io_v1.Filter))
 		})
 	}
 
-	var filterList []*gate_v1.Filter
+	var filterList []*gate_xdmybl_io_v1.Filter
 	for _, obj := range s.Generic().UnsortedList(genericFilters...) {
-		filterList = append(filterList, obj.(*gate_v1.Filter))
+		filterList = append(filterList, obj.(*gate_xdmybl_io_v1.Filter))
 	}
 	return filterList
 }
 
-func (s *filterSet) Map() map[string]*gate_v1.Filter {
+func (s *filterSet) Map() map[string]*gate_xdmybl_io_v1.Filter {
 	if s == nil {
 		return nil
 	}
 
-	newMap := map[string]*gate_v1.Filter{}
+	newMap := map[string]*gate_xdmybl_io_v1.Filter{}
 	for k, v := range s.Generic().Map() {
-		newMap[k] = v.(*gate_v1.Filter)
+		newMap[k] = v.(*gate_xdmybl_io_v1.Filter)
 	}
 	return newMap
 }
 
 func (s *filterSet) Insert(
-	filterList ...*gate_v1.Filter,
+	filterList ...*gate_xdmybl_io_v1.Filter,
 ) {
 	if s == nil {
 		panic("cannot insert into nil set")
@@ -1069,23 +1069,23 @@ func (s *filterSet) Intersection(set FilterSet) FilterSet {
 		return nil
 	}
 	newSet := s.Generic().Intersection(set.Generic())
-	var filterList []*gate_v1.Filter
+	var filterList []*gate_xdmybl_io_v1.Filter
 	for _, obj := range newSet.List() {
-		filterList = append(filterList, obj.(*gate_v1.Filter))
+		filterList = append(filterList, obj.(*gate_xdmybl_io_v1.Filter))
 	}
 	return NewFilterSet(filterList...)
 }
 
-func (s *filterSet) Find(id ezkube.ResourceId) (*gate_v1.Filter, error) {
+func (s *filterSet) Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.Filter, error) {
 	if s == nil {
 		return nil, eris.Errorf("empty set, cannot find Filter %v", sksets.Key(id))
 	}
-	obj, err := s.Generic().Find(&gate_v1.Filter{}, id)
+	obj, err := s.Generic().Find(&gate_xdmybl_io_v1.Filter{}, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return obj.(*gate_v1.Filter), nil
+	return obj.(*gate_xdmybl_io_v1.Filter), nil
 }
 
 func (s *filterSet) Length() int {

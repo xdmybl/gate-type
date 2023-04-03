@@ -8,7 +8,7 @@ package controller
 import (
 	"context"
 
-	gate_v1 "github.com/xdmybl/gate-type/pkg/api/gate/v1"
+	gate_xdmybl_io_v1 "github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1"
 
 	"github.com/pkg/errors"
 	"github.com/solo-io/skv2/pkg/ezkube"
@@ -21,7 +21,7 @@ import (
 // Reconcile Upsert events for the CaCertificate Resource across clusters.
 // implemented by the user
 type MulticlusterCaCertificateReconciler interface {
-	ReconcileCaCertificate(clusterName string, obj *gate_v1.CaCertificate) (reconcile.Result, error)
+	ReconcileCaCertificate(clusterName string, obj *gate_xdmybl_io_v1.CaCertificate) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the CaCertificate Resource across clusters.
@@ -33,11 +33,11 @@ type MulticlusterCaCertificateDeletionReconciler interface {
 }
 
 type MulticlusterCaCertificateReconcilerFuncs struct {
-	OnReconcileCaCertificate         func(clusterName string, obj *gate_v1.CaCertificate) (reconcile.Result, error)
+	OnReconcileCaCertificate         func(clusterName string, obj *gate_xdmybl_io_v1.CaCertificate) (reconcile.Result, error)
 	OnReconcileCaCertificateDeletion func(clusterName string, req reconcile.Request) error
 }
 
-func (f *MulticlusterCaCertificateReconcilerFuncs) ReconcileCaCertificate(clusterName string, obj *gate_v1.CaCertificate) (reconcile.Result, error) {
+func (f *MulticlusterCaCertificateReconcilerFuncs) ReconcileCaCertificate(clusterName string, obj *gate_xdmybl_io_v1.CaCertificate) (reconcile.Result, error) {
 	if f.OnReconcileCaCertificate == nil {
 		return reconcile.Result{}, nil
 	}
@@ -67,7 +67,7 @@ func (m *multiclusterCaCertificateReconcileLoop) AddMulticlusterCaCertificateRec
 }
 
 func NewMulticlusterCaCertificateReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterCaCertificateReconcileLoop {
-	return &multiclusterCaCertificateReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_v1.CaCertificate{}, options)}
+	return &multiclusterCaCertificateReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_xdmybl_io_v1.CaCertificate{}, options)}
 }
 
 type genericCaCertificateMulticlusterReconciler struct {
@@ -82,7 +82,7 @@ func (g genericCaCertificateMulticlusterReconciler) ReconcileDeletion(cluster st
 }
 
 func (g genericCaCertificateMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.CaCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.CaCertificate)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: CaCertificate handler received event for %T", object)
 	}
@@ -92,7 +92,7 @@ func (g genericCaCertificateMulticlusterReconciler) Reconcile(cluster string, ob
 // Reconcile Upsert events for the SslCertificate Resource across clusters.
 // implemented by the user
 type MulticlusterSslCertificateReconciler interface {
-	ReconcileSslCertificate(clusterName string, obj *gate_v1.SslCertificate) (reconcile.Result, error)
+	ReconcileSslCertificate(clusterName string, obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the SslCertificate Resource across clusters.
@@ -104,11 +104,11 @@ type MulticlusterSslCertificateDeletionReconciler interface {
 }
 
 type MulticlusterSslCertificateReconcilerFuncs struct {
-	OnReconcileSslCertificate         func(clusterName string, obj *gate_v1.SslCertificate) (reconcile.Result, error)
+	OnReconcileSslCertificate         func(clusterName string, obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error)
 	OnReconcileSslCertificateDeletion func(clusterName string, req reconcile.Request) error
 }
 
-func (f *MulticlusterSslCertificateReconcilerFuncs) ReconcileSslCertificate(clusterName string, obj *gate_v1.SslCertificate) (reconcile.Result, error) {
+func (f *MulticlusterSslCertificateReconcilerFuncs) ReconcileSslCertificate(clusterName string, obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error) {
 	if f.OnReconcileSslCertificate == nil {
 		return reconcile.Result{}, nil
 	}
@@ -138,7 +138,7 @@ func (m *multiclusterSslCertificateReconcileLoop) AddMulticlusterSslCertificateR
 }
 
 func NewMulticlusterSslCertificateReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterSslCertificateReconcileLoop {
-	return &multiclusterSslCertificateReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_v1.SslCertificate{}, options)}
+	return &multiclusterSslCertificateReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_xdmybl_io_v1.SslCertificate{}, options)}
 }
 
 type genericSslCertificateMulticlusterReconciler struct {
@@ -153,7 +153,7 @@ func (g genericSslCertificateMulticlusterReconciler) ReconcileDeletion(cluster s
 }
 
 func (g genericSslCertificateMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.SslCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: SslCertificate handler received event for %T", object)
 	}
@@ -163,7 +163,7 @@ func (g genericSslCertificateMulticlusterReconciler) Reconcile(cluster string, o
 // Reconcile Upsert events for the Upstream Resource across clusters.
 // implemented by the user
 type MulticlusterUpstreamReconciler interface {
-	ReconcileUpstream(clusterName string, obj *gate_v1.Upstream) (reconcile.Result, error)
+	ReconcileUpstream(clusterName string, obj *gate_xdmybl_io_v1.Upstream) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the Upstream Resource across clusters.
@@ -175,11 +175,11 @@ type MulticlusterUpstreamDeletionReconciler interface {
 }
 
 type MulticlusterUpstreamReconcilerFuncs struct {
-	OnReconcileUpstream         func(clusterName string, obj *gate_v1.Upstream) (reconcile.Result, error)
+	OnReconcileUpstream         func(clusterName string, obj *gate_xdmybl_io_v1.Upstream) (reconcile.Result, error)
 	OnReconcileUpstreamDeletion func(clusterName string, req reconcile.Request) error
 }
 
-func (f *MulticlusterUpstreamReconcilerFuncs) ReconcileUpstream(clusterName string, obj *gate_v1.Upstream) (reconcile.Result, error) {
+func (f *MulticlusterUpstreamReconcilerFuncs) ReconcileUpstream(clusterName string, obj *gate_xdmybl_io_v1.Upstream) (reconcile.Result, error) {
 	if f.OnReconcileUpstream == nil {
 		return reconcile.Result{}, nil
 	}
@@ -209,7 +209,7 @@ func (m *multiclusterUpstreamReconcileLoop) AddMulticlusterUpstreamReconciler(ct
 }
 
 func NewMulticlusterUpstreamReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterUpstreamReconcileLoop {
-	return &multiclusterUpstreamReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_v1.Upstream{}, options)}
+	return &multiclusterUpstreamReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_xdmybl_io_v1.Upstream{}, options)}
 }
 
 type genericUpstreamMulticlusterReconciler struct {
@@ -224,7 +224,7 @@ func (g genericUpstreamMulticlusterReconciler) ReconcileDeletion(cluster string,
 }
 
 func (g genericUpstreamMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.Upstream)
+	obj, ok := object.(*gate_xdmybl_io_v1.Upstream)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: Upstream handler received event for %T", object)
 	}
@@ -234,7 +234,7 @@ func (g genericUpstreamMulticlusterReconciler) Reconcile(cluster string, object 
 // Reconcile Upsert events for the Gateway Resource across clusters.
 // implemented by the user
 type MulticlusterGatewayReconciler interface {
-	ReconcileGateway(clusterName string, obj *gate_v1.Gateway) (reconcile.Result, error)
+	ReconcileGateway(clusterName string, obj *gate_xdmybl_io_v1.Gateway) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the Gateway Resource across clusters.
@@ -246,11 +246,11 @@ type MulticlusterGatewayDeletionReconciler interface {
 }
 
 type MulticlusterGatewayReconcilerFuncs struct {
-	OnReconcileGateway         func(clusterName string, obj *gate_v1.Gateway) (reconcile.Result, error)
+	OnReconcileGateway         func(clusterName string, obj *gate_xdmybl_io_v1.Gateway) (reconcile.Result, error)
 	OnReconcileGatewayDeletion func(clusterName string, req reconcile.Request) error
 }
 
-func (f *MulticlusterGatewayReconcilerFuncs) ReconcileGateway(clusterName string, obj *gate_v1.Gateway) (reconcile.Result, error) {
+func (f *MulticlusterGatewayReconcilerFuncs) ReconcileGateway(clusterName string, obj *gate_xdmybl_io_v1.Gateway) (reconcile.Result, error) {
 	if f.OnReconcileGateway == nil {
 		return reconcile.Result{}, nil
 	}
@@ -280,7 +280,7 @@ func (m *multiclusterGatewayReconcileLoop) AddMulticlusterGatewayReconciler(ctx 
 }
 
 func NewMulticlusterGatewayReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterGatewayReconcileLoop {
-	return &multiclusterGatewayReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_v1.Gateway{}, options)}
+	return &multiclusterGatewayReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_xdmybl_io_v1.Gateway{}, options)}
 }
 
 type genericGatewayMulticlusterReconciler struct {
@@ -295,7 +295,7 @@ func (g genericGatewayMulticlusterReconciler) ReconcileDeletion(cluster string, 
 }
 
 func (g genericGatewayMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.Gateway)
+	obj, ok := object.(*gate_xdmybl_io_v1.Gateway)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: Gateway handler received event for %T", object)
 	}
@@ -305,7 +305,7 @@ func (g genericGatewayMulticlusterReconciler) Reconcile(cluster string, object e
 // Reconcile Upsert events for the Filter Resource across clusters.
 // implemented by the user
 type MulticlusterFilterReconciler interface {
-	ReconcileFilter(clusterName string, obj *gate_v1.Filter) (reconcile.Result, error)
+	ReconcileFilter(clusterName string, obj *gate_xdmybl_io_v1.Filter) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the Filter Resource across clusters.
@@ -317,11 +317,11 @@ type MulticlusterFilterDeletionReconciler interface {
 }
 
 type MulticlusterFilterReconcilerFuncs struct {
-	OnReconcileFilter         func(clusterName string, obj *gate_v1.Filter) (reconcile.Result, error)
+	OnReconcileFilter         func(clusterName string, obj *gate_xdmybl_io_v1.Filter) (reconcile.Result, error)
 	OnReconcileFilterDeletion func(clusterName string, req reconcile.Request) error
 }
 
-func (f *MulticlusterFilterReconcilerFuncs) ReconcileFilter(clusterName string, obj *gate_v1.Filter) (reconcile.Result, error) {
+func (f *MulticlusterFilterReconcilerFuncs) ReconcileFilter(clusterName string, obj *gate_xdmybl_io_v1.Filter) (reconcile.Result, error) {
 	if f.OnReconcileFilter == nil {
 		return reconcile.Result{}, nil
 	}
@@ -351,7 +351,7 @@ func (m *multiclusterFilterReconcileLoop) AddMulticlusterFilterReconciler(ctx co
 }
 
 func NewMulticlusterFilterReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterFilterReconcileLoop {
-	return &multiclusterFilterReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_v1.Filter{}, options)}
+	return &multiclusterFilterReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_xdmybl_io_v1.Filter{}, options)}
 }
 
 type genericFilterMulticlusterReconciler struct {
@@ -366,7 +366,7 @@ func (g genericFilterMulticlusterReconciler) ReconcileDeletion(cluster string, r
 }
 
 func (g genericFilterMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.Filter)
+	obj, ok := object.(*gate_xdmybl_io_v1.Filter)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: Filter handler received event for %T", object)
 	}

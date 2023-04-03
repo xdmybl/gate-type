@@ -34,7 +34,7 @@ func (m *CaCertificateSpec) Hash(hasher hash.Hash64) (uint64, error) {
 		hasher = fnv.New64()
 	}
 	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.CaCertificateSpec")); err != nil {
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.CaCertificateSpec")); err != nil {
 		return 0, err
 	}
 

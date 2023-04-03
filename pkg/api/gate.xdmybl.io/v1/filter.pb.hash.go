@@ -34,7 +34,7 @@ func (m *FilterSpec) Hash(hasher hash.Hash64) (uint64, error) {
 		hasher = fnv.New64()
 	}
 	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.FilterSpec")); err != nil {
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.FilterSpec")); err != nil {
 		return 0, err
 	}
 
@@ -118,7 +118,7 @@ func (m *HttpConnectionManager) Hash(hasher hash.Hash64) (uint64, error) {
 		hasher = fnv.New64()
 	}
 	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.HttpConnectionManager")); err != nil {
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.HttpConnectionManager")); err != nil {
 		return 0, err
 	}
 
@@ -172,7 +172,7 @@ func (m *HttpFilter) Hash(hasher hash.Hash64) (uint64, error) {
 		hasher = fnv.New64()
 	}
 	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.HttpFilter")); err != nil {
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.HttpFilter")); err != nil {
 		return 0, err
 	}
 
@@ -188,7 +188,7 @@ func (m *TcpProxy) Hash(hasher hash.Hash64) (uint64, error) {
 		hasher = fnv.New64()
 	}
 	var err error
-	if _, err = hasher.Write([]byte("gate.github.com/xdmybl/gate-type/pkg/api/gate/v1.TcpProxy")); err != nil {
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.TcpProxy")); err != nil {
 		return 0, err
 	}
 

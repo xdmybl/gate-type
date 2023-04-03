@@ -8,7 +8,7 @@ package controller
 import (
 	"context"
 
-	gate_v1 "github.com/xdmybl/gate-type/pkg/api/gate/v1"
+	gate_xdmybl_io_v1 "github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1"
 
 	"github.com/pkg/errors"
 	"github.com/solo-io/skv2/pkg/ezkube"
@@ -20,7 +20,7 @@ import (
 // Reconcile Upsert events for the CaCertificate Resource.
 // implemented by the user
 type CaCertificateReconciler interface {
-	ReconcileCaCertificate(obj *gate_v1.CaCertificate) (reconcile.Result, error)
+	ReconcileCaCertificate(obj *gate_xdmybl_io_v1.CaCertificate) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the CaCertificate Resource.
@@ -32,11 +32,11 @@ type CaCertificateDeletionReconciler interface {
 }
 
 type CaCertificateReconcilerFuncs struct {
-	OnReconcileCaCertificate         func(obj *gate_v1.CaCertificate) (reconcile.Result, error)
+	OnReconcileCaCertificate         func(obj *gate_xdmybl_io_v1.CaCertificate) (reconcile.Result, error)
 	OnReconcileCaCertificateDeletion func(req reconcile.Request) error
 }
 
-func (f *CaCertificateReconcilerFuncs) ReconcileCaCertificate(obj *gate_v1.CaCertificate) (reconcile.Result, error) {
+func (f *CaCertificateReconcilerFuncs) ReconcileCaCertificate(obj *gate_xdmybl_io_v1.CaCertificate) (reconcile.Result, error) {
 	if f.OnReconcileCaCertificate == nil {
 		return reconcile.Result{}, nil
 	}
@@ -61,7 +61,7 @@ type CaCertificateFinalizer interface {
 
 	// finalize the object before it is deleted.
 	// Watchers created with a finalizing handler will a
-	FinalizeCaCertificate(obj *gate_v1.CaCertificate) error
+	FinalizeCaCertificate(obj *gate_xdmybl_io_v1.CaCertificate) error
 }
 
 type CaCertificateReconcileLoop interface {
@@ -75,7 +75,7 @@ type caCertificateReconcileLoop struct {
 func NewCaCertificateReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) CaCertificateReconcileLoop {
 	return &caCertificateReconcileLoop{
 		// empty cluster indicates this reconciler is built for the local cluster
-		loop: reconcile.NewLoop(name, "", mgr, &gate_v1.CaCertificate{}, options),
+		loop: reconcile.NewLoop(name, "", mgr, &gate_xdmybl_io_v1.CaCertificate{}, options),
 	}
 }
 
@@ -102,7 +102,7 @@ type genericCaCertificateReconciler struct {
 }
 
 func (r genericCaCertificateReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.CaCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.CaCertificate)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: CaCertificate handler received event for %T", object)
 	}
@@ -127,7 +127,7 @@ func (r genericCaCertificateFinalizer) FinalizerName() string {
 }
 
 func (r genericCaCertificateFinalizer) Finalize(object ezkube.Object) error {
-	obj, ok := object.(*gate_v1.CaCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.CaCertificate)
 	if !ok {
 		return errors.Errorf("internal error: CaCertificate handler received event for %T", object)
 	}
@@ -137,7 +137,7 @@ func (r genericCaCertificateFinalizer) Finalize(object ezkube.Object) error {
 // Reconcile Upsert events for the SslCertificate Resource.
 // implemented by the user
 type SslCertificateReconciler interface {
-	ReconcileSslCertificate(obj *gate_v1.SslCertificate) (reconcile.Result, error)
+	ReconcileSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the SslCertificate Resource.
@@ -149,11 +149,11 @@ type SslCertificateDeletionReconciler interface {
 }
 
 type SslCertificateReconcilerFuncs struct {
-	OnReconcileSslCertificate         func(obj *gate_v1.SslCertificate) (reconcile.Result, error)
+	OnReconcileSslCertificate         func(obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error)
 	OnReconcileSslCertificateDeletion func(req reconcile.Request) error
 }
 
-func (f *SslCertificateReconcilerFuncs) ReconcileSslCertificate(obj *gate_v1.SslCertificate) (reconcile.Result, error) {
+func (f *SslCertificateReconcilerFuncs) ReconcileSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error) {
 	if f.OnReconcileSslCertificate == nil {
 		return reconcile.Result{}, nil
 	}
@@ -178,7 +178,7 @@ type SslCertificateFinalizer interface {
 
 	// finalize the object before it is deleted.
 	// Watchers created with a finalizing handler will a
-	FinalizeSslCertificate(obj *gate_v1.SslCertificate) error
+	FinalizeSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error
 }
 
 type SslCertificateReconcileLoop interface {
@@ -192,7 +192,7 @@ type sslCertificateReconcileLoop struct {
 func NewSslCertificateReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) SslCertificateReconcileLoop {
 	return &sslCertificateReconcileLoop{
 		// empty cluster indicates this reconciler is built for the local cluster
-		loop: reconcile.NewLoop(name, "", mgr, &gate_v1.SslCertificate{}, options),
+		loop: reconcile.NewLoop(name, "", mgr, &gate_xdmybl_io_v1.SslCertificate{}, options),
 	}
 }
 
@@ -219,7 +219,7 @@ type genericSslCertificateReconciler struct {
 }
 
 func (r genericSslCertificateReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.SslCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: SslCertificate handler received event for %T", object)
 	}
@@ -244,7 +244,7 @@ func (r genericSslCertificateFinalizer) FinalizerName() string {
 }
 
 func (r genericSslCertificateFinalizer) Finalize(object ezkube.Object) error {
-	obj, ok := object.(*gate_v1.SslCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
 	if !ok {
 		return errors.Errorf("internal error: SslCertificate handler received event for %T", object)
 	}
@@ -254,7 +254,7 @@ func (r genericSslCertificateFinalizer) Finalize(object ezkube.Object) error {
 // Reconcile Upsert events for the Upstream Resource.
 // implemented by the user
 type UpstreamReconciler interface {
-	ReconcileUpstream(obj *gate_v1.Upstream) (reconcile.Result, error)
+	ReconcileUpstream(obj *gate_xdmybl_io_v1.Upstream) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the Upstream Resource.
@@ -266,11 +266,11 @@ type UpstreamDeletionReconciler interface {
 }
 
 type UpstreamReconcilerFuncs struct {
-	OnReconcileUpstream         func(obj *gate_v1.Upstream) (reconcile.Result, error)
+	OnReconcileUpstream         func(obj *gate_xdmybl_io_v1.Upstream) (reconcile.Result, error)
 	OnReconcileUpstreamDeletion func(req reconcile.Request) error
 }
 
-func (f *UpstreamReconcilerFuncs) ReconcileUpstream(obj *gate_v1.Upstream) (reconcile.Result, error) {
+func (f *UpstreamReconcilerFuncs) ReconcileUpstream(obj *gate_xdmybl_io_v1.Upstream) (reconcile.Result, error) {
 	if f.OnReconcileUpstream == nil {
 		return reconcile.Result{}, nil
 	}
@@ -295,7 +295,7 @@ type UpstreamFinalizer interface {
 
 	// finalize the object before it is deleted.
 	// Watchers created with a finalizing handler will a
-	FinalizeUpstream(obj *gate_v1.Upstream) error
+	FinalizeUpstream(obj *gate_xdmybl_io_v1.Upstream) error
 }
 
 type UpstreamReconcileLoop interface {
@@ -309,7 +309,7 @@ type upstreamReconcileLoop struct {
 func NewUpstreamReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) UpstreamReconcileLoop {
 	return &upstreamReconcileLoop{
 		// empty cluster indicates this reconciler is built for the local cluster
-		loop: reconcile.NewLoop(name, "", mgr, &gate_v1.Upstream{}, options),
+		loop: reconcile.NewLoop(name, "", mgr, &gate_xdmybl_io_v1.Upstream{}, options),
 	}
 }
 
@@ -336,7 +336,7 @@ type genericUpstreamReconciler struct {
 }
 
 func (r genericUpstreamReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.Upstream)
+	obj, ok := object.(*gate_xdmybl_io_v1.Upstream)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: Upstream handler received event for %T", object)
 	}
@@ -361,7 +361,7 @@ func (r genericUpstreamFinalizer) FinalizerName() string {
 }
 
 func (r genericUpstreamFinalizer) Finalize(object ezkube.Object) error {
-	obj, ok := object.(*gate_v1.Upstream)
+	obj, ok := object.(*gate_xdmybl_io_v1.Upstream)
 	if !ok {
 		return errors.Errorf("internal error: Upstream handler received event for %T", object)
 	}
@@ -371,7 +371,7 @@ func (r genericUpstreamFinalizer) Finalize(object ezkube.Object) error {
 // Reconcile Upsert events for the Gateway Resource.
 // implemented by the user
 type GatewayReconciler interface {
-	ReconcileGateway(obj *gate_v1.Gateway) (reconcile.Result, error)
+	ReconcileGateway(obj *gate_xdmybl_io_v1.Gateway) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the Gateway Resource.
@@ -383,11 +383,11 @@ type GatewayDeletionReconciler interface {
 }
 
 type GatewayReconcilerFuncs struct {
-	OnReconcileGateway         func(obj *gate_v1.Gateway) (reconcile.Result, error)
+	OnReconcileGateway         func(obj *gate_xdmybl_io_v1.Gateway) (reconcile.Result, error)
 	OnReconcileGatewayDeletion func(req reconcile.Request) error
 }
 
-func (f *GatewayReconcilerFuncs) ReconcileGateway(obj *gate_v1.Gateway) (reconcile.Result, error) {
+func (f *GatewayReconcilerFuncs) ReconcileGateway(obj *gate_xdmybl_io_v1.Gateway) (reconcile.Result, error) {
 	if f.OnReconcileGateway == nil {
 		return reconcile.Result{}, nil
 	}
@@ -412,7 +412,7 @@ type GatewayFinalizer interface {
 
 	// finalize the object before it is deleted.
 	// Watchers created with a finalizing handler will a
-	FinalizeGateway(obj *gate_v1.Gateway) error
+	FinalizeGateway(obj *gate_xdmybl_io_v1.Gateway) error
 }
 
 type GatewayReconcileLoop interface {
@@ -426,7 +426,7 @@ type gatewayReconcileLoop struct {
 func NewGatewayReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) GatewayReconcileLoop {
 	return &gatewayReconcileLoop{
 		// empty cluster indicates this reconciler is built for the local cluster
-		loop: reconcile.NewLoop(name, "", mgr, &gate_v1.Gateway{}, options),
+		loop: reconcile.NewLoop(name, "", mgr, &gate_xdmybl_io_v1.Gateway{}, options),
 	}
 }
 
@@ -453,7 +453,7 @@ type genericGatewayReconciler struct {
 }
 
 func (r genericGatewayReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.Gateway)
+	obj, ok := object.(*gate_xdmybl_io_v1.Gateway)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: Gateway handler received event for %T", object)
 	}
@@ -478,7 +478,7 @@ func (r genericGatewayFinalizer) FinalizerName() string {
 }
 
 func (r genericGatewayFinalizer) Finalize(object ezkube.Object) error {
-	obj, ok := object.(*gate_v1.Gateway)
+	obj, ok := object.(*gate_xdmybl_io_v1.Gateway)
 	if !ok {
 		return errors.Errorf("internal error: Gateway handler received event for %T", object)
 	}
@@ -488,7 +488,7 @@ func (r genericGatewayFinalizer) Finalize(object ezkube.Object) error {
 // Reconcile Upsert events for the Filter Resource.
 // implemented by the user
 type FilterReconciler interface {
-	ReconcileFilter(obj *gate_v1.Filter) (reconcile.Result, error)
+	ReconcileFilter(obj *gate_xdmybl_io_v1.Filter) (reconcile.Result, error)
 }
 
 // Reconcile deletion events for the Filter Resource.
@@ -500,11 +500,11 @@ type FilterDeletionReconciler interface {
 }
 
 type FilterReconcilerFuncs struct {
-	OnReconcileFilter         func(obj *gate_v1.Filter) (reconcile.Result, error)
+	OnReconcileFilter         func(obj *gate_xdmybl_io_v1.Filter) (reconcile.Result, error)
 	OnReconcileFilterDeletion func(req reconcile.Request) error
 }
 
-func (f *FilterReconcilerFuncs) ReconcileFilter(obj *gate_v1.Filter) (reconcile.Result, error) {
+func (f *FilterReconcilerFuncs) ReconcileFilter(obj *gate_xdmybl_io_v1.Filter) (reconcile.Result, error) {
 	if f.OnReconcileFilter == nil {
 		return reconcile.Result{}, nil
 	}
@@ -529,7 +529,7 @@ type FilterFinalizer interface {
 
 	// finalize the object before it is deleted.
 	// Watchers created with a finalizing handler will a
-	FinalizeFilter(obj *gate_v1.Filter) error
+	FinalizeFilter(obj *gate_xdmybl_io_v1.Filter) error
 }
 
 type FilterReconcileLoop interface {
@@ -543,7 +543,7 @@ type filterReconcileLoop struct {
 func NewFilterReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) FilterReconcileLoop {
 	return &filterReconcileLoop{
 		// empty cluster indicates this reconciler is built for the local cluster
-		loop: reconcile.NewLoop(name, "", mgr, &gate_v1.Filter{}, options),
+		loop: reconcile.NewLoop(name, "", mgr, &gate_xdmybl_io_v1.Filter{}, options),
 	}
 }
 
@@ -570,7 +570,7 @@ type genericFilterReconciler struct {
 }
 
 func (r genericFilterReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_v1.Filter)
+	obj, ok := object.(*gate_xdmybl_io_v1.Filter)
 	if !ok {
 		return reconcile.Result{}, errors.Errorf("internal error: Filter handler received event for %T", object)
 	}
@@ -595,7 +595,7 @@ func (r genericFilterFinalizer) FinalizerName() string {
 }
 
 func (r genericFilterFinalizer) Finalize(object ezkube.Object) error {
-	obj, ok := object.(*gate_v1.Filter)
+	obj, ok := object.(*gate_xdmybl_io_v1.Filter)
 	if !ok {
 		return errors.Errorf("internal error: Filter handler received event for %T", object)
 	}

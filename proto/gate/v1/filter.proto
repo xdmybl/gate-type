@@ -3,9 +3,9 @@
 // 1. 照搬相应的对象, 比如说 filter 是之前
 
 syntax = "proto3";
-package gate;
+package gate.xdmybl.io;
 
-option go_package = "github.com/xdmybl/gate-type/pkg/api/gate/v1";
+option go_package = "github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1";
 
 import "validate/validate.proto";
 import "google/protobuf/struct.proto";

@@ -11,7 +11,7 @@ import (
 
 var Group = model.Group{
 	GroupVersion: schema.GroupVersion{
-		Group:   "gate",
+		Group:   "gate.xdmybl.io",
 		Version: "v1",
 	},
 	Module: "github.com/xdmybl/gate-type",

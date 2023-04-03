@@ -15,7 +15,7 @@ import (
 
 // GroupVersionKind for CaCertificate
 var CaCertificateGVK = schema.GroupVersionKind{
-	Group:   "gate",
+	Group:   "gate.xdmybl.io",
 	Version: "v1",
 	Kind:    "CaCertificate",
 }
@@ -49,7 +49,7 @@ type CaCertificateList struct {
 
 // GroupVersionKind for SslCertificate
 var SslCertificateGVK = schema.GroupVersionKind{
-	Group:   "gate",
+	Group:   "gate.xdmybl.io",
 	Version: "v1",
 	Kind:    "SslCertificate",
 }
@@ -83,7 +83,7 @@ type SslCertificateList struct {
 
 // GroupVersionKind for Upstream
 var UpstreamGVK = schema.GroupVersionKind{
-	Group:   "gate",
+	Group:   "gate.xdmybl.io",
 	Version: "v1",
 	Kind:    "Upstream",
 }
@@ -117,7 +117,7 @@ type UpstreamList struct {
 
 // GroupVersionKind for Gateway
 var GatewayGVK = schema.GroupVersionKind{
-	Group:   "gate",
+	Group:   "gate.xdmybl.io",
 	Version: "v1",
 	Kind:    "Gateway",
 }
@@ -151,7 +151,7 @@ type GatewayList struct {
 
 // GroupVersionKind for Filter
 var FilterGVK = schema.GroupVersionKind{
-	Group:   "gate",
+	Group:   "gate.xdmybl.io",
 	Version: "v1",
 	Kind:    "Filter",
 }

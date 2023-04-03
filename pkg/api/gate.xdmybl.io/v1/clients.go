@@ -15,7 +15,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// MulticlusterClientset for the gate/v1 APIs
+// MulticlusterClientset for the gate.xdmybl.io/v1 APIs
 type MulticlusterClientset interface {
 	// Cluster returns a Clientset for the given cluster
 	Cluster(cluster string) (Clientset, error)
@@ -37,17 +37,17 @@ func (m *multiclusterClientset) Cluster(cluster string) (Clientset, error) {
 	return NewClientset(client), nil
 }
 
-// clienset for the gate/v1 APIs
+// clienset for the gate.xdmybl.io/v1 APIs
 type Clientset interface {
-	// clienset for the gate/v1/v1 APIs
+	// clienset for the gate.xdmybl.io/v1/v1 APIs
 	CaCertificates() CaCertificateClient
-	// clienset for the gate/v1/v1 APIs
+	// clienset for the gate.xdmybl.io/v1/v1 APIs
 	SslCertificates() SslCertificateClient
-	// clienset for the gate/v1/v1 APIs
+	// clienset for the gate.xdmybl.io/v1/v1 APIs
 	Upstreams() UpstreamClient
-	// clienset for the gate/v1/v1 APIs
+	// clienset for the gate.xdmybl.io/v1/v1 APIs
 	Gateways() GatewayClient
-	// clienset for the gate/v1/v1 APIs
+	// clienset for the gate.xdmybl.io/v1/v1 APIs
 	Filters() FilterClient
 }
 
@@ -73,27 +73,27 @@ func NewClientset(client client.Client) Clientset {
 	return &clientSet{client: client}
 }
 
-// clienset for the gate/v1/v1 APIs
+// clienset for the gate.xdmybl.io/v1/v1 APIs
 func (c *clientSet) CaCertificates() CaCertificateClient {
 	return NewCaCertificateClient(c.client)
 }
 
-// clienset for the gate/v1/v1 APIs
+// clienset for the gate.xdmybl.io/v1/v1 APIs
 func (c *clientSet) SslCertificates() SslCertificateClient {
 	return NewSslCertificateClient(c.client)
 }
 
-// clienset for the gate/v1/v1 APIs
+// clienset for the gate.xdmybl.io/v1/v1 APIs
 func (c *clientSet) Upstreams() UpstreamClient {
 	return NewUpstreamClient(c.client)
 }
 
-// clienset for the gate/v1/v1 APIs
+// clienset for the gate.xdmybl.io/v1/v1 APIs
 func (c *clientSet) Gateways() GatewayClient {
 	return NewGatewayClient(c.client)
 }
 
-// clienset for the gate/v1/v1 APIs
+// clienset for the gate.xdmybl.io/v1/v1 APIs
 func (c *clientSet) Filters() FilterClient {
 	return NewFilterClient(c.client)
 }

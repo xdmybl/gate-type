@@ -8,7 +8,7 @@ package controller
 import (
 	"context"
 
-	gate_v1 "github.com/xdmybl/gate-type/pkg/api/gate/v1"
+	gate_xdmybl_io_v1 "github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1"
 
 	"github.com/pkg/errors"
 	"github.com/solo-io/skv2/pkg/events"
@@ -20,41 +20,41 @@ import (
 // Handle events for the CaCertificate Resource
 // DEPRECATED: Prefer reconciler pattern.
 type CaCertificateEventHandler interface {
-	CreateCaCertificate(obj *gate_v1.CaCertificate) error
-	UpdateCaCertificate(old, new *gate_v1.CaCertificate) error
-	DeleteCaCertificate(obj *gate_v1.CaCertificate) error
-	GenericCaCertificate(obj *gate_v1.CaCertificate) error
+	CreateCaCertificate(obj *gate_xdmybl_io_v1.CaCertificate) error
+	UpdateCaCertificate(old, new *gate_xdmybl_io_v1.CaCertificate) error
+	DeleteCaCertificate(obj *gate_xdmybl_io_v1.CaCertificate) error
+	GenericCaCertificate(obj *gate_xdmybl_io_v1.CaCertificate) error
 }
 
 type CaCertificateEventHandlerFuncs struct {
-	OnCreate  func(obj *gate_v1.CaCertificate) error
-	OnUpdate  func(old, new *gate_v1.CaCertificate) error
-	OnDelete  func(obj *gate_v1.CaCertificate) error
-	OnGeneric func(obj *gate_v1.CaCertificate) error
+	OnCreate  func(obj *gate_xdmybl_io_v1.CaCertificate) error
+	OnUpdate  func(old, new *gate_xdmybl_io_v1.CaCertificate) error
+	OnDelete  func(obj *gate_xdmybl_io_v1.CaCertificate) error
+	OnGeneric func(obj *gate_xdmybl_io_v1.CaCertificate) error
 }
 
-func (f *CaCertificateEventHandlerFuncs) CreateCaCertificate(obj *gate_v1.CaCertificate) error {
+func (f *CaCertificateEventHandlerFuncs) CreateCaCertificate(obj *gate_xdmybl_io_v1.CaCertificate) error {
 	if f.OnCreate == nil {
 		return nil
 	}
 	return f.OnCreate(obj)
 }
 
-func (f *CaCertificateEventHandlerFuncs) DeleteCaCertificate(obj *gate_v1.CaCertificate) error {
+func (f *CaCertificateEventHandlerFuncs) DeleteCaCertificate(obj *gate_xdmybl_io_v1.CaCertificate) error {
 	if f.OnDelete == nil {
 		return nil
 	}
 	return f.OnDelete(obj)
 }
 
-func (f *CaCertificateEventHandlerFuncs) UpdateCaCertificate(objOld, objNew *gate_v1.CaCertificate) error {
+func (f *CaCertificateEventHandlerFuncs) UpdateCaCertificate(objOld, objNew *gate_xdmybl_io_v1.CaCertificate) error {
 	if f.OnUpdate == nil {
 		return nil
 	}
 	return f.OnUpdate(objOld, objNew)
 }
 
-func (f *CaCertificateEventHandlerFuncs) GenericCaCertificate(obj *gate_v1.CaCertificate) error {
+func (f *CaCertificateEventHandlerFuncs) GenericCaCertificate(obj *gate_xdmybl_io_v1.CaCertificate) error {
 	if f.OnGeneric == nil {
 		return nil
 	}
@@ -71,7 +71,7 @@ type caCertificateEventWatcher struct {
 
 func NewCaCertificateEventWatcher(name string, mgr manager.Manager) CaCertificateEventWatcher {
 	return &caCertificateEventWatcher{
-		watcher: events.NewWatcher(name, mgr, &gate_v1.CaCertificate{}),
+		watcher: events.NewWatcher(name, mgr, &gate_xdmybl_io_v1.CaCertificate{}),
 	}
 }
 
@@ -89,7 +89,7 @@ type genericCaCertificateHandler struct {
 }
 
 func (h genericCaCertificateHandler) Create(object client.Object) error {
-	obj, ok := object.(*gate_v1.CaCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.CaCertificate)
 	if !ok {
 		return errors.Errorf("internal error: CaCertificate handler received event for %T", object)
 	}
@@ -97,7 +97,7 @@ func (h genericCaCertificateHandler) Create(object client.Object) error {
 }
 
 func (h genericCaCertificateHandler) Delete(object client.Object) error {
-	obj, ok := object.(*gate_v1.CaCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.CaCertificate)
 	if !ok {
 		return errors.Errorf("internal error: CaCertificate handler received event for %T", object)
 	}
@@ -105,11 +105,11 @@ func (h genericCaCertificateHandler) Delete(object client.Object) error {
 }
 
 func (h genericCaCertificateHandler) Update(old, new client.Object) error {
-	objOld, ok := old.(*gate_v1.CaCertificate)
+	objOld, ok := old.(*gate_xdmybl_io_v1.CaCertificate)
 	if !ok {
 		return errors.Errorf("internal error: CaCertificate handler received event for %T", old)
 	}
-	objNew, ok := new.(*gate_v1.CaCertificate)
+	objNew, ok := new.(*gate_xdmybl_io_v1.CaCertificate)
 	if !ok {
 		return errors.Errorf("internal error: CaCertificate handler received event for %T", new)
 	}
@@ -117,7 +117,7 @@ func (h genericCaCertificateHandler) Update(old, new client.Object) error {
 }
 
 func (h genericCaCertificateHandler) Generic(object client.Object) error {
-	obj, ok := object.(*gate_v1.CaCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.CaCertificate)
 	if !ok {
 		return errors.Errorf("internal error: CaCertificate handler received event for %T", object)
 	}
@@ -127,41 +127,41 @@ func (h genericCaCertificateHandler) Generic(object client.Object) error {
 // Handle events for the SslCertificate Resource
 // DEPRECATED: Prefer reconciler pattern.
 type SslCertificateEventHandler interface {
-	CreateSslCertificate(obj *gate_v1.SslCertificate) error
-	UpdateSslCertificate(old, new *gate_v1.SslCertificate) error
-	DeleteSslCertificate(obj *gate_v1.SslCertificate) error
-	GenericSslCertificate(obj *gate_v1.SslCertificate) error
+	CreateSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error
+	UpdateSslCertificate(old, new *gate_xdmybl_io_v1.SslCertificate) error
+	DeleteSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error
+	GenericSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error
 }
 
 type SslCertificateEventHandlerFuncs struct {
-	OnCreate  func(obj *gate_v1.SslCertificate) error
-	OnUpdate  func(old, new *gate_v1.SslCertificate) error
-	OnDelete  func(obj *gate_v1.SslCertificate) error
-	OnGeneric func(obj *gate_v1.SslCertificate) error
+	OnCreate  func(obj *gate_xdmybl_io_v1.SslCertificate) error
+	OnUpdate  func(old, new *gate_xdmybl_io_v1.SslCertificate) error
+	OnDelete  func(obj *gate_xdmybl_io_v1.SslCertificate) error
+	OnGeneric func(obj *gate_xdmybl_io_v1.SslCertificate) error
 }
 
-func (f *SslCertificateEventHandlerFuncs) CreateSslCertificate(obj *gate_v1.SslCertificate) error {
+func (f *SslCertificateEventHandlerFuncs) CreateSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error {
 	if f.OnCreate == nil {
 		return nil
 	}
 	return f.OnCreate(obj)
 }
 
-func (f *SslCertificateEventHandlerFuncs) DeleteSslCertificate(obj *gate_v1.SslCertificate) error {
+func (f *SslCertificateEventHandlerFuncs) DeleteSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error {
 	if f.OnDelete == nil {
 		return nil
 	}
 	return f.OnDelete(obj)
 }
 
-func (f *SslCertificateEventHandlerFuncs) UpdateSslCertificate(objOld, objNew *gate_v1.SslCertificate) error {
+func (f *SslCertificateEventHandlerFuncs) UpdateSslCertificate(objOld, objNew *gate_xdmybl_io_v1.SslCertificate) error {
 	if f.OnUpdate == nil {
 		return nil
 	}
 	return f.OnUpdate(objOld, objNew)
 }
 
-func (f *SslCertificateEventHandlerFuncs) GenericSslCertificate(obj *gate_v1.SslCertificate) error {
+func (f *SslCertificateEventHandlerFuncs) GenericSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error {
 	if f.OnGeneric == nil {
 		return nil
 	}
@@ -178,7 +178,7 @@ type sslCertificateEventWatcher struct {
 
 func NewSslCertificateEventWatcher(name string, mgr manager.Manager) SslCertificateEventWatcher {
 	return &sslCertificateEventWatcher{
-		watcher: events.NewWatcher(name, mgr, &gate_v1.SslCertificate{}),
+		watcher: events.NewWatcher(name, mgr, &gate_xdmybl_io_v1.SslCertificate{}),
 	}
 }
 
@@ -196,7 +196,7 @@ type genericSslCertificateHandler struct {
 }
 
 func (h genericSslCertificateHandler) Create(object client.Object) error {
-	obj, ok := object.(*gate_v1.SslCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
 	if !ok {
 		return errors.Errorf("internal error: SslCertificate handler received event for %T", object)
 	}
@@ -204,7 +204,7 @@ func (h genericSslCertificateHandler) Create(object client.Object) error {
 }
 
 func (h genericSslCertificateHandler) Delete(object client.Object) error {
-	obj, ok := object.(*gate_v1.SslCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
 	if !ok {
 		return errors.Errorf("internal error: SslCertificate handler received event for %T", object)
 	}
@@ -212,11 +212,11 @@ func (h genericSslCertificateHandler) Delete(object client.Object) error {
 }
 
 func (h genericSslCertificateHandler) Update(old, new client.Object) error {
-	objOld, ok := old.(*gate_v1.SslCertificate)
+	objOld, ok := old.(*gate_xdmybl_io_v1.SslCertificate)
 	if !ok {
 		return errors.Errorf("internal error: SslCertificate handler received event for %T", old)
 	}
-	objNew, ok := new.(*gate_v1.SslCertificate)
+	objNew, ok := new.(*gate_xdmybl_io_v1.SslCertificate)
 	if !ok {
 		return errors.Errorf("internal error: SslCertificate handler received event for %T", new)
 	}
@@ -224,7 +224,7 @@ func (h genericSslCertificateHandler) Update(old, new client.Object) error {
 }
 
 func (h genericSslCertificateHandler) Generic(object client.Object) error {
-	obj, ok := object.(*gate_v1.SslCertificate)
+	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
 	if !ok {
 		return errors.Errorf("internal error: SslCertificate handler received event for %T", object)
 	}
@@ -234,41 +234,41 @@ func (h genericSslCertificateHandler) Generic(object client.Object) error {
 // Handle events for the Upstream Resource
 // DEPRECATED: Prefer reconciler pattern.
 type UpstreamEventHandler interface {
-	CreateUpstream(obj *gate_v1.Upstream) error
-	UpdateUpstream(old, new *gate_v1.Upstream) error
-	DeleteUpstream(obj *gate_v1.Upstream) error
-	GenericUpstream(obj *gate_v1.Upstream) error
+	CreateUpstream(obj *gate_xdmybl_io_v1.Upstream) error
+	UpdateUpstream(old, new *gate_xdmybl_io_v1.Upstream) error
+	DeleteUpstream(obj *gate_xdmybl_io_v1.Upstream) error
+	GenericUpstream(obj *gate_xdmybl_io_v1.Upstream) error
 }
 
 type UpstreamEventHandlerFuncs struct {
-	OnCreate  func(obj *gate_v1.Upstream) error
-	OnUpdate  func(old, new *gate_v1.Upstream) error
-	OnDelete  func(obj *gate_v1.Upstream) error
-	OnGeneric func(obj *gate_v1.Upstream) error
+	OnCreate  func(obj *gate_xdmybl_io_v1.Upstream) error
+	OnUpdate  func(old, new *gate_xdmybl_io_v1.Upstream) error
+	OnDelete  func(obj *gate_xdmybl_io_v1.Upstream) error
+	OnGeneric func(obj *gate_xdmybl_io_v1.Upstream) error
 }
 
-func (f *UpstreamEventHandlerFuncs) CreateUpstream(obj *gate_v1.Upstream) error {
+func (f *UpstreamEventHandlerFuncs) CreateUpstream(obj *gate_xdmybl_io_v1.Upstream) error {
 	if f.OnCreate == nil {
 		return nil
 	}
 	return f.OnCreate(obj)
 }
 
-func (f *UpstreamEventHandlerFuncs) DeleteUpstream(obj *gate_v1.Upstream) error {
+func (f *UpstreamEventHandlerFuncs) DeleteUpstream(obj *gate_xdmybl_io_v1.Upstream) error {
 	if f.OnDelete == nil {
 		return nil
 	}
 	return f.OnDelete(obj)
 }
 
-func (f *UpstreamEventHandlerFuncs) UpdateUpstream(objOld, objNew *gate_v1.Upstream) error {
+func (f *UpstreamEventHandlerFuncs) UpdateUpstream(objOld, objNew *gate_xdmybl_io_v1.Upstream) error {
 	if f.OnUpdate == nil {
 		return nil
 	}
 	return f.OnUpdate(objOld, objNew)
 }
 
-func (f *UpstreamEventHandlerFuncs) GenericUpstream(obj *gate_v1.Upstream) error {
+func (f *UpstreamEventHandlerFuncs) GenericUpstream(obj *gate_xdmybl_io_v1.Upstream) error {
 	if f.OnGeneric == nil {
 		return nil
 	}
@@ -285,7 +285,7 @@ type upstreamEventWatcher struct {
 
 func NewUpstreamEventWatcher(name string, mgr manager.Manager) UpstreamEventWatcher {
 	return &upstreamEventWatcher{
-		watcher: events.NewWatcher(name, mgr, &gate_v1.Upstream{}),
+		watcher: events.NewWatcher(name, mgr, &gate_xdmybl_io_v1.Upstream{}),
 	}
 }
 
@@ -303,7 +303,7 @@ type genericUpstreamHandler struct {
 }
 
 func (h genericUpstreamHandler) Create(object client.Object) error {
-	obj, ok := object.(*gate_v1.Upstream)
+	obj, ok := object.(*gate_xdmybl_io_v1.Upstream)
 	if !ok {
 		return errors.Errorf("internal error: Upstream handler received event for %T", object)
 	}
@@ -311,7 +311,7 @@ func (h genericUpstreamHandler) Create(object client.Object) error {
 }
 
 func (h genericUpstreamHandler) Delete(object client.Object) error {
-	obj, ok := object.(*gate_v1.Upstream)
+	obj, ok := object.(*gate_xdmybl_io_v1.Upstream)
 	if !ok {
 		return errors.Errorf("internal error: Upstream handler received event for %T", object)
 	}
@@ -319,11 +319,11 @@ func (h genericUpstreamHandler) Delete(object client.Object) error {
 }
 
 func (h genericUpstreamHandler) Update(old, new client.Object) error {
-	objOld, ok := old.(*gate_v1.Upstream)
+	objOld, ok := old.(*gate_xdmybl_io_v1.Upstream)
 	if !ok {
 		return errors.Errorf("internal error: Upstream handler received event for %T", old)
 	}
-	objNew, ok := new.(*gate_v1.Upstream)
+	objNew, ok := new.(*gate_xdmybl_io_v1.Upstream)
 	if !ok {
 		return errors.Errorf("internal error: Upstream handler received event for %T", new)
 	}
@@ -331,7 +331,7 @@ func (h genericUpstreamHandler) Update(old, new client.Object) error {
 }
 
 func (h genericUpstreamHandler) Generic(object client.Object) error {
-	obj, ok := object.(*gate_v1.Upstream)
+	obj, ok := object.(*gate_xdmybl_io_v1.Upstream)
 	if !ok {
 		return errors.Errorf("internal error: Upstream handler received event for %T", object)
 	}
@@ -341,41 +341,41 @@ func (h genericUpstreamHandler) Generic(object client.Object) error {
 // Handle events for the Gateway Resource
 // DEPRECATED: Prefer reconciler pattern.
 type GatewayEventHandler interface {
-	CreateGateway(obj *gate_v1.Gateway) error
-	UpdateGateway(old, new *gate_v1.Gateway) error
-	DeleteGateway(obj *gate_v1.Gateway) error
-	GenericGateway(obj *gate_v1.Gateway) error
+	CreateGateway(obj *gate_xdmybl_io_v1.Gateway) error
+	UpdateGateway(old, new *gate_xdmybl_io_v1.Gateway) error
+	DeleteGateway(obj *gate_xdmybl_io_v1.Gateway) error
+	GenericGateway(obj *gate_xdmybl_io_v1.Gateway) error
 }
 
 type GatewayEventHandlerFuncs struct {
-	OnCreate  func(obj *gate_v1.Gateway) error
-	OnUpdate  func(old, new *gate_v1.Gateway) error
-	OnDelete  func(obj *gate_v1.Gateway) error
-	OnGeneric func(obj *gate_v1.Gateway) error
+	OnCreate  func(obj *gate_xdmybl_io_v1.Gateway) error
+	OnUpdate  func(old, new *gate_xdmybl_io_v1.Gateway) error
+	OnDelete  func(obj *gate_xdmybl_io_v1.Gateway) error
+	OnGeneric func(obj *gate_xdmybl_io_v1.Gateway) error
 }
 
-func (f *GatewayEventHandlerFuncs) CreateGateway(obj *gate_v1.Gateway) error {
+func (f *GatewayEventHandlerFuncs) CreateGateway(obj *gate_xdmybl_io_v1.Gateway) error {
 	if f.OnCreate == nil {
 		return nil
 	}
 	return f.OnCreate(obj)
 }
 
-func (f *GatewayEventHandlerFuncs) DeleteGateway(obj *gate_v1.Gateway) error {
+func (f *GatewayEventHandlerFuncs) DeleteGateway(obj *gate_xdmybl_io_v1.Gateway) error {
 	if f.OnDelete == nil {
 		return nil
 	}
 	return f.OnDelete(obj)
 }
 
-func (f *GatewayEventHandlerFuncs) UpdateGateway(objOld, objNew *gate_v1.Gateway) error {
+func (f *GatewayEventHandlerFuncs) UpdateGateway(objOld, objNew *gate_xdmybl_io_v1.Gateway) error {
 	if f.OnUpdate == nil {
 		return nil
 	}
 	return f.OnUpdate(objOld, objNew)
 }
 
-func (f *GatewayEventHandlerFuncs) GenericGateway(obj *gate_v1.Gateway) error {
+func (f *GatewayEventHandlerFuncs) GenericGateway(obj *gate_xdmybl_io_v1.Gateway) error {
 	if f.OnGeneric == nil {
 		return nil
 	}
@@ -392,7 +392,7 @@ type gatewayEventWatcher struct {
 
 func NewGatewayEventWatcher(name string, mgr manager.Manager) GatewayEventWatcher {
 	return &gatewayEventWatcher{
-		watcher: events.NewWatcher(name, mgr, &gate_v1.Gateway{}),
+		watcher: events.NewWatcher(name, mgr, &gate_xdmybl_io_v1.Gateway{}),
 	}
 }
 
@@ -410,7 +410,7 @@ type genericGatewayHandler struct {
 }
 
 func (h genericGatewayHandler) Create(object client.Object) error {
-	obj, ok := object.(*gate_v1.Gateway)
+	obj, ok := object.(*gate_xdmybl_io_v1.Gateway)
 	if !ok {
 		return errors.Errorf("internal error: Gateway handler received event for %T", object)
 	}
@@ -418,7 +418,7 @@ func (h genericGatewayHandler) Create(object client.Object) error {
 }
 
 func (h genericGatewayHandler) Delete(object client.Object) error {
-	obj, ok := object.(*gate_v1.Gateway)
+	obj, ok := object.(*gate_xdmybl_io_v1.Gateway)
 	if !ok {
 		return errors.Errorf("internal error: Gateway handler received event for %T", object)
 	}
@@ -426,11 +426,11 @@ func (h genericGatewayHandler) Delete(object client.Object) error {
 }
 
 func (h genericGatewayHandler) Update(old, new client.Object) error {
-	objOld, ok := old.(*gate_v1.Gateway)
+	objOld, ok := old.(*gate_xdmybl_io_v1.Gateway)
 	if !ok {
 		return errors.Errorf("internal error: Gateway handler received event for %T", old)
 	}
-	objNew, ok := new.(*gate_v1.Gateway)
+	objNew, ok := new.(*gate_xdmybl_io_v1.Gateway)
 	if !ok {
 		return errors.Errorf("internal error: Gateway handler received event for %T", new)
 	}
@@ -438,7 +438,7 @@ func (h genericGatewayHandler) Update(old, new client.Object) error {
 }
 
 func (h genericGatewayHandler) Generic(object client.Object) error {
-	obj, ok := object.(*gate_v1.Gateway)
+	obj, ok := object.(*gate_xdmybl_io_v1.Gateway)
 	if !ok {
 		return errors.Errorf("internal error: Gateway handler received event for %T", object)
 	}
@@ -448,41 +448,41 @@ func (h genericGatewayHandler) Generic(object client.Object) error {
 // Handle events for the Filter Resource
 // DEPRECATED: Prefer reconciler pattern.
 type FilterEventHandler interface {
-	CreateFilter(obj *gate_v1.Filter) error
-	UpdateFilter(old, new *gate_v1.Filter) error
-	DeleteFilter(obj *gate_v1.Filter) error
-	GenericFilter(obj *gate_v1.Filter) error
+	CreateFilter(obj *gate_xdmybl_io_v1.Filter) error
+	UpdateFilter(old, new *gate_xdmybl_io_v1.Filter) error
+	DeleteFilter(obj *gate_xdmybl_io_v1.Filter) error
+	GenericFilter(obj *gate_xdmybl_io_v1.Filter) error
 }
 
 type FilterEventHandlerFuncs struct {
-	OnCreate  func(obj *gate_v1.Filter) error
-	OnUpdate  func(old, new *gate_v1.Filter) error
-	OnDelete  func(obj *gate_v1.Filter) error
-	OnGeneric func(obj *gate_v1.Filter) error
+	OnCreate  func(obj *gate_xdmybl_io_v1.Filter) error
+	OnUpdate  func(old, new *gate_xdmybl_io_v1.Filter) error
+	OnDelete  func(obj *gate_xdmybl_io_v1.Filter) error
+	OnGeneric func(obj *gate_xdmybl_io_v1.Filter) error
 }
 
-func (f *FilterEventHandlerFuncs) CreateFilter(obj *gate_v1.Filter) error {
+func (f *FilterEventHandlerFuncs) CreateFilter(obj *gate_xdmybl_io_v1.Filter) error {
 	if f.OnCreate == nil {
 		return nil
 	}
 	return f.OnCreate(obj)
 }
 
-func (f *FilterEventHandlerFuncs) DeleteFilter(obj *gate_v1.Filter) error {
+func (f *FilterEventHandlerFuncs) DeleteFilter(obj *gate_xdmybl_io_v1.Filter) error {
 	if f.OnDelete == nil {
 		return nil
 	}
 	return f.OnDelete(obj)
 }
 
-func (f *FilterEventHandlerFuncs) UpdateFilter(objOld, objNew *gate_v1.Filter) error {
+func (f *FilterEventHandlerFuncs) UpdateFilter(objOld, objNew *gate_xdmybl_io_v1.Filter) error {
 	if f.OnUpdate == nil {
 		return nil
 	}
 	return f.OnUpdate(objOld, objNew)
 }
 
-func (f *FilterEventHandlerFuncs) GenericFilter(obj *gate_v1.Filter) error {
+func (f *FilterEventHandlerFuncs) GenericFilter(obj *gate_xdmybl_io_v1.Filter) error {
 	if f.OnGeneric == nil {
 		return nil
 	}
@@ -499,7 +499,7 @@ type filterEventWatcher struct {
 
 func NewFilterEventWatcher(name string, mgr manager.Manager) FilterEventWatcher {
 	return &filterEventWatcher{
-		watcher: events.NewWatcher(name, mgr, &gate_v1.Filter{}),
+		watcher: events.NewWatcher(name, mgr, &gate_xdmybl_io_v1.Filter{}),
 	}
 }
 
@@ -517,7 +517,7 @@ type genericFilterHandler struct {
 }
 
 func (h genericFilterHandler) Create(object client.Object) error {
-	obj, ok := object.(*gate_v1.Filter)
+	obj, ok := object.(*gate_xdmybl_io_v1.Filter)
 	if !ok {
 		return errors.Errorf("internal error: Filter handler received event for %T", object)
 	}
@@ -525,7 +525,7 @@ func (h genericFilterHandler) Create(object client.Object) error {
 }
 
 func (h genericFilterHandler) Delete(object client.Object) error {
-	obj, ok := object.(*gate_v1.Filter)
+	obj, ok := object.(*gate_xdmybl_io_v1.Filter)
 	if !ok {
 		return errors.Errorf("internal error: Filter handler received event for %T", object)
 	}
@@ -533,11 +533,11 @@ func (h genericFilterHandler) Delete(object client.Object) error {
 }
 
 func (h genericFilterHandler) Update(old, new client.Object) error {
-	objOld, ok := old.(*gate_v1.Filter)
+	objOld, ok := old.(*gate_xdmybl_io_v1.Filter)
 	if !ok {
 		return errors.Errorf("internal error: Filter handler received event for %T", old)
 	}
-	objNew, ok := new.(*gate_v1.Filter)
+	objNew, ok := new.(*gate_xdmybl_io_v1.Filter)
 	if !ok {
 		return errors.Errorf("internal error: Filter handler received event for %T", new)
 	}
@@ -545,7 +545,7 @@ func (h genericFilterHandler) Update(old, new client.Object) error {
 }
 
 func (h genericFilterHandler) Generic(object client.Object) error {
-	obj, ok := object.(*gate_v1.Filter)
+	obj, ok := object.(*gate_xdmybl_io_v1.Filter)
 	if !ok {
 		return errors.Errorf("internal error: Filter handler received event for %T", object)
 	}

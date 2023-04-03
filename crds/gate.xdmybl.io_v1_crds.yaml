@@ -4,13 +4,13 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: 5e527921ae5a5ec0
+    crd.solo.io/specHash: 3b5178c5f4437141
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
-  name: cacertificates.gate
+  name: cacertificates.gate.xdmybl.io
 spec:
-  group: gate
+  group: gate.xdmybl.io
   names:
     kind: CaCertificate
     listKind: CaCertificateList
@@ -232,13 +232,13 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: 1a291220bf11c638
+    crd.solo.io/specHash: 7f2a13c4e508e9b9
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
-  name: sslcertificates.gate
+  name: sslcertificates.gate.xdmybl.io
 spec:
-  group: gate
+  group: gate.xdmybl.io
   names:
     kind: SslCertificate
     listKind: SslCertificateList
@@ -463,13 +463,13 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: a4be8b08b596a975
+    crd.solo.io/specHash: c1bd8aecef8f86f4
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
-  name: upstreams.gate
+  name: upstreams.gate.xdmybl.io
 spec:
-  group: gate
+  group: gate.xdmybl.io
   names:
     kind: Upstream
     listKind: UpstreamList
@@ -663,13 +663,13 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: 9a602e884351d009
+    crd.solo.io/specHash: ff632f6c1948ff88
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
-  name: gateways.gate
+  name: gateways.gate.xdmybl.io
 spec:
-  group: gate
+  group: gate.xdmybl.io
   names:
     kind: Gateway
     listKind: GatewayList
@@ -768,13 +768,13 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: 29a2f98f03371c29
+    crd.solo.io/specHash: 4ca1f86b592e33a8
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
-  name: filters.gate
+  name: filters.gate.xdmybl.io
 spec:
-  group: gate
+  group: gate.xdmybl.io
   names:
     kind: Filter
     listKind: FilterList

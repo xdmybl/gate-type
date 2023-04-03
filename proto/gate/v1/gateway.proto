@@ -1,9 +1,9 @@
 // 对应 envoy 的 listener List 到 []filter 这个层级的 对象
 
 syntax = "proto3";
-package gate;
+package gate.xdmybl.io;
 
-option go_package = "github.com/xdmybl/gate-type/pkg/api/gate/v1";
+option go_package = "github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1";
 
 import "validate/validate.proto";
 import "google/protobuf/struct.proto";
