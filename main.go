@@ -23,6 +23,7 @@ var Group = model.Group{
 					Name: "CaCertificateSpec",
 				},
 			},
+			ShortNames: []string{"ca"},
 			//Status: &model.Field{
 			//	Type: model.Type{
 			//		Name: "KubernetesClusterStatus",
@@ -36,6 +37,7 @@ var Group = model.Group{
 					Name: "SslCertificateSpec",
 				},
 			},
+			ShortNames: []string{"ssl"},
 		},
 		{
 			Kind: "Upstream",
@@ -44,6 +46,7 @@ var Group = model.Group{
 					Name: "UpstreamSpec",
 				},
 			},
+			ShortNames: []string{"up"},
 		},
 		{
 			Kind: "Gateway",
@@ -52,6 +55,7 @@ var Group = model.Group{
 					Name: "GatewaySpec",
 				},
 			},
+			ShortNames: []string{"gw"},
 		},
 		{
 			Kind: "Filter",
@@ -60,6 +64,7 @@ var Group = model.Group{
 					Name: "FilterSpec",
 				},
 			},
+			ShortNames: []string{"filter"},
 		},
 	},
 	RenderManifests:         true,

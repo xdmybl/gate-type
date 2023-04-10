@@ -96,15 +96,7 @@ message ConnPoll{
     }
   ];
 
-  // 最大重试数，默认值3。
-  // uint32 maxRetries = 5 [
-  //     (validate.rules).uint32 = {
-  //         gte: 3
-  //     }
-  // ];
-
-  // 指定出口网卡, 通过IP来指定网卡
-  string outboundSourceAddress = 6 [
+  string outboundSourceAddress = 5 [
     (validate.rules).string = {
       ignore_empty: true,
       ip: true,

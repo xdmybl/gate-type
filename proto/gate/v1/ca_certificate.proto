@@ -22,15 +22,15 @@ message CaCertificateSpec {
 
     string ca = 3;
 
-    string crl = 5;
+    string crl = 4;
 
-    bool allowExpiredCertificate = 6;
+    bool allowExpiredCertificate = 5;
 
-    common.v1.TlsParameters tlsParameters = 7;
+    common.v1.TlsParameters tlsParameters = 6;
 
     // Set Application Level Protocol Negotiation
     // If empty, defaults to ["h2", "http/1.1"].
-    repeated string alpnProtocols = 8 [
+    repeated string alpnProtocols = 7 [
         (validate.rules).repeated = {
             ignore_empty: true,
             unique: true,

@@ -4,7 +4,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: 3b5178c5f4437141
+    crd.solo.io/specHash: 1ca472c8912fd0b4
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
@@ -15,6 +15,8 @@ spec:
     kind: CaCertificate
     listKind: CaCertificateList
     plural: cacertificates
+    shortNames:
+    - ca
     singular: cacertificate
   scope: Namespaced
   versions:
@@ -232,7 +234,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: 7f2a13c4e508e9b9
+    crd.solo.io/specHash: 504c5ac5c1adf8a9
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
@@ -243,6 +245,8 @@ spec:
     kind: SslCertificate
     listKind: SslCertificateList
     plural: sslcertificates
+    shortNames:
+    - ssl
     singular: sslcertificate
   scope: Namespaced
   versions:
@@ -463,7 +467,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: c1bd8aecef8f86f4
+    crd.solo.io/specHash: 5dc5e5d099feee1e
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
@@ -474,6 +478,8 @@ spec:
     kind: Upstream
     listKind: UpstreamList
     plural: upstreams
+    shortNames:
+    - up
     singular: upstream
   scope: Namespaced
   versions:
@@ -535,7 +541,6 @@ spec:
                     minimum: 0
                     type: integer
                   outboundSourceAddress:
-                    description: 指定出口网卡, 通过IP来指定网卡
                     type: string
                 type: object
               endpoints:
@@ -663,7 +668,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: ff632f6c1948ff88
+    crd.solo.io/specHash: eeadf561c8680c75
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
@@ -674,6 +679,8 @@ spec:
     kind: Gateway
     listKind: GatewayList
     plural: gateways
+    shortNames:
+    - gw
     singular: gateway
   scope: Namespaced
   versions:
@@ -768,7 +775,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: 4ca1f86b592e33a8
+    crd.solo.io/specHash: b20555d1044e3064
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
@@ -779,6 +786,8 @@ spec:
     kind: Filter
     listKind: FilterList
     plural: filters
+    shortNames:
+    - filter
     singular: filter
   scope: Namespaced
   versions:
