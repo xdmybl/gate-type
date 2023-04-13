@@ -134,78 +134,78 @@ func (r genericCaCertificateFinalizer) Finalize(object ezkube.Object) error {
 	return r.finalizingReconciler.FinalizeCaCertificate(obj)
 }
 
-// Reconcile Upsert events for the SslCertificate Resource.
+// Reconcile Upsert events for the Certificate Resource.
 // implemented by the user
-type SslCertificateReconciler interface {
-	ReconcileSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error)
+type CertificateReconciler interface {
+	ReconcileCertificate(obj *gate_xdmybl_io_v1.Certificate) (reconcile.Result, error)
 }
 
-// Reconcile deletion events for the SslCertificate Resource.
+// Reconcile deletion events for the Certificate Resource.
 // Deletion receives a reconcile.Request as we cannot guarantee the last state of the object
 // before being deleted.
 // implemented by the user
-type SslCertificateDeletionReconciler interface {
-	ReconcileSslCertificateDeletion(req reconcile.Request) error
+type CertificateDeletionReconciler interface {
+	ReconcileCertificateDeletion(req reconcile.Request) error
 }
 
-type SslCertificateReconcilerFuncs struct {
-	OnReconcileSslCertificate         func(obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error)
-	OnReconcileSslCertificateDeletion func(req reconcile.Request) error
+type CertificateReconcilerFuncs struct {
+	OnReconcileCertificate         func(obj *gate_xdmybl_io_v1.Certificate) (reconcile.Result, error)
+	OnReconcileCertificateDeletion func(req reconcile.Request) error
 }
 
-func (f *SslCertificateReconcilerFuncs) ReconcileSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error) {
-	if f.OnReconcileSslCertificate == nil {
+func (f *CertificateReconcilerFuncs) ReconcileCertificate(obj *gate_xdmybl_io_v1.Certificate) (reconcile.Result, error) {
+	if f.OnReconcileCertificate == nil {
 		return reconcile.Result{}, nil
 	}
-	return f.OnReconcileSslCertificate(obj)
+	return f.OnReconcileCertificate(obj)
 }
 
-func (f *SslCertificateReconcilerFuncs) ReconcileSslCertificateDeletion(req reconcile.Request) error {
-	if f.OnReconcileSslCertificateDeletion == nil {
+func (f *CertificateReconcilerFuncs) ReconcileCertificateDeletion(req reconcile.Request) error {
+	if f.OnReconcileCertificateDeletion == nil {
 		return nil
 	}
-	return f.OnReconcileSslCertificateDeletion(req)
+	return f.OnReconcileCertificateDeletion(req)
 }
 
-// Reconcile and finalize the SslCertificate Resource
+// Reconcile and finalize the Certificate Resource
 // implemented by the user
-type SslCertificateFinalizer interface {
-	SslCertificateReconciler
+type CertificateFinalizer interface {
+	CertificateReconciler
 
 	// name of the finalizer used by this handler.
 	// finalizer names should be unique for a single task
-	SslCertificateFinalizerName() string
+	CertificateFinalizerName() string
 
 	// finalize the object before it is deleted.
 	// Watchers created with a finalizing handler will a
-	FinalizeSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error
+	FinalizeCertificate(obj *gate_xdmybl_io_v1.Certificate) error
 }
 
-type SslCertificateReconcileLoop interface {
-	RunSslCertificateReconciler(ctx context.Context, rec SslCertificateReconciler, predicates ...predicate.Predicate) error
+type CertificateReconcileLoop interface {
+	RunCertificateReconciler(ctx context.Context, rec CertificateReconciler, predicates ...predicate.Predicate) error
 }
 
-type sslCertificateReconcileLoop struct {
+type certificateReconcileLoop struct {
 	loop reconcile.Loop
 }
 
-func NewSslCertificateReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) SslCertificateReconcileLoop {
-	return &sslCertificateReconcileLoop{
+func NewCertificateReconcileLoop(name string, mgr manager.Manager, options reconcile.Options) CertificateReconcileLoop {
+	return &certificateReconcileLoop{
 		// empty cluster indicates this reconciler is built for the local cluster
-		loop: reconcile.NewLoop(name, "", mgr, &gate_xdmybl_io_v1.SslCertificate{}, options),
+		loop: reconcile.NewLoop(name, "", mgr, &gate_xdmybl_io_v1.Certificate{}, options),
 	}
 }
 
-func (c *sslCertificateReconcileLoop) RunSslCertificateReconciler(ctx context.Context, reconciler SslCertificateReconciler, predicates ...predicate.Predicate) error {
-	genericReconciler := genericSslCertificateReconciler{
+func (c *certificateReconcileLoop) RunCertificateReconciler(ctx context.Context, reconciler CertificateReconciler, predicates ...predicate.Predicate) error {
+	genericReconciler := genericCertificateReconciler{
 		reconciler: reconciler,
 	}
 
 	var reconcilerWrapper reconcile.Reconciler
-	if finalizingReconciler, ok := reconciler.(SslCertificateFinalizer); ok {
-		reconcilerWrapper = genericSslCertificateFinalizer{
-			genericSslCertificateReconciler: genericReconciler,
-			finalizingReconciler:            finalizingReconciler,
+	if finalizingReconciler, ok := reconciler.(CertificateFinalizer); ok {
+		reconcilerWrapper = genericCertificateFinalizer{
+			genericCertificateReconciler: genericReconciler,
+			finalizingReconciler:         finalizingReconciler,
 		}
 	} else {
 		reconcilerWrapper = genericReconciler
@@ -213,42 +213,42 @@ func (c *sslCertificateReconcileLoop) RunSslCertificateReconciler(ctx context.Co
 	return c.loop.RunReconciler(ctx, reconcilerWrapper, predicates...)
 }
 
-// genericSslCertificateHandler implements a generic reconcile.Reconciler
-type genericSslCertificateReconciler struct {
-	reconciler SslCertificateReconciler
+// genericCertificateHandler implements a generic reconcile.Reconciler
+type genericCertificateReconciler struct {
+	reconciler CertificateReconciler
 }
 
-func (r genericSslCertificateReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
+func (r genericCertificateReconciler) Reconcile(object ezkube.Object) (reconcile.Result, error) {
+	obj, ok := object.(*gate_xdmybl_io_v1.Certificate)
 	if !ok {
-		return reconcile.Result{}, errors.Errorf("internal error: SslCertificate handler received event for %T", object)
+		return reconcile.Result{}, errors.Errorf("internal error: Certificate handler received event for %T", object)
 	}
-	return r.reconciler.ReconcileSslCertificate(obj)
+	return r.reconciler.ReconcileCertificate(obj)
 }
 
-func (r genericSslCertificateReconciler) ReconcileDeletion(request reconcile.Request) error {
-	if deletionReconciler, ok := r.reconciler.(SslCertificateDeletionReconciler); ok {
-		return deletionReconciler.ReconcileSslCertificateDeletion(request)
+func (r genericCertificateReconciler) ReconcileDeletion(request reconcile.Request) error {
+	if deletionReconciler, ok := r.reconciler.(CertificateDeletionReconciler); ok {
+		return deletionReconciler.ReconcileCertificateDeletion(request)
 	}
 	return nil
 }
 
-// genericSslCertificateFinalizer implements a generic reconcile.FinalizingReconciler
-type genericSslCertificateFinalizer struct {
-	genericSslCertificateReconciler
-	finalizingReconciler SslCertificateFinalizer
+// genericCertificateFinalizer implements a generic reconcile.FinalizingReconciler
+type genericCertificateFinalizer struct {
+	genericCertificateReconciler
+	finalizingReconciler CertificateFinalizer
 }
 
-func (r genericSslCertificateFinalizer) FinalizerName() string {
-	return r.finalizingReconciler.SslCertificateFinalizerName()
+func (r genericCertificateFinalizer) FinalizerName() string {
+	return r.finalizingReconciler.CertificateFinalizerName()
 }
 
-func (r genericSslCertificateFinalizer) Finalize(object ezkube.Object) error {
-	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
+func (r genericCertificateFinalizer) Finalize(object ezkube.Object) error {
+	obj, ok := object.(*gate_xdmybl_io_v1.Certificate)
 	if !ok {
-		return errors.Errorf("internal error: SslCertificate handler received event for %T", object)
+		return errors.Errorf("internal error: Certificate handler received event for %T", object)
 	}
-	return r.finalizingReconciler.FinalizeSslCertificate(obj)
+	return r.finalizingReconciler.FinalizeCertificate(obj)
 }
 
 // Reconcile Upsert events for the Upstream Resource.

@@ -20,13 +20,13 @@ func (in *CaCertificateSpec) DeepCopyInto(out *CaCertificateSpec) {
 	*out = *p
 }
 
-// DeepCopyInto for the SslCertificate.Spec
-func (in *SslCertificateSpec) DeepCopyInto(out *SslCertificateSpec) {
-	var p *SslCertificateSpec
+// DeepCopyInto for the Certificate.Spec
+func (in *CertificateSpec) DeepCopyInto(out *CertificateSpec) {
+	var p *CertificateSpec
 	if h, ok := interface{}(in).(clone.Cloner); ok {
-		p = h.Clone().(*SslCertificateSpec)
+		p = h.Clone().(*CertificateSpec)
 	} else {
-		p = proto.Clone(in).(*SslCertificateSpec)
+		p = proto.Clone(in).(*CertificateSpec)
 	}
 	*out = *p
 }

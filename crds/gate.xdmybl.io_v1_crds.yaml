@@ -234,20 +234,20 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: 504c5ac5c1adf8a9
+    crd.solo.io/specHash: d50fa485c550f646
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
-  name: sslcertificates.gate.xdmybl.io
+  name: certificates.gate.xdmybl.io
 spec:
   group: gate.xdmybl.io
   names:
-    kind: SslCertificate
-    listKind: SslCertificateList
-    plural: sslcertificates
+    kind: Certificate
+    listKind: CertificateList
+    plural: certificates
     shortNames:
-    - ssl
-    singular: sslcertificate
+    - cert
+    singular: certificate
   scope: Namespaced
   versions:
   - name: v1

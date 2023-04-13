@@ -89,75 +89,75 @@ func (g genericCaCertificateMulticlusterReconciler) Reconcile(cluster string, ob
 	return g.reconciler.ReconcileCaCertificate(cluster, obj)
 }
 
-// Reconcile Upsert events for the SslCertificate Resource across clusters.
+// Reconcile Upsert events for the Certificate Resource across clusters.
 // implemented by the user
-type MulticlusterSslCertificateReconciler interface {
-	ReconcileSslCertificate(clusterName string, obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error)
+type MulticlusterCertificateReconciler interface {
+	ReconcileCertificate(clusterName string, obj *gate_xdmybl_io_v1.Certificate) (reconcile.Result, error)
 }
 
-// Reconcile deletion events for the SslCertificate Resource across clusters.
+// Reconcile deletion events for the Certificate Resource across clusters.
 // Deletion receives a reconcile.Request as we cannot guarantee the last state of the object
 // before being deleted.
 // implemented by the user
-type MulticlusterSslCertificateDeletionReconciler interface {
-	ReconcileSslCertificateDeletion(clusterName string, req reconcile.Request) error
+type MulticlusterCertificateDeletionReconciler interface {
+	ReconcileCertificateDeletion(clusterName string, req reconcile.Request) error
 }
 
-type MulticlusterSslCertificateReconcilerFuncs struct {
-	OnReconcileSslCertificate         func(clusterName string, obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error)
-	OnReconcileSslCertificateDeletion func(clusterName string, req reconcile.Request) error
+type MulticlusterCertificateReconcilerFuncs struct {
+	OnReconcileCertificate         func(clusterName string, obj *gate_xdmybl_io_v1.Certificate) (reconcile.Result, error)
+	OnReconcileCertificateDeletion func(clusterName string, req reconcile.Request) error
 }
 
-func (f *MulticlusterSslCertificateReconcilerFuncs) ReconcileSslCertificate(clusterName string, obj *gate_xdmybl_io_v1.SslCertificate) (reconcile.Result, error) {
-	if f.OnReconcileSslCertificate == nil {
+func (f *MulticlusterCertificateReconcilerFuncs) ReconcileCertificate(clusterName string, obj *gate_xdmybl_io_v1.Certificate) (reconcile.Result, error) {
+	if f.OnReconcileCertificate == nil {
 		return reconcile.Result{}, nil
 	}
-	return f.OnReconcileSslCertificate(clusterName, obj)
+	return f.OnReconcileCertificate(clusterName, obj)
 }
 
-func (f *MulticlusterSslCertificateReconcilerFuncs) ReconcileSslCertificateDeletion(clusterName string, req reconcile.Request) error {
-	if f.OnReconcileSslCertificateDeletion == nil {
+func (f *MulticlusterCertificateReconcilerFuncs) ReconcileCertificateDeletion(clusterName string, req reconcile.Request) error {
+	if f.OnReconcileCertificateDeletion == nil {
 		return nil
 	}
-	return f.OnReconcileSslCertificateDeletion(clusterName, req)
+	return f.OnReconcileCertificateDeletion(clusterName, req)
 }
 
-type MulticlusterSslCertificateReconcileLoop interface {
-	// AddMulticlusterSslCertificateReconciler adds a MulticlusterSslCertificateReconciler to the MulticlusterSslCertificateReconcileLoop.
-	AddMulticlusterSslCertificateReconciler(ctx context.Context, rec MulticlusterSslCertificateReconciler, predicates ...predicate.Predicate)
+type MulticlusterCertificateReconcileLoop interface {
+	// AddMulticlusterCertificateReconciler adds a MulticlusterCertificateReconciler to the MulticlusterCertificateReconcileLoop.
+	AddMulticlusterCertificateReconciler(ctx context.Context, rec MulticlusterCertificateReconciler, predicates ...predicate.Predicate)
 }
 
-type multiclusterSslCertificateReconcileLoop struct {
+type multiclusterCertificateReconcileLoop struct {
 	loop multicluster.Loop
 }
 
-func (m *multiclusterSslCertificateReconcileLoop) AddMulticlusterSslCertificateReconciler(ctx context.Context, rec MulticlusterSslCertificateReconciler, predicates ...predicate.Predicate) {
-	genericReconciler := genericSslCertificateMulticlusterReconciler{reconciler: rec}
+func (m *multiclusterCertificateReconcileLoop) AddMulticlusterCertificateReconciler(ctx context.Context, rec MulticlusterCertificateReconciler, predicates ...predicate.Predicate) {
+	genericReconciler := genericCertificateMulticlusterReconciler{reconciler: rec}
 
 	m.loop.AddReconciler(ctx, genericReconciler, predicates...)
 }
 
-func NewMulticlusterSslCertificateReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterSslCertificateReconcileLoop {
-	return &multiclusterSslCertificateReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_xdmybl_io_v1.SslCertificate{}, options)}
+func NewMulticlusterCertificateReconcileLoop(name string, cw multicluster.ClusterWatcher, options reconcile.Options) MulticlusterCertificateReconcileLoop {
+	return &multiclusterCertificateReconcileLoop{loop: mc_reconcile.NewLoop(name, cw, &gate_xdmybl_io_v1.Certificate{}, options)}
 }
 
-type genericSslCertificateMulticlusterReconciler struct {
-	reconciler MulticlusterSslCertificateReconciler
+type genericCertificateMulticlusterReconciler struct {
+	reconciler MulticlusterCertificateReconciler
 }
 
-func (g genericSslCertificateMulticlusterReconciler) ReconcileDeletion(cluster string, req reconcile.Request) error {
-	if deletionReconciler, ok := g.reconciler.(MulticlusterSslCertificateDeletionReconciler); ok {
-		return deletionReconciler.ReconcileSslCertificateDeletion(cluster, req)
+func (g genericCertificateMulticlusterReconciler) ReconcileDeletion(cluster string, req reconcile.Request) error {
+	if deletionReconciler, ok := g.reconciler.(MulticlusterCertificateDeletionReconciler); ok {
+		return deletionReconciler.ReconcileCertificateDeletion(cluster, req)
 	}
 	return nil
 }
 
-func (g genericSslCertificateMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
-	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
+func (g genericCertificateMulticlusterReconciler) Reconcile(cluster string, object ezkube.Object) (reconcile.Result, error) {
+	obj, ok := object.(*gate_xdmybl_io_v1.Certificate)
 	if !ok {
-		return reconcile.Result{}, errors.Errorf("internal error: SslCertificate handler received event for %T", object)
+		return reconcile.Result{}, errors.Errorf("internal error: Certificate handler received event for %T", object)
 	}
-	return g.reconciler.ReconcileSslCertificate(cluster, obj)
+	return g.reconciler.ReconcileCertificate(cluster, obj)
 }
 
 // Reconcile Upsert events for the Upstream Resource across clusters.

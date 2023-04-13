@@ -42,7 +42,7 @@ type Clientset interface {
 	// clienset for the gate.xdmybl.io/v1/v1 APIs
 	CaCertificates() CaCertificateClient
 	// clienset for the gate.xdmybl.io/v1/v1 APIs
-	SslCertificates() SslCertificateClient
+	Certificates() CertificateClient
 	// clienset for the gate.xdmybl.io/v1/v1 APIs
 	Upstreams() UpstreamClient
 	// clienset for the gate.xdmybl.io/v1/v1 APIs
@@ -79,8 +79,8 @@ func (c *clientSet) CaCertificates() CaCertificateClient {
 }
 
 // clienset for the gate.xdmybl.io/v1/v1 APIs
-func (c *clientSet) SslCertificates() SslCertificateClient {
-	return NewSslCertificateClient(c.client)
+func (c *clientSet) Certificates() CertificateClient {
+	return NewCertificateClient(c.client)
 }
 
 // clienset for the gate.xdmybl.io/v1/v1 APIs
@@ -240,109 +240,109 @@ func (m *multiclusterCaCertificateClient) Cluster(cluster string) (CaCertificate
 	return NewCaCertificateClient(client), nil
 }
 
-// Reader knows how to read and list SslCertificates.
-type SslCertificateReader interface {
-	// Get retrieves a SslCertificate for the given object key
-	GetSslCertificate(ctx context.Context, key client.ObjectKey) (*SslCertificate, error)
+// Reader knows how to read and list Certificates.
+type CertificateReader interface {
+	// Get retrieves a Certificate for the given object key
+	GetCertificate(ctx context.Context, key client.ObjectKey) (*Certificate, error)
 
-	// List retrieves list of SslCertificates for a given namespace and list options.
-	ListSslCertificate(ctx context.Context, opts ...client.ListOption) (*SslCertificateList, error)
+	// List retrieves list of Certificates for a given namespace and list options.
+	ListCertificate(ctx context.Context, opts ...client.ListOption) (*CertificateList, error)
 }
 
-// SslCertificateTransitionFunction instructs the SslCertificateWriter how to transition between an existing
-// SslCertificate object and a desired on an Upsert
-type SslCertificateTransitionFunction func(existing, desired *SslCertificate) error
+// CertificateTransitionFunction instructs the CertificateWriter how to transition between an existing
+// Certificate object and a desired on an Upsert
+type CertificateTransitionFunction func(existing, desired *Certificate) error
 
-// Writer knows how to create, delete, and update SslCertificates.
-type SslCertificateWriter interface {
-	// Create saves the SslCertificate object.
-	CreateSslCertificate(ctx context.Context, obj *SslCertificate, opts ...client.CreateOption) error
+// Writer knows how to create, delete, and update Certificates.
+type CertificateWriter interface {
+	// Create saves the Certificate object.
+	CreateCertificate(ctx context.Context, obj *Certificate, opts ...client.CreateOption) error
 
-	// Delete deletes the SslCertificate object.
-	DeleteSslCertificate(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error
+	// Delete deletes the Certificate object.
+	DeleteCertificate(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error
 
-	// Update updates the given SslCertificate object.
-	UpdateSslCertificate(ctx context.Context, obj *SslCertificate, opts ...client.UpdateOption) error
+	// Update updates the given Certificate object.
+	UpdateCertificate(ctx context.Context, obj *Certificate, opts ...client.UpdateOption) error
 
-	// Patch patches the given SslCertificate object.
-	PatchSslCertificate(ctx context.Context, obj *SslCertificate, patch client.Patch, opts ...client.PatchOption) error
+	// Patch patches the given Certificate object.
+	PatchCertificate(ctx context.Context, obj *Certificate, patch client.Patch, opts ...client.PatchOption) error
 
-	// DeleteAllOf deletes all SslCertificate objects matching the given options.
-	DeleteAllOfSslCertificate(ctx context.Context, opts ...client.DeleteAllOfOption) error
+	// DeleteAllOf deletes all Certificate objects matching the given options.
+	DeleteAllOfCertificate(ctx context.Context, opts ...client.DeleteAllOfOption) error
 
-	// Create or Update the SslCertificate object.
-	UpsertSslCertificate(ctx context.Context, obj *SslCertificate, transitionFuncs ...SslCertificateTransitionFunction) error
+	// Create or Update the Certificate object.
+	UpsertCertificate(ctx context.Context, obj *Certificate, transitionFuncs ...CertificateTransitionFunction) error
 }
 
-// StatusWriter knows how to update status subresource of a SslCertificate object.
-type SslCertificateStatusWriter interface {
+// StatusWriter knows how to update status subresource of a Certificate object.
+type CertificateStatusWriter interface {
 	// Update updates the fields corresponding to the status subresource for the
-	// given SslCertificate object.
-	UpdateSslCertificateStatus(ctx context.Context, obj *SslCertificate, opts ...client.UpdateOption) error
+	// given Certificate object.
+	UpdateCertificateStatus(ctx context.Context, obj *Certificate, opts ...client.UpdateOption) error
 
-	// Patch patches the given SslCertificate object's subresource.
-	PatchSslCertificateStatus(ctx context.Context, obj *SslCertificate, patch client.Patch, opts ...client.PatchOption) error
+	// Patch patches the given Certificate object's subresource.
+	PatchCertificateStatus(ctx context.Context, obj *Certificate, patch client.Patch, opts ...client.PatchOption) error
 }
 
-// Client knows how to perform CRUD operations on SslCertificates.
-type SslCertificateClient interface {
-	SslCertificateReader
-	SslCertificateWriter
-	SslCertificateStatusWriter
+// Client knows how to perform CRUD operations on Certificates.
+type CertificateClient interface {
+	CertificateReader
+	CertificateWriter
+	CertificateStatusWriter
 }
 
-type sslCertificateClient struct {
+type certificateClient struct {
 	client client.Client
 }
 
-func NewSslCertificateClient(client client.Client) *sslCertificateClient {
-	return &sslCertificateClient{client: client}
+func NewCertificateClient(client client.Client) *certificateClient {
+	return &certificateClient{client: client}
 }
 
-func (c *sslCertificateClient) GetSslCertificate(ctx context.Context, key client.ObjectKey) (*SslCertificate, error) {
-	obj := &SslCertificate{}
+func (c *certificateClient) GetCertificate(ctx context.Context, key client.ObjectKey) (*Certificate, error) {
+	obj := &Certificate{}
 	if err := c.client.Get(ctx, key, obj); err != nil {
 		return nil, err
 	}
 	return obj, nil
 }
 
-func (c *sslCertificateClient) ListSslCertificate(ctx context.Context, opts ...client.ListOption) (*SslCertificateList, error) {
-	list := &SslCertificateList{}
+func (c *certificateClient) ListCertificate(ctx context.Context, opts ...client.ListOption) (*CertificateList, error) {
+	list := &CertificateList{}
 	if err := c.client.List(ctx, list, opts...); err != nil {
 		return nil, err
 	}
 	return list, nil
 }
 
-func (c *sslCertificateClient) CreateSslCertificate(ctx context.Context, obj *SslCertificate, opts ...client.CreateOption) error {
+func (c *certificateClient) CreateCertificate(ctx context.Context, obj *Certificate, opts ...client.CreateOption) error {
 	return c.client.Create(ctx, obj, opts...)
 }
 
-func (c *sslCertificateClient) DeleteSslCertificate(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error {
-	obj := &SslCertificate{}
+func (c *certificateClient) DeleteCertificate(ctx context.Context, key client.ObjectKey, opts ...client.DeleteOption) error {
+	obj := &Certificate{}
 	obj.SetName(key.Name)
 	obj.SetNamespace(key.Namespace)
 	return c.client.Delete(ctx, obj, opts...)
 }
 
-func (c *sslCertificateClient) UpdateSslCertificate(ctx context.Context, obj *SslCertificate, opts ...client.UpdateOption) error {
+func (c *certificateClient) UpdateCertificate(ctx context.Context, obj *Certificate, opts ...client.UpdateOption) error {
 	return c.client.Update(ctx, obj, opts...)
 }
 
-func (c *sslCertificateClient) PatchSslCertificate(ctx context.Context, obj *SslCertificate, patch client.Patch, opts ...client.PatchOption) error {
+func (c *certificateClient) PatchCertificate(ctx context.Context, obj *Certificate, patch client.Patch, opts ...client.PatchOption) error {
 	return c.client.Patch(ctx, obj, patch, opts...)
 }
 
-func (c *sslCertificateClient) DeleteAllOfSslCertificate(ctx context.Context, opts ...client.DeleteAllOfOption) error {
-	obj := &SslCertificate{}
+func (c *certificateClient) DeleteAllOfCertificate(ctx context.Context, opts ...client.DeleteAllOfOption) error {
+	obj := &Certificate{}
 	return c.client.DeleteAllOf(ctx, obj, opts...)
 }
 
-func (c *sslCertificateClient) UpsertSslCertificate(ctx context.Context, obj *SslCertificate, transitionFuncs ...SslCertificateTransitionFunction) error {
+func (c *certificateClient) UpsertCertificate(ctx context.Context, obj *Certificate, transitionFuncs ...CertificateTransitionFunction) error {
 	genericTxFunc := func(existing, desired runtime.Object) error {
 		for _, txFunc := range transitionFuncs {
-			if err := txFunc(existing.(*SslCertificate), desired.(*SslCertificate)); err != nil {
+			if err := txFunc(existing.(*Certificate), desired.(*Certificate)); err != nil {
 				return err
 			}
 		}
@@ -352,34 +352,34 @@ func (c *sslCertificateClient) UpsertSslCertificate(ctx context.Context, obj *Ss
 	return err
 }
 
-func (c *sslCertificateClient) UpdateSslCertificateStatus(ctx context.Context, obj *SslCertificate, opts ...client.UpdateOption) error {
+func (c *certificateClient) UpdateCertificateStatus(ctx context.Context, obj *Certificate, opts ...client.UpdateOption) error {
 	return c.client.Status().Update(ctx, obj, opts...)
 }
 
-func (c *sslCertificateClient) PatchSslCertificateStatus(ctx context.Context, obj *SslCertificate, patch client.Patch, opts ...client.PatchOption) error {
+func (c *certificateClient) PatchCertificateStatus(ctx context.Context, obj *Certificate, patch client.Patch, opts ...client.PatchOption) error {
 	return c.client.Status().Patch(ctx, obj, patch, opts...)
 }
 
-// Provides SslCertificateClients for multiple clusters.
-type MulticlusterSslCertificateClient interface {
-	// Cluster returns a SslCertificateClient for the given cluster
-	Cluster(cluster string) (SslCertificateClient, error)
+// Provides CertificateClients for multiple clusters.
+type MulticlusterCertificateClient interface {
+	// Cluster returns a CertificateClient for the given cluster
+	Cluster(cluster string) (CertificateClient, error)
 }
 
-type multiclusterSslCertificateClient struct {
+type multiclusterCertificateClient struct {
 	client multicluster.Client
 }
 
-func NewMulticlusterSslCertificateClient(client multicluster.Client) MulticlusterSslCertificateClient {
-	return &multiclusterSslCertificateClient{client: client}
+func NewMulticlusterCertificateClient(client multicluster.Client) MulticlusterCertificateClient {
+	return &multiclusterCertificateClient{client: client}
 }
 
-func (m *multiclusterSslCertificateClient) Cluster(cluster string) (SslCertificateClient, error) {
+func (m *multiclusterCertificateClient) Cluster(cluster string) (CertificateClient, error) {
 	client, err := m.client.Cluster(cluster)
 	if err != nil {
 		return nil, err
 	}
-	return NewSslCertificateClient(client), nil
+	return NewCertificateClient(client), nil
 }
 
 // Reader knows how to read and list Upstreams.

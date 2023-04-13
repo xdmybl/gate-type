@@ -66,9 +66,9 @@ func (in *CaCertificateList) DeepCopyObject() runtime.Object {
 	return nil
 }
 
-// Generated Deepcopy methods for SslCertificate
+// Generated Deepcopy methods for Certificate
 
-func (in *SslCertificate) DeepCopyInto(out *SslCertificate) {
+func (in *Certificate) DeepCopyInto(out *Certificate) {
 	out.TypeMeta = in.TypeMeta
 	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 
@@ -78,29 +78,29 @@ func (in *SslCertificate) DeepCopyInto(out *SslCertificate) {
 	return
 }
 
-func (in *SslCertificate) DeepCopy() *SslCertificate {
+func (in *Certificate) DeepCopy() *Certificate {
 	if in == nil {
 		return nil
 	}
-	out := new(SslCertificate)
+	out := new(Certificate)
 	in.DeepCopyInto(out)
 	return out
 }
 
-func (in *SslCertificate) DeepCopyObject() runtime.Object {
+func (in *Certificate) DeepCopyObject() runtime.Object {
 	if c := in.DeepCopy(); c != nil {
 		return c
 	}
 	return nil
 }
 
-func (in *SslCertificateList) DeepCopyInto(out *SslCertificateList) {
+func (in *CertificateList) DeepCopyInto(out *CertificateList) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
 	in.ListMeta.DeepCopyInto(&out.ListMeta)
 	if in.Items != nil {
 		in, out := &in.Items, &out.Items
-		*out = make([]SslCertificate, len(*in))
+		*out = make([]Certificate, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
@@ -108,16 +108,16 @@ func (in *SslCertificateList) DeepCopyInto(out *SslCertificateList) {
 	return
 }
 
-func (in *SslCertificateList) DeepCopy() *SslCertificateList {
+func (in *CertificateList) DeepCopy() *CertificateList {
 	if in == nil {
 		return nil
 	}
-	out := new(SslCertificateList)
+	out := new(CertificateList)
 	in.DeepCopyInto(out)
 	return out
 }
 
-func (in *SslCertificateList) DeepCopyObject() runtime.Object {
+func (in *CertificateList) DeepCopyObject() runtime.Object {
 	if c := in.DeepCopy(); c != nil {
 		return c
 	}

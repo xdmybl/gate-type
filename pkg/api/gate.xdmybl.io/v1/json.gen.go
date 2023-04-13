@@ -38,14 +38,14 @@ func (this *CaCertificateSpec) UnmarshalJSON(b []byte) error {
 	return unmarshaller.Unmarshal(bytes.NewReader(b), this)
 }
 
-// MarshalJSON is a custom marshaler for SslCertificateSpec
-func (this *SslCertificateSpec) MarshalJSON() ([]byte, error) {
+// MarshalJSON is a custom marshaler for CertificateSpec
+func (this *CertificateSpec) MarshalJSON() ([]byte, error) {
 	str, err := marshaller.MarshalToString(this)
 	return []byte(str), err
 }
 
-// UnmarshalJSON is a custom unmarshaler for SslCertificateSpec
-func (this *SslCertificateSpec) UnmarshalJSON(b []byte) error {
+// UnmarshalJSON is a custom unmarshaler for CertificateSpec
+func (this *CertificateSpec) UnmarshalJSON(b []byte) error {
 	return unmarshaller.Unmarshal(bytes.NewReader(b), this)
 }
 

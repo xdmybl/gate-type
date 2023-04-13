@@ -8,8 +8,8 @@ import ()
 // CaCertificateSlice represents a slice of *CaCertificate
 type CaCertificateSlice []*CaCertificate
 
-// SslCertificateSlice represents a slice of *SslCertificate
-type SslCertificateSlice []*SslCertificate
+// CertificateSlice represents a slice of *Certificate
+type CertificateSlice []*Certificate
 
 // UpstreamSlice represents a slice of *Upstream
 type UpstreamSlice []*Upstream

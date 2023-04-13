@@ -124,111 +124,111 @@ func (h genericCaCertificateHandler) Generic(object client.Object) error {
 	return h.handler.GenericCaCertificate(obj)
 }
 
-// Handle events for the SslCertificate Resource
+// Handle events for the Certificate Resource
 // DEPRECATED: Prefer reconciler pattern.
-type SslCertificateEventHandler interface {
-	CreateSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error
-	UpdateSslCertificate(old, new *gate_xdmybl_io_v1.SslCertificate) error
-	DeleteSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error
-	GenericSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error
+type CertificateEventHandler interface {
+	CreateCertificate(obj *gate_xdmybl_io_v1.Certificate) error
+	UpdateCertificate(old, new *gate_xdmybl_io_v1.Certificate) error
+	DeleteCertificate(obj *gate_xdmybl_io_v1.Certificate) error
+	GenericCertificate(obj *gate_xdmybl_io_v1.Certificate) error
 }
 
-type SslCertificateEventHandlerFuncs struct {
-	OnCreate  func(obj *gate_xdmybl_io_v1.SslCertificate) error
-	OnUpdate  func(old, new *gate_xdmybl_io_v1.SslCertificate) error
-	OnDelete  func(obj *gate_xdmybl_io_v1.SslCertificate) error
-	OnGeneric func(obj *gate_xdmybl_io_v1.SslCertificate) error
+type CertificateEventHandlerFuncs struct {
+	OnCreate  func(obj *gate_xdmybl_io_v1.Certificate) error
+	OnUpdate  func(old, new *gate_xdmybl_io_v1.Certificate) error
+	OnDelete  func(obj *gate_xdmybl_io_v1.Certificate) error
+	OnGeneric func(obj *gate_xdmybl_io_v1.Certificate) error
 }
 
-func (f *SslCertificateEventHandlerFuncs) CreateSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error {
+func (f *CertificateEventHandlerFuncs) CreateCertificate(obj *gate_xdmybl_io_v1.Certificate) error {
 	if f.OnCreate == nil {
 		return nil
 	}
 	return f.OnCreate(obj)
 }
 
-func (f *SslCertificateEventHandlerFuncs) DeleteSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error {
+func (f *CertificateEventHandlerFuncs) DeleteCertificate(obj *gate_xdmybl_io_v1.Certificate) error {
 	if f.OnDelete == nil {
 		return nil
 	}
 	return f.OnDelete(obj)
 }
 
-func (f *SslCertificateEventHandlerFuncs) UpdateSslCertificate(objOld, objNew *gate_xdmybl_io_v1.SslCertificate) error {
+func (f *CertificateEventHandlerFuncs) UpdateCertificate(objOld, objNew *gate_xdmybl_io_v1.Certificate) error {
 	if f.OnUpdate == nil {
 		return nil
 	}
 	return f.OnUpdate(objOld, objNew)
 }
 
-func (f *SslCertificateEventHandlerFuncs) GenericSslCertificate(obj *gate_xdmybl_io_v1.SslCertificate) error {
+func (f *CertificateEventHandlerFuncs) GenericCertificate(obj *gate_xdmybl_io_v1.Certificate) error {
 	if f.OnGeneric == nil {
 		return nil
 	}
 	return f.OnGeneric(obj)
 }
 
-type SslCertificateEventWatcher interface {
-	AddEventHandler(ctx context.Context, h SslCertificateEventHandler, predicates ...predicate.Predicate) error
+type CertificateEventWatcher interface {
+	AddEventHandler(ctx context.Context, h CertificateEventHandler, predicates ...predicate.Predicate) error
 }
 
-type sslCertificateEventWatcher struct {
+type certificateEventWatcher struct {
 	watcher events.EventWatcher
 }
 
-func NewSslCertificateEventWatcher(name string, mgr manager.Manager) SslCertificateEventWatcher {
-	return &sslCertificateEventWatcher{
-		watcher: events.NewWatcher(name, mgr, &gate_xdmybl_io_v1.SslCertificate{}),
+func NewCertificateEventWatcher(name string, mgr manager.Manager) CertificateEventWatcher {
+	return &certificateEventWatcher{
+		watcher: events.NewWatcher(name, mgr, &gate_xdmybl_io_v1.Certificate{}),
 	}
 }
 
-func (c *sslCertificateEventWatcher) AddEventHandler(ctx context.Context, h SslCertificateEventHandler, predicates ...predicate.Predicate) error {
-	handler := genericSslCertificateHandler{handler: h}
+func (c *certificateEventWatcher) AddEventHandler(ctx context.Context, h CertificateEventHandler, predicates ...predicate.Predicate) error {
+	handler := genericCertificateHandler{handler: h}
 	if err := c.watcher.Watch(ctx, handler, predicates...); err != nil {
 		return err
 	}
 	return nil
 }
 
-// genericSslCertificateHandler implements a generic events.EventHandler
-type genericSslCertificateHandler struct {
-	handler SslCertificateEventHandler
+// genericCertificateHandler implements a generic events.EventHandler
+type genericCertificateHandler struct {
+	handler CertificateEventHandler
 }
 
-func (h genericSslCertificateHandler) Create(object client.Object) error {
-	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
+func (h genericCertificateHandler) Create(object client.Object) error {
+	obj, ok := object.(*gate_xdmybl_io_v1.Certificate)
 	if !ok {
-		return errors.Errorf("internal error: SslCertificate handler received event for %T", object)
+		return errors.Errorf("internal error: Certificate handler received event for %T", object)
 	}
-	return h.handler.CreateSslCertificate(obj)
+	return h.handler.CreateCertificate(obj)
 }
 
-func (h genericSslCertificateHandler) Delete(object client.Object) error {
-	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
+func (h genericCertificateHandler) Delete(object client.Object) error {
+	obj, ok := object.(*gate_xdmybl_io_v1.Certificate)
 	if !ok {
-		return errors.Errorf("internal error: SslCertificate handler received event for %T", object)
+		return errors.Errorf("internal error: Certificate handler received event for %T", object)
 	}
-	return h.handler.DeleteSslCertificate(obj)
+	return h.handler.DeleteCertificate(obj)
 }
 
-func (h genericSslCertificateHandler) Update(old, new client.Object) error {
-	objOld, ok := old.(*gate_xdmybl_io_v1.SslCertificate)
+func (h genericCertificateHandler) Update(old, new client.Object) error {
+	objOld, ok := old.(*gate_xdmybl_io_v1.Certificate)
 	if !ok {
-		return errors.Errorf("internal error: SslCertificate handler received event for %T", old)
+		return errors.Errorf("internal error: Certificate handler received event for %T", old)
 	}
-	objNew, ok := new.(*gate_xdmybl_io_v1.SslCertificate)
+	objNew, ok := new.(*gate_xdmybl_io_v1.Certificate)
 	if !ok {
-		return errors.Errorf("internal error: SslCertificate handler received event for %T", new)
+		return errors.Errorf("internal error: Certificate handler received event for %T", new)
 	}
-	return h.handler.UpdateSslCertificate(objOld, objNew)
+	return h.handler.UpdateCertificate(objOld, objNew)
 }
 
-func (h genericSslCertificateHandler) Generic(object client.Object) error {
-	obj, ok := object.(*gate_xdmybl_io_v1.SslCertificate)
+func (h genericCertificateHandler) Generic(object client.Object) error {
+	obj, ok := object.(*gate_xdmybl_io_v1.Certificate)
 	if !ok {
-		return errors.Errorf("internal error: SslCertificate handler received event for %T", object)
+		return errors.Errorf("internal error: Certificate handler received event for %T", object)
 	}
-	return h.handler.GenericSslCertificate(obj)
+	return h.handler.GenericCertificate(obj)
 }
 
 // Handle events for the Upstream Resource

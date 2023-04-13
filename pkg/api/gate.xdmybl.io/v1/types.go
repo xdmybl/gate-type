@@ -47,33 +47,33 @@ type CaCertificateList struct {
 // +k8s:openapi-gen=true
 // +genclient:noStatus
 
-// GroupVersionKind for SslCertificate
-var SslCertificateGVK = schema.GroupVersionKind{
+// GroupVersionKind for Certificate
+var CertificateGVK = schema.GroupVersionKind{
 	Group:   "gate.xdmybl.io",
 	Version: "v1",
-	Kind:    "SslCertificate",
+	Kind:    "Certificate",
 }
 
-// SslCertificate is the Schema for the sslCertificate API
-type SslCertificate struct {
+// Certificate is the Schema for the certificate API
+type Certificate struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec SslCertificateSpec `json:"spec,omitempty"`
+	Spec CertificateSpec `json:"spec,omitempty"`
 }
 
 // GVK returns the GroupVersionKind associated with the resource type.
-func (SslCertificate) GVK() schema.GroupVersionKind {
-	return SslCertificateGVK
+func (Certificate) GVK() schema.GroupVersionKind {
+	return CertificateGVK
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// SslCertificateList contains a list of SslCertificate
-type SslCertificateList struct {
+// CertificateList contains a list of Certificate
+type CertificateList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []SslCertificate `json:"items"`
+	Items           []Certificate `json:"items"`
 }
 
 // +genclient
@@ -180,7 +180,7 @@ type FilterList struct {
 
 func init() {
 	SchemeBuilder.Register(&CaCertificate{}, &CaCertificateList{})
-	SchemeBuilder.Register(&SslCertificate{}, &SslCertificateList{})
+	SchemeBuilder.Register(&Certificate{}, &CertificateList{})
 	SchemeBuilder.Register(&Upstream{}, &UpstreamList{})
 	SchemeBuilder.Register(&Gateway{}, &GatewayList{})
 	SchemeBuilder.Register(&Filter{}, &FilterList{})

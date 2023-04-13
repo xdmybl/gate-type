@@ -31,13 +31,13 @@ var Group = model.Group{
 			//},
 		},
 		{
-			Kind: "SslCertificate",
+			Kind: "Certificate",
 			Spec: model.Field{
 				Type: model.Type{
-					Name: "SslCertificateSpec",
+					Name: "CertificateSpec",
 				},
 			},
-			ShortNames: []string{"ssl"},
+			ShortNames: []string{"cert"},
 		},
 		{
 			Kind: "Upstream",

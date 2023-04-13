@@ -45,31 +45,31 @@ func CaCertificateClientFromConfigFactoryProvider() CaCertificateClientFromConfi
 	}
 }
 
-// Provider for SslCertificateClient from Clientset
-func SslCertificateClientFromClientsetProvider(clients gate_xdmybl_io_v1.Clientset) gate_xdmybl_io_v1.SslCertificateClient {
-	return clients.SslCertificates()
+// Provider for CertificateClient from Clientset
+func CertificateClientFromClientsetProvider(clients gate_xdmybl_io_v1.Clientset) gate_xdmybl_io_v1.CertificateClient {
+	return clients.Certificates()
 }
 
-// Provider for SslCertificate Client from Client
-func SslCertificateClientProvider(client client.Client) gate_xdmybl_io_v1.SslCertificateClient {
-	return gate_xdmybl_io_v1.NewSslCertificateClient(client)
+// Provider for Certificate Client from Client
+func CertificateClientProvider(client client.Client) gate_xdmybl_io_v1.CertificateClient {
+	return gate_xdmybl_io_v1.NewCertificateClient(client)
 }
 
-type SslCertificateClientFactory func(client client.Client) gate_xdmybl_io_v1.SslCertificateClient
+type CertificateClientFactory func(client client.Client) gate_xdmybl_io_v1.CertificateClient
 
-func SslCertificateClientFactoryProvider() SslCertificateClientFactory {
-	return SslCertificateClientProvider
+func CertificateClientFactoryProvider() CertificateClientFactory {
+	return CertificateClientProvider
 }
 
-type SslCertificateClientFromConfigFactory func(cfg *rest.Config) (gate_xdmybl_io_v1.SslCertificateClient, error)
+type CertificateClientFromConfigFactory func(cfg *rest.Config) (gate_xdmybl_io_v1.CertificateClient, error)
 
-func SslCertificateClientFromConfigFactoryProvider() SslCertificateClientFromConfigFactory {
-	return func(cfg *rest.Config) (gate_xdmybl_io_v1.SslCertificateClient, error) {
+func CertificateClientFromConfigFactoryProvider() CertificateClientFromConfigFactory {
+	return func(cfg *rest.Config) (gate_xdmybl_io_v1.CertificateClient, error) {
 		clients, err := gate_xdmybl_io_v1.NewClientsetFromConfig(cfg)
 		if err != nil {
 			return nil, err
 		}
-		return clients.SslCertificates(), nil
+		return clients.Certificates(), nil
 	}
 }
 

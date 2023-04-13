@@ -234,73 +234,73 @@ func (s *caCertificateSet) Clone() CaCertificateSet {
 	return &caCertificateSet{set: sksets.NewResourceSet(s.Generic().Clone().List()...)}
 }
 
-type SslCertificateSet interface {
+type CertificateSet interface {
 	// Get the set stored keys
 	Keys() sets.String
 	// List of resources stored in the set. Pass an optional filter function to filter on the list.
-	List(filterResource ...func(*gate_xdmybl_io_v1.SslCertificate) bool) []*gate_xdmybl_io_v1.SslCertificate
+	List(filterResource ...func(*gate_xdmybl_io_v1.Certificate) bool) []*gate_xdmybl_io_v1.Certificate
 	// Unsorted list of resources stored in the set. Pass an optional filter function to filter on the list.
-	UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.SslCertificate) bool) []*gate_xdmybl_io_v1.SslCertificate
+	UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.Certificate) bool) []*gate_xdmybl_io_v1.Certificate
 	// Return the Set as a map of key to resource.
-	Map() map[string]*gate_xdmybl_io_v1.SslCertificate
+	Map() map[string]*gate_xdmybl_io_v1.Certificate
 	// Insert a resource into the set.
-	Insert(sslCertificate ...*gate_xdmybl_io_v1.SslCertificate)
+	Insert(certificate ...*gate_xdmybl_io_v1.Certificate)
 	// Compare the equality of the keys in two sets (not the resources themselves)
-	Equal(sslCertificateSet SslCertificateSet) bool
+	Equal(certificateSet CertificateSet) bool
 	// Check if the set contains a key matching the resource (not the resource itself)
-	Has(sslCertificate ezkube.ResourceId) bool
+	Has(certificate ezkube.ResourceId) bool
 	// Delete the key matching the resource
-	Delete(sslCertificate ezkube.ResourceId)
+	Delete(certificate ezkube.ResourceId)
 	// Return the union with the provided set
-	Union(set SslCertificateSet) SslCertificateSet
+	Union(set CertificateSet) CertificateSet
 	// Return the difference with the provided set
-	Difference(set SslCertificateSet) SslCertificateSet
+	Difference(set CertificateSet) CertificateSet
 	// Return the intersection with the provided set
-	Intersection(set SslCertificateSet) SslCertificateSet
+	Intersection(set CertificateSet) CertificateSet
 	// Find the resource with the given ID
-	Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.SslCertificate, error)
+	Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.Certificate, error)
 	// Get the length of the set
 	Length() int
 	// returns the generic implementation of the set
 	Generic() sksets.ResourceSet
-	// returns the delta between this and and another SslCertificateSet
-	Delta(newSet SslCertificateSet) sksets.ResourceDelta
-	// Create a deep copy of the current SslCertificateSet
-	Clone() SslCertificateSet
+	// returns the delta between this and and another CertificateSet
+	Delta(newSet CertificateSet) sksets.ResourceDelta
+	// Create a deep copy of the current CertificateSet
+	Clone() CertificateSet
 }
 
-func makeGenericSslCertificateSet(sslCertificateList []*gate_xdmybl_io_v1.SslCertificate) sksets.ResourceSet {
+func makeGenericCertificateSet(certificateList []*gate_xdmybl_io_v1.Certificate) sksets.ResourceSet {
 	var genericResources []ezkube.ResourceId
-	for _, obj := range sslCertificateList {
+	for _, obj := range certificateList {
 		genericResources = append(genericResources, obj)
 	}
 	return sksets.NewResourceSet(genericResources...)
 }
 
-type sslCertificateSet struct {
+type certificateSet struct {
 	set sksets.ResourceSet
 }
 
-func NewSslCertificateSet(sslCertificateList ...*gate_xdmybl_io_v1.SslCertificate) SslCertificateSet {
-	return &sslCertificateSet{set: makeGenericSslCertificateSet(sslCertificateList)}
+func NewCertificateSet(certificateList ...*gate_xdmybl_io_v1.Certificate) CertificateSet {
+	return &certificateSet{set: makeGenericCertificateSet(certificateList)}
 }
 
-func NewSslCertificateSetFromList(sslCertificateList *gate_xdmybl_io_v1.SslCertificateList) SslCertificateSet {
-	list := make([]*gate_xdmybl_io_v1.SslCertificate, 0, len(sslCertificateList.Items))
-	for idx := range sslCertificateList.Items {
-		list = append(list, &sslCertificateList.Items[idx])
+func NewCertificateSetFromList(certificateList *gate_xdmybl_io_v1.CertificateList) CertificateSet {
+	list := make([]*gate_xdmybl_io_v1.Certificate, 0, len(certificateList.Items))
+	for idx := range certificateList.Items {
+		list = append(list, &certificateList.Items[idx])
 	}
-	return &sslCertificateSet{set: makeGenericSslCertificateSet(list)}
+	return &certificateSet{set: makeGenericCertificateSet(list)}
 }
 
-func (s *sslCertificateSet) Keys() sets.String {
+func (s *certificateSet) Keys() sets.String {
 	if s == nil {
 		return sets.String{}
 	}
 	return s.Generic().Keys()
 }
 
-func (s *sslCertificateSet) List(filterResource ...func(*gate_xdmybl_io_v1.SslCertificate) bool) []*gate_xdmybl_io_v1.SslCertificate {
+func (s *certificateSet) List(filterResource ...func(*gate_xdmybl_io_v1.Certificate) bool) []*gate_xdmybl_io_v1.Certificate {
 	if s == nil {
 		return nil
 	}
@@ -308,19 +308,19 @@ func (s *sslCertificateSet) List(filterResource ...func(*gate_xdmybl_io_v1.SslCe
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_xdmybl_io_v1.SslCertificate))
+			return filter(obj.(*gate_xdmybl_io_v1.Certificate))
 		})
 	}
 
 	objs := s.Generic().List(genericFilters...)
-	sslCertificateList := make([]*gate_xdmybl_io_v1.SslCertificate, 0, len(objs))
+	certificateList := make([]*gate_xdmybl_io_v1.Certificate, 0, len(objs))
 	for _, obj := range objs {
-		sslCertificateList = append(sslCertificateList, obj.(*gate_xdmybl_io_v1.SslCertificate))
+		certificateList = append(certificateList, obj.(*gate_xdmybl_io_v1.Certificate))
 	}
-	return sslCertificateList
+	return certificateList
 }
 
-func (s *sslCertificateSet) UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.SslCertificate) bool) []*gate_xdmybl_io_v1.SslCertificate {
+func (s *certificateSet) UnsortedList(filterResource ...func(*gate_xdmybl_io_v1.Certificate) bool) []*gate_xdmybl_io_v1.Certificate {
 	if s == nil {
 		return nil
 	}
@@ -328,118 +328,118 @@ func (s *sslCertificateSet) UnsortedList(filterResource ...func(*gate_xdmybl_io_
 	for _, filter := range filterResource {
 		filter := filter
 		genericFilters = append(genericFilters, func(obj ezkube.ResourceId) bool {
-			return filter(obj.(*gate_xdmybl_io_v1.SslCertificate))
+			return filter(obj.(*gate_xdmybl_io_v1.Certificate))
 		})
 	}
 
-	var sslCertificateList []*gate_xdmybl_io_v1.SslCertificate
+	var certificateList []*gate_xdmybl_io_v1.Certificate
 	for _, obj := range s.Generic().UnsortedList(genericFilters...) {
-		sslCertificateList = append(sslCertificateList, obj.(*gate_xdmybl_io_v1.SslCertificate))
+		certificateList = append(certificateList, obj.(*gate_xdmybl_io_v1.Certificate))
 	}
-	return sslCertificateList
+	return certificateList
 }
 
-func (s *sslCertificateSet) Map() map[string]*gate_xdmybl_io_v1.SslCertificate {
+func (s *certificateSet) Map() map[string]*gate_xdmybl_io_v1.Certificate {
 	if s == nil {
 		return nil
 	}
 
-	newMap := map[string]*gate_xdmybl_io_v1.SslCertificate{}
+	newMap := map[string]*gate_xdmybl_io_v1.Certificate{}
 	for k, v := range s.Generic().Map() {
-		newMap[k] = v.(*gate_xdmybl_io_v1.SslCertificate)
+		newMap[k] = v.(*gate_xdmybl_io_v1.Certificate)
 	}
 	return newMap
 }
 
-func (s *sslCertificateSet) Insert(
-	sslCertificateList ...*gate_xdmybl_io_v1.SslCertificate,
+func (s *certificateSet) Insert(
+	certificateList ...*gate_xdmybl_io_v1.Certificate,
 ) {
 	if s == nil {
 		panic("cannot insert into nil set")
 	}
 
-	for _, obj := range sslCertificateList {
+	for _, obj := range certificateList {
 		s.Generic().Insert(obj)
 	}
 }
 
-func (s *sslCertificateSet) Has(sslCertificate ezkube.ResourceId) bool {
+func (s *certificateSet) Has(certificate ezkube.ResourceId) bool {
 	if s == nil {
 		return false
 	}
-	return s.Generic().Has(sslCertificate)
+	return s.Generic().Has(certificate)
 }
 
-func (s *sslCertificateSet) Equal(
-	sslCertificateSet SslCertificateSet,
+func (s *certificateSet) Equal(
+	certificateSet CertificateSet,
 ) bool {
 	if s == nil {
-		return sslCertificateSet == nil
+		return certificateSet == nil
 	}
-	return s.Generic().Equal(sslCertificateSet.Generic())
+	return s.Generic().Equal(certificateSet.Generic())
 }
 
-func (s *sslCertificateSet) Delete(SslCertificate ezkube.ResourceId) {
+func (s *certificateSet) Delete(Certificate ezkube.ResourceId) {
 	if s == nil {
 		return
 	}
-	s.Generic().Delete(SslCertificate)
+	s.Generic().Delete(Certificate)
 }
 
-func (s *sslCertificateSet) Union(set SslCertificateSet) SslCertificateSet {
+func (s *certificateSet) Union(set CertificateSet) CertificateSet {
 	if s == nil {
 		return set
 	}
-	return NewSslCertificateSet(append(s.List(), set.List()...)...)
+	return NewCertificateSet(append(s.List(), set.List()...)...)
 }
 
-func (s *sslCertificateSet) Difference(set SslCertificateSet) SslCertificateSet {
+func (s *certificateSet) Difference(set CertificateSet) CertificateSet {
 	if s == nil {
 		return set
 	}
 	newSet := s.Generic().Difference(set.Generic())
-	return &sslCertificateSet{set: newSet}
+	return &certificateSet{set: newSet}
 }
 
-func (s *sslCertificateSet) Intersection(set SslCertificateSet) SslCertificateSet {
+func (s *certificateSet) Intersection(set CertificateSet) CertificateSet {
 	if s == nil {
 		return nil
 	}
 	newSet := s.Generic().Intersection(set.Generic())
-	var sslCertificateList []*gate_xdmybl_io_v1.SslCertificate
+	var certificateList []*gate_xdmybl_io_v1.Certificate
 	for _, obj := range newSet.List() {
-		sslCertificateList = append(sslCertificateList, obj.(*gate_xdmybl_io_v1.SslCertificate))
+		certificateList = append(certificateList, obj.(*gate_xdmybl_io_v1.Certificate))
 	}
-	return NewSslCertificateSet(sslCertificateList...)
+	return NewCertificateSet(certificateList...)
 }
 
-func (s *sslCertificateSet) Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.SslCertificate, error) {
+func (s *certificateSet) Find(id ezkube.ResourceId) (*gate_xdmybl_io_v1.Certificate, error) {
 	if s == nil {
-		return nil, eris.Errorf("empty set, cannot find SslCertificate %v", sksets.Key(id))
+		return nil, eris.Errorf("empty set, cannot find Certificate %v", sksets.Key(id))
 	}
-	obj, err := s.Generic().Find(&gate_xdmybl_io_v1.SslCertificate{}, id)
+	obj, err := s.Generic().Find(&gate_xdmybl_io_v1.Certificate{}, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return obj.(*gate_xdmybl_io_v1.SslCertificate), nil
+	return obj.(*gate_xdmybl_io_v1.Certificate), nil
 }
 
-func (s *sslCertificateSet) Length() int {
+func (s *certificateSet) Length() int {
 	if s == nil {
 		return 0
 	}
 	return s.Generic().Length()
 }
 
-func (s *sslCertificateSet) Generic() sksets.ResourceSet {
+func (s *certificateSet) Generic() sksets.ResourceSet {
 	if s == nil {
 		return nil
 	}
 	return s.set
 }
 
-func (s *sslCertificateSet) Delta(newSet SslCertificateSet) sksets.ResourceDelta {
+func (s *certificateSet) Delta(newSet CertificateSet) sksets.ResourceDelta {
 	if s == nil {
 		return sksets.ResourceDelta{
 			Inserted: newSet.Generic(),
@@ -448,11 +448,11 @@ func (s *sslCertificateSet) Delta(newSet SslCertificateSet) sksets.ResourceDelta
 	return s.Generic().Delta(newSet.Generic())
 }
 
-func (s *sslCertificateSet) Clone() SslCertificateSet {
+func (s *certificateSet) Clone() CertificateSet {
 	if s == nil {
 		return nil
 	}
-	return &sslCertificateSet{set: sksets.NewResourceSet(s.Generic().Clone().List()...)}
+	return &certificateSet{set: sksets.NewResourceSet(s.Generic().Clone().List()...)}
 }
 
 type UpstreamSet interface {
