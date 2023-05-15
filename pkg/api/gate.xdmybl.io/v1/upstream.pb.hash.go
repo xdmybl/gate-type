@@ -103,18 +103,38 @@ func (m *UpstreamSpec) Hash(hasher hash.Hash64) (uint64, error) {
 		}
 	}
 
-	if h, ok := interface{}(m.GetHealthCheckRef()).(safe_hasher.SafeHasher); ok {
-		if _, err = hasher.Write([]byte("HealthCheckRef")); err != nil {
+	err = binary.Write(hasher, binary.LittleEndian, m.GetHcInterval())
+	if err != nil {
+		return 0, err
+	}
+
+	err = binary.Write(hasher, binary.LittleEndian, m.GetHcTimeout())
+	if err != nil {
+		return 0, err
+	}
+
+	err = binary.Write(hasher, binary.LittleEndian, m.GetHcHealthyThreshold())
+	if err != nil {
+		return 0, err
+	}
+
+	err = binary.Write(hasher, binary.LittleEndian, m.GetHcUnhealthyThreshold())
+	if err != nil {
+		return 0, err
+	}
+
+	if h, ok := interface{}(m.GetHcSpecifier()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("HcSpecifier")); err != nil {
 			return 0, err
 		}
 		if _, err = h.Hash(hasher); err != nil {
 			return 0, err
 		}
 	} else {
-		if fieldValue, err := hashstructure.Hash(m.GetHealthCheckRef(), nil); err != nil {
+		if fieldValue, err := hashstructure.Hash(m.GetHcSpecifier(), nil); err != nil {
 			return 0, err
 		} else {
-			if _, err = hasher.Write([]byte("HealthCheckRef")); err != nil {
+			if _, err = hasher.Write([]byte("HcSpecifier")); err != nil {
 				return 0, err
 			}
 			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
@@ -260,6 +280,132 @@ func (m *WeightedUpstreamList) Hash(hasher hash.Hash64) (uint64, error) {
 			return 0, err
 		} else {
 			if _, err = hasher.Write([]byte("HeaderManipulation")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	return hasher.Sum64(), nil
+}
+
+// Hash function
+func (m *TcpHealthCheck) Hash(hasher hash.Hash64) (uint64, error) {
+	if m == nil {
+		return 0, nil
+	}
+	if hasher == nil {
+		hasher = fnv.New64()
+	}
+	var err error
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.TcpHealthCheck")); err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetSendPayload())); err != nil {
+		return 0, err
+	}
+
+	for _, v := range m.GetReceivePayload() {
+
+		if _, err = hasher.Write([]byte(v)); err != nil {
+			return 0, err
+		}
+
+	}
+
+	return hasher.Sum64(), nil
+}
+
+// Hash function
+func (m *HttpHealthCheck) Hash(hasher hash.Hash64) (uint64, error) {
+	if m == nil {
+		return 0, nil
+	}
+	if hasher == nil {
+		hasher = fnv.New64()
+	}
+	var err error
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.HttpHealthCheck")); err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetHost())); err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetPath())); err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetMethod())); err != nil {
+		return 0, err
+	}
+
+	err = binary.Write(hasher, binary.LittleEndian, m.GetExpectedStatuses())
+	if err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetClientType())); err != nil {
+		return 0, err
+	}
+
+	return hasher.Sum64(), nil
+}
+
+// Hash function
+func (m *HealthCheckSpecifier) Hash(hasher hash.Hash64) (uint64, error) {
+	if m == nil {
+		return 0, nil
+	}
+	if hasher == nil {
+		hasher = fnv.New64()
+	}
+	var err error
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.HealthCheckSpecifier")); err != nil {
+		return 0, err
+	}
+
+	err = binary.Write(hasher, binary.LittleEndian, m.GetType())
+	if err != nil {
+		return 0, err
+	}
+
+	if h, ok := interface{}(m.GetTcpHealthCheck()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("TcpHealthCheck")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetTcpHealthCheck(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("TcpHealthCheck")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	if h, ok := interface{}(m.GetHttpHealthCheck()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("HttpHealthCheck")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetHttpHealthCheck(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("HttpHealthCheck")); err != nil {
 				return 0, err
 			}
 			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {

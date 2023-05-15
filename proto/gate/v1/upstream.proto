@@ -54,11 +54,39 @@ message UpstreamSpec {
 
   ConnPoll connPoll = 4;
 
-  core.v1.ResourceRef healthCheckRef = 5;
+  //core.v1.ResourceRef healthCheckRef = 5;
 
-  core.v1.StatefulSession statefulSession = 6;
+  // health check interval
+  uint32 hcInterval = 5 [
+    (validate.rules).uint32 = {
+      gte: 5
+    }
+  ];
 
-  repeated core.v1.Endpoint endpoints = 7 [
+  uint32 hcTimeout = 6 [
+    (validate.rules).uint32 = {
+      gte: 5
+    }
+  ];
+
+  // hc 健康阈值
+  uint32 hcHealthyThreshold = 7 [
+    (validate.rules).uint32 = {
+      gte: 1
+    }
+  ];
+
+  uint32 hcUnhealthyThreshold = 8 [
+    (validate.rules).uint32 = {
+      gte: 1
+    }
+  ];
+
+  HealthCheckSpecifier hcSpecifier = 9;
+
+  core.v1.StatefulSession statefulSession = 10;
+
+  repeated core.v1.Endpoint endpoints = 11 [
     (validate.rules).repeated = {
       min_items: 1,
       max_items: 64
@@ -67,9 +95,6 @@ message UpstreamSpec {
 }
 
 message ConnPoll{
-
-  // 限制每个连接可以承载的连接个数，0表示不受限制，1表示一个连接服务一个请求后就被关闭，
-  // 也就是禁用连接复用。默认值为0。
   uint32 maxRequestsPerConnection = 1;
 
   // 访问该集群的最大发连接数，默认值-1 (2^32-1 = 4294967295)。
@@ -80,7 +105,6 @@ message ConnPoll{
     }
   ];
 
-  // 访问该集群的最大并发请求数，默认值-1(2^32-1)。
   int64 maxRequests = 3 [
     (validate.rules).int64 = {
       gte: -1,
@@ -112,3 +136,69 @@ message WeightedUpstreamList {
 
   core.v1.HeaderManipulation headerManipulation  = 3 [(validate.rules).message.required = true];
 }
+
+message TcpHealthCheck {
+
+  string sendPayload = 1 [
+    (validate.rules).string = {
+      ignore_empty: true,
+      pattern: "^[0-9A-Fa-f]{1,512}$"
+    }
+  ];
+
+  repeated string receivePayload = 2 [
+    (validate.rules).string = {
+      ignore_empty: true,
+      pattern: "^[0-9A-Fa-f]{1,512}$"
+    }
+  ];
+}
+
+message HttpHealthCheck {
+  string host = 1 [(validate.rules).string = {well_known_regex: HTTP_HEADER_VALUE strict: false}];
+
+  string path = 2 [(validate.rules).string = {min_bytes: 1 well_known_regex: HTTP_HEADER_VALUE strict: false}];
+
+  string method = 3 [
+    (validate.rules).string = {
+      in: ["GET", "HEAD", "POST", "OPTIONS", "TRACE"]
+    }
+  ];
+
+  repeated uint32 expectedStatuses = 4 [
+    (validate.rules).repeated = {
+      ignore_empty: true,
+      unique: true,
+      max_items: 8,
+      items: {
+        uint32: {
+          gte: 100,
+          lt: 600
+        }
+      }
+    }
+  ];
+
+  string ClientType = 5 [
+    (validate.rules).string = {
+      in: ["HTTP1", "HTTP2"]
+    }
+  ];
+}
+
+//https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/core/v3/health_check.proto#config-core-v3-healthcheck
+message HealthCheckSpecifier {
+
+  enum Type {
+    UNKNOWN = 0;
+    TCP = 1;
+    HTTP = 2;
+  }
+
+  Type type = 1 [(validate.rules).enum.defined_only = true];
+
+  TcpHealthCheck tcpHealthCheck = 2;
+
+  HttpHealthCheck httpHealthCheck = 3;
+}
+

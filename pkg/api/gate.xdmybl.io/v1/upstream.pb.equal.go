@@ -80,12 +80,28 @@ func (m *UpstreamSpec) Equal(that interface{}) bool {
 		}
 	}
 
-	if h, ok := interface{}(m.GetHealthCheckRef()).(equality.Equalizer); ok {
-		if !h.Equal(target.GetHealthCheckRef()) {
+	if m.GetHcInterval() != target.GetHcInterval() {
+		return false
+	}
+
+	if m.GetHcTimeout() != target.GetHcTimeout() {
+		return false
+	}
+
+	if m.GetHcHealthyThreshold() != target.GetHcHealthyThreshold() {
+		return false
+	}
+
+	if m.GetHcUnhealthyThreshold() != target.GetHcUnhealthyThreshold() {
+		return false
+	}
+
+	if h, ok := interface{}(m.GetHcSpecifier()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetHcSpecifier()) {
 			return false
 		}
 	} else {
-		if !proto.Equal(m.GetHealthCheckRef(), target.GetHealthCheckRef()) {
+		if !proto.Equal(m.GetHcSpecifier(), target.GetHcSpecifier()) {
 			return false
 		}
 	}
@@ -205,6 +221,144 @@ func (m *WeightedUpstreamList) Equal(that interface{}) bool {
 		}
 	} else {
 		if !proto.Equal(m.GetHeaderManipulation(), target.GetHeaderManipulation()) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Equal function
+func (m *TcpHealthCheck) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*TcpHealthCheck)
+	if !ok {
+		that2, ok := that.(TcpHealthCheck)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if strings.Compare(m.GetSendPayload(), target.GetSendPayload()) != 0 {
+		return false
+	}
+
+	if len(m.GetReceivePayload()) != len(target.GetReceivePayload()) {
+		return false
+	}
+	for idx, v := range m.GetReceivePayload() {
+
+		if strings.Compare(v, target.GetReceivePayload()[idx]) != 0 {
+			return false
+		}
+
+	}
+
+	return true
+}
+
+// Equal function
+func (m *HttpHealthCheck) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*HttpHealthCheck)
+	if !ok {
+		that2, ok := that.(HttpHealthCheck)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if strings.Compare(m.GetHost(), target.GetHost()) != 0 {
+		return false
+	}
+
+	if strings.Compare(m.GetPath(), target.GetPath()) != 0 {
+		return false
+	}
+
+	if strings.Compare(m.GetMethod(), target.GetMethod()) != 0 {
+		return false
+	}
+
+	if len(m.GetExpectedStatuses()) != len(target.GetExpectedStatuses()) {
+		return false
+	}
+	for idx, v := range m.GetExpectedStatuses() {
+
+		if v != target.GetExpectedStatuses()[idx] {
+			return false
+		}
+
+	}
+
+	if strings.Compare(m.GetClientType(), target.GetClientType()) != 0 {
+		return false
+	}
+
+	return true
+}
+
+// Equal function
+func (m *HealthCheckSpecifier) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*HealthCheckSpecifier)
+	if !ok {
+		that2, ok := that.(HealthCheckSpecifier)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if m.GetType() != target.GetType() {
+		return false
+	}
+
+	if h, ok := interface{}(m.GetTcpHealthCheck()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetTcpHealthCheck()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetTcpHealthCheck(), target.GetTcpHealthCheck()) {
+			return false
+		}
+	}
+
+	if h, ok := interface{}(m.GetHttpHealthCheck()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetHttpHealthCheck()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetHttpHealthCheck(), target.GetHttpHealthCheck()) {
 			return false
 		}
 	}

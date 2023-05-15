@@ -57,10 +57,18 @@ func (m *UpstreamSpec) Clone() proto.Message {
 		target.ConnPoll = proto.Clone(m.GetConnPoll()).(*ConnPoll)
 	}
 
-	if h, ok := interface{}(m.GetHealthCheckRef()).(clone.Cloner); ok {
-		target.HealthCheckRef = h.Clone().(*github_com_xdmybl_gate_type_pkg_api_core_v1.ResourceRef)
+	target.HcInterval = m.GetHcInterval()
+
+	target.HcTimeout = m.GetHcTimeout()
+
+	target.HcHealthyThreshold = m.GetHcHealthyThreshold()
+
+	target.HcUnhealthyThreshold = m.GetHcUnhealthyThreshold()
+
+	if h, ok := interface{}(m.GetHcSpecifier()).(clone.Cloner); ok {
+		target.HcSpecifier = h.Clone().(*HealthCheckSpecifier)
 	} else {
-		target.HealthCheckRef = proto.Clone(m.GetHealthCheckRef()).(*github_com_xdmybl_gate_type_pkg_api_core_v1.ResourceRef)
+		target.HcSpecifier = proto.Clone(m.GetHcSpecifier()).(*HealthCheckSpecifier)
 	}
 
 	if h, ok := interface{}(m.GetStatefulSession()).(clone.Cloner); ok {
@@ -126,6 +134,81 @@ func (m *WeightedUpstreamList) Clone() proto.Message {
 		target.HeaderManipulation = h.Clone().(*github_com_xdmybl_gate_type_pkg_api_core_v1.HeaderManipulation)
 	} else {
 		target.HeaderManipulation = proto.Clone(m.GetHeaderManipulation()).(*github_com_xdmybl_gate_type_pkg_api_core_v1.HeaderManipulation)
+	}
+
+	return target
+}
+
+// Clone function
+func (m *TcpHealthCheck) Clone() proto.Message {
+	var target *TcpHealthCheck
+	if m == nil {
+		return target
+	}
+	target = &TcpHealthCheck{}
+
+	target.SendPayload = m.GetSendPayload()
+
+	if m.GetReceivePayload() != nil {
+		target.ReceivePayload = make([]string, len(m.GetReceivePayload()))
+		for idx, v := range m.GetReceivePayload() {
+
+			target.ReceivePayload[idx] = v
+
+		}
+	}
+
+	return target
+}
+
+// Clone function
+func (m *HttpHealthCheck) Clone() proto.Message {
+	var target *HttpHealthCheck
+	if m == nil {
+		return target
+	}
+	target = &HttpHealthCheck{}
+
+	target.Host = m.GetHost()
+
+	target.Path = m.GetPath()
+
+	target.Method = m.GetMethod()
+
+	if m.GetExpectedStatuses() != nil {
+		target.ExpectedStatuses = make([]uint32, len(m.GetExpectedStatuses()))
+		for idx, v := range m.GetExpectedStatuses() {
+
+			target.ExpectedStatuses[idx] = v
+
+		}
+	}
+
+	target.ClientType = m.GetClientType()
+
+	return target
+}
+
+// Clone function
+func (m *HealthCheckSpecifier) Clone() proto.Message {
+	var target *HealthCheckSpecifier
+	if m == nil {
+		return target
+	}
+	target = &HealthCheckSpecifier{}
+
+	target.Type = m.GetType()
+
+	if h, ok := interface{}(m.GetTcpHealthCheck()).(clone.Cloner); ok {
+		target.TcpHealthCheck = h.Clone().(*TcpHealthCheck)
+	} else {
+		target.TcpHealthCheck = proto.Clone(m.GetTcpHealthCheck()).(*TcpHealthCheck)
+	}
+
+	if h, ok := interface{}(m.GetHttpHealthCheck()).(clone.Cloner); ok {
+		target.HttpHealthCheck = h.Clone().(*HttpHealthCheck)
+	} else {
+		target.HttpHealthCheck = proto.Clone(m.GetHttpHealthCheck()).(*HttpHealthCheck)
 	}
 
 	return target
