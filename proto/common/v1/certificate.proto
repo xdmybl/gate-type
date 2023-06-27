@@ -27,20 +27,20 @@ message CertificateData {
 
     string signatureHashAlgorithm = 4;
 
-    // 颁发者
-    repeated Names isuser = 5;
+    // 发行者 发行证书的证书认证中心 (CA) 的标识信息
+    repeated CertSubject issuer = 5;
 
     Validity validity = 6;
 
-    // 使用者
-    repeated Names subject = 7;
+    // subject
+    repeated CertSubject subject = 7;
 
     SubjectPublicKeyInfo subjectPublicKeyInfo = 8;
 
     Extensions extensions = 9;
 }
 
-message Names {
+message CertSubject {
 
     // CN
     string commonName = 1;

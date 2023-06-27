@@ -4,7 +4,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: 1ca472c8912fd0b4
+    crd.solo.io/specHash: 5ff4854d4b530689
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
@@ -48,8 +48,8 @@ spec:
                               type: string
                             type: array
                         type: object
-                      isuser:
-                        description: 颁发者
+                      issuer:
+                        description: 发行者 发行证书的证书认证中心 (CA) 的标识信息
                         items:
                           properties:
                             commonName:
@@ -79,7 +79,7 @@ spec:
                       signatureHashAlgorithm:
                         type: string
                       subject:
-                        description: 使用者
+                        description: subject
                         items:
                           properties:
                             commonName:
@@ -234,7 +234,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: d50fa485c550f646
+    crd.solo.io/specHash: 6e94e042c0105686
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
@@ -276,8 +276,8 @@ spec:
                               type: string
                             type: array
                         type: object
-                      isuser:
-                        description: 颁发者
+                      issuer:
+                        description: 发行者 发行证书的证书认证中心 (CA) 的标识信息
                         items:
                           properties:
                             commonName:
@@ -307,7 +307,7 @@ spec:
                       signatureHashAlgorithm:
                         type: string
                       subject:
-                        description: 使用者
+                        description: subject
                         items:
                           properties:
                             commonName:
