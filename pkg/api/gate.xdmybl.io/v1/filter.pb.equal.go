@@ -119,8 +119,14 @@ func (m *HttpConnectionManager) Equal(that interface{}) bool {
 		return false
 	}
 
-	if strings.Compare(m.GetRouteConfigName(), target.GetRouteConfigName()) != 0 {
-		return false
+	if h, ok := interface{}(m.GetRouteConfig()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetRouteConfig()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetRouteConfig(), target.GetRouteConfig()) {
+			return false
+		}
 	}
 
 	if len(m.GetHttpFilter()) != len(target.GetHttpFilter()) {
@@ -145,6 +151,447 @@ func (m *HttpConnectionManager) Equal(that interface{}) bool {
 	}
 
 	if m.GetSkipXffAppend() != target.GetSkipXffAppend() {
+		return false
+	}
+
+	return true
+}
+
+// Equal function
+func (m *RouteConfig) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*RouteConfig)
+	if !ok {
+		that2, ok := that.(RouteConfig)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if strings.Compare(m.GetName(), target.GetName()) != 0 {
+		return false
+	}
+
+	if len(m.GetVhostLs()) != len(target.GetVhostLs()) {
+		return false
+	}
+	for idx, v := range m.GetVhostLs() {
+
+		if h, ok := interface{}(v).(equality.Equalizer); ok {
+			if !h.Equal(target.GetVhostLs()[idx]) {
+				return false
+			}
+		} else {
+			if !proto.Equal(v, target.GetVhostLs()[idx]) {
+				return false
+			}
+		}
+
+	}
+
+	if h, ok := interface{}(m.GetHeaderManipulation()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetHeaderManipulation()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetHeaderManipulation(), target.GetHeaderManipulation()) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Equal function
+func (m *VHost) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*VHost)
+	if !ok {
+		that2, ok := that.(VHost)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if len(m.GetRouteLs()) != len(target.GetRouteLs()) {
+		return false
+	}
+	for idx, v := range m.GetRouteLs() {
+
+		if h, ok := interface{}(v).(equality.Equalizer); ok {
+			if !h.Equal(target.GetRouteLs()[idx]) {
+				return false
+			}
+		} else {
+			if !proto.Equal(v, target.GetRouteLs()[idx]) {
+				return false
+			}
+		}
+
+	}
+
+	return true
+}
+
+// Equal function
+func (m *Route) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*Route)
+	if !ok {
+		that2, ok := that.(Route)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if h, ok := interface{}(m.GetMatch()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetMatch()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetMatch(), target.GetMatch()) {
+			return false
+		}
+	}
+
+	switch m.RouteActionType.(type) {
+
+	case *Route_ForwardAction:
+		if _, ok := target.RouteActionType.(*Route_ForwardAction); !ok {
+			return false
+		}
+
+		if h, ok := interface{}(m.GetForwardAction()).(equality.Equalizer); ok {
+			if !h.Equal(target.GetForwardAction()) {
+				return false
+			}
+		} else {
+			if !proto.Equal(m.GetForwardAction(), target.GetForwardAction()) {
+				return false
+			}
+		}
+
+	case *Route_RedirectAction:
+		if _, ok := target.RouteActionType.(*Route_RedirectAction); !ok {
+			return false
+		}
+
+		if h, ok := interface{}(m.GetRedirectAction()).(equality.Equalizer); ok {
+			if !h.Equal(target.GetRedirectAction()) {
+				return false
+			}
+		} else {
+			if !proto.Equal(m.GetRedirectAction(), target.GetRedirectAction()) {
+				return false
+			}
+		}
+
+	case *Route_DirectionAction:
+		if _, ok := target.RouteActionType.(*Route_DirectionAction); !ok {
+			return false
+		}
+
+		if h, ok := interface{}(m.GetDirectionAction()).(equality.Equalizer); ok {
+			if !h.Equal(target.GetDirectionAction()) {
+				return false
+			}
+		} else {
+			if !proto.Equal(m.GetDirectionAction(), target.GetDirectionAction()) {
+				return false
+			}
+		}
+
+	default:
+		// m is nil but target is not nil
+		if m.RouteActionType != target.RouteActionType {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Equal function
+func (m *ForwardAction) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*ForwardAction)
+	if !ok {
+		that2, ok := that.(ForwardAction)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if len(m.GetWeightClusterLs()) != len(target.GetWeightClusterLs()) {
+		return false
+	}
+	for idx, v := range m.GetWeightClusterLs() {
+
+		if h, ok := interface{}(v).(equality.Equalizer); ok {
+			if !h.Equal(target.GetWeightClusterLs()[idx]) {
+				return false
+			}
+		} else {
+			if !proto.Equal(v, target.GetWeightClusterLs()[idx]) {
+				return false
+			}
+		}
+
+	}
+
+	if m.GetTimeout() != target.GetTimeout() {
+		return false
+	}
+
+	return true
+}
+
+// Equal function
+func (m *RedirectAction) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*RedirectAction)
+	if !ok {
+		that2, ok := that.(RedirectAction)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if strings.Compare(m.GetHostRedirect(), target.GetHostRedirect()) != 0 {
+		return false
+	}
+
+	if m.GetResponseCode() != target.GetResponseCode() {
+		return false
+	}
+
+	if m.GetSchemeRewriteSpecifier() != target.GetSchemeRewriteSpecifier() {
+		return false
+	}
+
+	if m.GetStripQuery() != target.GetStripQuery() {
+		return false
+	}
+
+	if m.GetPortRedirect() != target.GetPortRedirect() {
+		return false
+	}
+
+	return true
+}
+
+// Equal function
+func (m *DirectionAction) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*DirectionAction)
+	if !ok {
+		that2, ok := that.(DirectionAction)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if m.GetStatusCode() != target.GetStatusCode() {
+		return false
+	}
+
+	if strings.Compare(m.GetBody(), target.GetBody()) != 0 {
+		return false
+	}
+
+	return true
+}
+
+// Equal function
+func (m *RouteMatch) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*RouteMatch)
+	if !ok {
+		that2, ok := that.(RouteMatch)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if strings.Compare(m.GetPrefix(), target.GetPrefix()) != 0 {
+		return false
+	}
+
+	if strings.Compare(m.GetPath(), target.GetPath()) != 0 {
+		return false
+	}
+
+	if strings.Compare(m.GetRegex(), target.GetRegex()) != 0 {
+		return false
+	}
+
+	if len(m.GetHeaders()) != len(target.GetHeaders()) {
+		return false
+	}
+	for idx, v := range m.GetHeaders() {
+
+		if h, ok := interface{}(v).(equality.Equalizer); ok {
+			if !h.Equal(target.GetHeaders()[idx]) {
+				return false
+			}
+		} else {
+			if !proto.Equal(v, target.GetHeaders()[idx]) {
+				return false
+			}
+		}
+
+	}
+
+	return true
+}
+
+// Equal function
+func (m *HeaderMatch) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*HeaderMatch)
+	if !ok {
+		that2, ok := that.(HeaderMatch)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if strings.Compare(m.GetExact(), target.GetExact()) != 0 {
+		return false
+	}
+
+	if strings.Compare(m.GetPrefix(), target.GetPrefix()) != 0 {
+		return false
+	}
+
+	if strings.Compare(m.GetRegex(), target.GetRegex()) != 0 {
+		return false
+	}
+
+	if strings.Compare(m.GetContains(), target.GetContains()) != 0 {
+		return false
+	}
+
+	if m.GetInvert() != target.GetInvert() {
+		return false
+	}
+
+	return true
+}
+
+// Equal function
+func (m *WeightCluster) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*WeightCluster)
+	if !ok {
+		that2, ok := that.(WeightCluster)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if len(m.GetClusterName()) != len(target.GetClusterName()) {
+		return false
+	}
+	for idx, v := range m.GetClusterName() {
+
+		if strings.Compare(v, target.GetClusterName()[idx]) != 0 {
+			return false
+		}
+
+	}
+
+	if m.GetTotalWeight() != target.GetTotalWeight() {
 		return false
 	}
 

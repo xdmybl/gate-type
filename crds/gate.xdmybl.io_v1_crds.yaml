@@ -810,7 +810,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    crd.solo.io/specHash: b20555d1044e3064
+    crd.solo.io/specHash: 73d1697b400d480a
   labels:
     app: engine-gate
     app.kubernetes.io/name: engine-gate
@@ -886,9 +886,178 @@ spec:
                     type: array
                   mergeSlashes:
                     type: boolean
-                  routeConfigName:
+                  routeConfig:
                     description: 对应 Envoy route_config_name
-                    type: string
+                    properties:
+                      headerManipulation:
+                        properties:
+                          requestHeadersToAdd:
+                            description: |-
+                              Specifies a list of HTTP headers that should be added to each request
+                              handled by this route or virtual host. For more information, including
+                              details on header value syntax, see the
+                              [Envoy documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/headers#config-http-conn-man-headers-custom-request-headers) .
+                            items:
+                              properties:
+                                append:
+                                  description: |-
+                                    Should the value be appended? If true (default), the value is appended to
+                                    existing values.
+                                  type: boolean
+                                header:
+                                  description: Header name/value pair that this option
+                                    applies to.
+                                  properties:
+                                    key:
+                                      description: Header name.
+                                      type: string
+                                    value:
+                                      description: Header value.
+                                      type: string
+                                  type: object
+                              type: object
+                            type: array
+                          requestHeadersToRemove:
+                            description: |-
+                              Specifies a list of HTTP headers that should be removed from each request
+                              handled by this route or virtual host.
+                            items:
+                              type: string
+                            type: array
+                          responseHeadersToAdd:
+                            description: |-
+                              Specifies a list of HTTP headers that should be added to each response
+                              handled by this route or host. For more information, including
+                              details on header value syntax, see the
+                              [Envoy documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/headers#config-http-conn-man-headers-custom-request-headers) .
+                            items:
+                              properties:
+                                append:
+                                  description: |-
+                                    Should the value be appended? If true (default), the value is appended to
+                                    existing values.
+                                  type: boolean
+                                header:
+                                  description: Header name/value pair that this option
+                                    applies to.
+                                  properties:
+                                    key:
+                                      description: Header name.
+                                      type: string
+                                    value:
+                                      description: Header value.
+                                      type: string
+                                  type: object
+                              type: object
+                            type: array
+                          responseHeadersToRemove:
+                            description: |-
+                              Specifies a list of HTTP headers that should be removed from each response
+                              handled by this route or virtual host.
+                            items:
+                              type: string
+                            type: array
+                        type: object
+                      name:
+                        type: string
+                      vhostLs:
+                        items:
+                          properties:
+                            routeLs:
+                              items:
+                                oneOf:
+                                - not:
+                                    anyOf:
+                                    - required:
+                                      - forwardAction
+                                    - required:
+                                      - redirectAction
+                                    - required:
+                                      - directionAction
+                                - required:
+                                  - forwardAction
+                                - required:
+                                  - redirectAction
+                                - required:
+                                  - directionAction
+                                properties:
+                                  directionAction:
+                                    properties:
+                                      body:
+                                        type: string
+                                      statusCode:
+                                        maximum: 4294967295
+                                        minimum: 0
+                                        type: integer
+                                    type: object
+                                  forwardAction:
+                                    properties:
+                                      timeout:
+                                        maximum: 4294967295
+                                        minimum: 0
+                                        type: integer
+                                      weightClusterLs:
+                                        items:
+                                          properties:
+                                            clusterName:
+                                              items:
+                                                type: string
+                                              type: array
+                                            totalWeight:
+                                              maximum: 4294967295
+                                              minimum: 0
+                                              type: integer
+                                          type: object
+                                        type: array
+                                    type: object
+                                  match:
+                                    properties:
+                                      headers:
+                                        items:
+                                          properties:
+                                            contains:
+                                              type: string
+                                            exact:
+                                              type: string
+                                            invert:
+                                              type: boolean
+                                            prefix:
+                                              type: string
+                                            regex:
+                                              type: string
+                                          type: object
+                                        type: array
+                                      path:
+                                        description: :path exact
+                                        type: string
+                                      prefix:
+                                        description: :path  prefix
+                                        type: string
+                                      regex:
+                                        type: string
+                                    type: object
+                                  redirectAction:
+                                    properties:
+                                      hostRedirect:
+                                        type: string
+                                      portRedirect:
+                                        maximum: 4294967295
+                                        minimum: 0
+                                        type: integer
+                                      responseCode:
+                                        maximum: 4294967295
+                                        minimum: 0
+                                        type: integer
+                                      schemeRewriteSpecifier:
+                                        type: boolean
+                                      stripQuery:
+                                        type: boolean
+                                    type: object
+                                type: object
+                              type: array
+                          type: object
+                        type: array
+                    type: object
                   skipXffAppend:
                     type: boolean
                 type: object

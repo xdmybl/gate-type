@@ -80,7 +80,11 @@ func (m *HttpConnectionManager) Clone() proto.Message {
 	}
 	target = &HttpConnectionManager{}
 
-	target.RouteConfigName = m.GetRouteConfigName()
+	if h, ok := interface{}(m.GetRouteConfig()).(clone.Cloner); ok {
+		target.RouteConfig = h.Clone().(*RouteConfig)
+	} else {
+		target.RouteConfig = proto.Clone(m.GetRouteConfig()).(*RouteConfig)
+	}
 
 	if m.GetHttpFilter() != nil {
 		target.HttpFilter = make([]*HttpFilter, len(m.GetHttpFilter()))
@@ -98,6 +102,254 @@ func (m *HttpConnectionManager) Clone() proto.Message {
 	target.MergeSlashes = m.GetMergeSlashes()
 
 	target.SkipXffAppend = m.GetSkipXffAppend()
+
+	return target
+}
+
+// Clone function
+func (m *RouteConfig) Clone() proto.Message {
+	var target *RouteConfig
+	if m == nil {
+		return target
+	}
+	target = &RouteConfig{}
+
+	target.Name = m.GetName()
+
+	if m.GetVhostLs() != nil {
+		target.VhostLs = make([]*VHost, len(m.GetVhostLs()))
+		for idx, v := range m.GetVhostLs() {
+
+			if h, ok := interface{}(v).(clone.Cloner); ok {
+				target.VhostLs[idx] = h.Clone().(*VHost)
+			} else {
+				target.VhostLs[idx] = proto.Clone(v).(*VHost)
+			}
+
+		}
+	}
+
+	if h, ok := interface{}(m.GetHeaderManipulation()).(clone.Cloner); ok {
+		target.HeaderManipulation = h.Clone().(*github_com_xdmybl_gate_type_pkg_api_core_v1.HeaderManipulation)
+	} else {
+		target.HeaderManipulation = proto.Clone(m.GetHeaderManipulation()).(*github_com_xdmybl_gate_type_pkg_api_core_v1.HeaderManipulation)
+	}
+
+	return target
+}
+
+// Clone function
+func (m *VHost) Clone() proto.Message {
+	var target *VHost
+	if m == nil {
+		return target
+	}
+	target = &VHost{}
+
+	if m.GetRouteLs() != nil {
+		target.RouteLs = make([]*Route, len(m.GetRouteLs()))
+		for idx, v := range m.GetRouteLs() {
+
+			if h, ok := interface{}(v).(clone.Cloner); ok {
+				target.RouteLs[idx] = h.Clone().(*Route)
+			} else {
+				target.RouteLs[idx] = proto.Clone(v).(*Route)
+			}
+
+		}
+	}
+
+	return target
+}
+
+// Clone function
+func (m *Route) Clone() proto.Message {
+	var target *Route
+	if m == nil {
+		return target
+	}
+	target = &Route{}
+
+	if h, ok := interface{}(m.GetMatch()).(clone.Cloner); ok {
+		target.Match = h.Clone().(*RouteMatch)
+	} else {
+		target.Match = proto.Clone(m.GetMatch()).(*RouteMatch)
+	}
+
+	switch m.RouteActionType.(type) {
+
+	case *Route_ForwardAction:
+
+		if h, ok := interface{}(m.GetForwardAction()).(clone.Cloner); ok {
+			target.RouteActionType = &Route_ForwardAction{
+				ForwardAction: h.Clone().(*ForwardAction),
+			}
+		} else {
+			target.RouteActionType = &Route_ForwardAction{
+				ForwardAction: proto.Clone(m.GetForwardAction()).(*ForwardAction),
+			}
+		}
+
+	case *Route_RedirectAction:
+
+		if h, ok := interface{}(m.GetRedirectAction()).(clone.Cloner); ok {
+			target.RouteActionType = &Route_RedirectAction{
+				RedirectAction: h.Clone().(*RedirectAction),
+			}
+		} else {
+			target.RouteActionType = &Route_RedirectAction{
+				RedirectAction: proto.Clone(m.GetRedirectAction()).(*RedirectAction),
+			}
+		}
+
+	case *Route_DirectionAction:
+
+		if h, ok := interface{}(m.GetDirectionAction()).(clone.Cloner); ok {
+			target.RouteActionType = &Route_DirectionAction{
+				DirectionAction: h.Clone().(*DirectionAction),
+			}
+		} else {
+			target.RouteActionType = &Route_DirectionAction{
+				DirectionAction: proto.Clone(m.GetDirectionAction()).(*DirectionAction),
+			}
+		}
+
+	}
+
+	return target
+}
+
+// Clone function
+func (m *ForwardAction) Clone() proto.Message {
+	var target *ForwardAction
+	if m == nil {
+		return target
+	}
+	target = &ForwardAction{}
+
+	if m.GetWeightClusterLs() != nil {
+		target.WeightClusterLs = make([]*WeightCluster, len(m.GetWeightClusterLs()))
+		for idx, v := range m.GetWeightClusterLs() {
+
+			if h, ok := interface{}(v).(clone.Cloner); ok {
+				target.WeightClusterLs[idx] = h.Clone().(*WeightCluster)
+			} else {
+				target.WeightClusterLs[idx] = proto.Clone(v).(*WeightCluster)
+			}
+
+		}
+	}
+
+	target.Timeout = m.GetTimeout()
+
+	return target
+}
+
+// Clone function
+func (m *RedirectAction) Clone() proto.Message {
+	var target *RedirectAction
+	if m == nil {
+		return target
+	}
+	target = &RedirectAction{}
+
+	target.HostRedirect = m.GetHostRedirect()
+
+	target.ResponseCode = m.GetResponseCode()
+
+	target.SchemeRewriteSpecifier = m.GetSchemeRewriteSpecifier()
+
+	target.StripQuery = m.GetStripQuery()
+
+	target.PortRedirect = m.GetPortRedirect()
+
+	return target
+}
+
+// Clone function
+func (m *DirectionAction) Clone() proto.Message {
+	var target *DirectionAction
+	if m == nil {
+		return target
+	}
+	target = &DirectionAction{}
+
+	target.StatusCode = m.GetStatusCode()
+
+	target.Body = m.GetBody()
+
+	return target
+}
+
+// Clone function
+func (m *RouteMatch) Clone() proto.Message {
+	var target *RouteMatch
+	if m == nil {
+		return target
+	}
+	target = &RouteMatch{}
+
+	target.Prefix = m.GetPrefix()
+
+	target.Path = m.GetPath()
+
+	target.Regex = m.GetRegex()
+
+	if m.GetHeaders() != nil {
+		target.Headers = make([]*HeaderMatch, len(m.GetHeaders()))
+		for idx, v := range m.GetHeaders() {
+
+			if h, ok := interface{}(v).(clone.Cloner); ok {
+				target.Headers[idx] = h.Clone().(*HeaderMatch)
+			} else {
+				target.Headers[idx] = proto.Clone(v).(*HeaderMatch)
+			}
+
+		}
+	}
+
+	return target
+}
+
+// Clone function
+func (m *HeaderMatch) Clone() proto.Message {
+	var target *HeaderMatch
+	if m == nil {
+		return target
+	}
+	target = &HeaderMatch{}
+
+	target.Exact = m.GetExact()
+
+	target.Prefix = m.GetPrefix()
+
+	target.Regex = m.GetRegex()
+
+	target.Contains = m.GetContains()
+
+	target.Invert = m.GetInvert()
+
+	return target
+}
+
+// Clone function
+func (m *WeightCluster) Clone() proto.Message {
+	var target *WeightCluster
+	if m == nil {
+		return target
+	}
+	target = &WeightCluster{}
+
+	if m.GetClusterName() != nil {
+		target.ClusterName = make([]string, len(m.GetClusterName()))
+		for idx, v := range m.GetClusterName() {
+
+			target.ClusterName[idx] = v
+
+		}
+	}
+
+	target.TotalWeight = m.GetTotalWeight()
 
 	return target
 }

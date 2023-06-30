@@ -12,6 +12,7 @@ import "google/protobuf/struct.proto";
 
 import "extproto/ext.proto";
 import "proto/core/v1/gate.proto";
+import "proto/core/v1/headers.proto";
 
 option (extproto.equal_all) = true;
 option (extproto.hash_all) = true;
@@ -35,7 +36,7 @@ message FilterSpec {
 // Hcm 直接对应 Envoy HCM
 message HttpConnectionManager {
   // 对应 Envoy route_config_name
-  string route_config_name = 1;
+  RouteConfig route_config = 1;
   repeated HttpFilter http_filter = 2;
   bool  merge_slashes = 3;
   bool  skip_xff_append = 4;
@@ -43,6 +44,66 @@ message HttpConnectionManager {
   // Rds
   // AccessLog
   // Tracing
+}
+
+message RouteConfig {
+  string name = 1;
+  repeated VHost vhost_ls = 2;
+  core.v1.HeaderManipulation header_manipulation = 3;
+}
+
+message VHost {
+  repeated Route route_ls = 1;
+}
+
+message Route {
+  oneof route_action_type {
+    option (validate.required) = true;
+    ForwardAction forward_action = 1;
+    RedirectAction redirect_action = 2;
+    DirectionAction direction_action = 3;
+  }
+  RouteMatch match = 4;
+}
+
+message ForwardAction {
+  repeated WeightCluster weight_cluster_ls = 1;
+  uint32 timeout = 2;
+}
+
+message RedirectAction {
+  string host_redirect = 1;
+  uint32 response_code = 2;
+  bool scheme_rewrite_specifier = 3;
+  bool strip_query = 4;
+  uint32 port_redirect = 5;
+}
+
+message DirectionAction {
+  uint32 status_code = 1;
+  string body = 2;
+}
+
+message RouteMatch {
+  // :path  prefix
+  string prefix = 1;
+  // :path exact
+  string path = 2;
+  string regex = 3;
+  repeated HeaderMatch headers = 4;
+}
+
+message HeaderMatch {
+  string exact = 1;
+  string prefix = 2;
+  string regex = 3;
+  string contains = 4;
+  bool invert = 5;
+}
+
+message WeightCluster {
+  repeated string cluster_name = 1;
+  uint32 total_weight = 2;
 }
 
 // TODO 插件  HCM 级别插件配置
