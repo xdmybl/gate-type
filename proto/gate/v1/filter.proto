@@ -54,16 +54,20 @@ message RouteConfig {
 
 message VHost {
   repeated Route route_ls = 1;
+  repeated string domains = 2;
 }
 
 message Route {
+  uint32 id = 1;
+  string name = 2;
   oneof route_action_type {
     option (validate.required) = true;
-    ForwardAction forward_action = 1;
-    RedirectAction redirect_action = 2;
-    DirectionAction direction_action = 3;
+    ForwardAction forward_action = 3;
+    RedirectAction redirect_action = 4;
+    DirectionAction direction_action = 5;
   }
-  RouteMatch match = 4;
+  RouteMatch match = 6;
+  core.v1.HeaderManipulation header_manipulation = 7;
 }
 
 message ForwardAction {

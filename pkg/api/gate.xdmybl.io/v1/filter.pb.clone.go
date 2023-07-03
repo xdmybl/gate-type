@@ -159,6 +159,15 @@ func (m *VHost) Clone() proto.Message {
 		}
 	}
 
+	if m.GetDomains() != nil {
+		target.Domains = make([]string, len(m.GetDomains()))
+		for idx, v := range m.GetDomains() {
+
+			target.Domains[idx] = v
+
+		}
+	}
+
 	return target
 }
 
@@ -170,10 +179,20 @@ func (m *Route) Clone() proto.Message {
 	}
 	target = &Route{}
 
+	target.Id = m.GetId()
+
+	target.Name = m.GetName()
+
 	if h, ok := interface{}(m.GetMatch()).(clone.Cloner); ok {
 		target.Match = h.Clone().(*RouteMatch)
 	} else {
 		target.Match = proto.Clone(m.GetMatch()).(*RouteMatch)
+	}
+
+	if h, ok := interface{}(m.GetHeaderManipulation()).(clone.Cloner); ok {
+		target.HeaderManipulation = h.Clone().(*github_com_xdmybl_gate_type_pkg_api_core_v1.HeaderManipulation)
+	} else {
+		target.HeaderManipulation = proto.Clone(m.GetHeaderManipulation()).(*github_com_xdmybl_gate_type_pkg_api_core_v1.HeaderManipulation)
 	}
 
 	switch m.RouteActionType.(type) {

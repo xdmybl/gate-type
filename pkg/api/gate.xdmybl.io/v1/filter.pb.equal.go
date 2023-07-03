@@ -250,6 +250,17 @@ func (m *VHost) Equal(that interface{}) bool {
 
 	}
 
+	if len(m.GetDomains()) != len(target.GetDomains()) {
+		return false
+	}
+	for idx, v := range m.GetDomains() {
+
+		if strings.Compare(v, target.GetDomains()[idx]) != 0 {
+			return false
+		}
+
+	}
+
 	return true
 }
 
@@ -274,12 +285,30 @@ func (m *Route) Equal(that interface{}) bool {
 		return false
 	}
 
+	if m.GetId() != target.GetId() {
+		return false
+	}
+
+	if strings.Compare(m.GetName(), target.GetName()) != 0 {
+		return false
+	}
+
 	if h, ok := interface{}(m.GetMatch()).(equality.Equalizer); ok {
 		if !h.Equal(target.GetMatch()) {
 			return false
 		}
 	} else {
 		if !proto.Equal(m.GetMatch(), target.GetMatch()) {
+			return false
+		}
+	}
+
+	if h, ok := interface{}(m.GetHeaderManipulation()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetHeaderManipulation()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetHeaderManipulation(), target.GetHeaderManipulation()) {
 			return false
 		}
 	}

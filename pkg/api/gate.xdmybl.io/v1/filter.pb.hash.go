@@ -280,6 +280,14 @@ func (m *VHost) Hash(hasher hash.Hash64) (uint64, error) {
 
 	}
 
+	for _, v := range m.GetDomains() {
+
+		if _, err = hasher.Write([]byte(v)); err != nil {
+			return 0, err
+		}
+
+	}
+
 	return hasher.Sum64(), nil
 }
 
@@ -296,6 +304,15 @@ func (m *Route) Hash(hasher hash.Hash64) (uint64, error) {
 		return 0, err
 	}
 
+	err = binary.Write(hasher, binary.LittleEndian, m.GetId())
+	if err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetName())); err != nil {
+		return 0, err
+	}
+
 	if h, ok := interface{}(m.GetMatch()).(safe_hasher.SafeHasher); ok {
 		if _, err = hasher.Write([]byte("Match")); err != nil {
 			return 0, err
@@ -308,6 +325,26 @@ func (m *Route) Hash(hasher hash.Hash64) (uint64, error) {
 			return 0, err
 		} else {
 			if _, err = hasher.Write([]byte("Match")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	if h, ok := interface{}(m.GetHeaderManipulation()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("HeaderManipulation")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetHeaderManipulation(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("HeaderManipulation")); err != nil {
 				return 0, err
 			}
 			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
