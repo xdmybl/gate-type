@@ -456,6 +456,24 @@ func (m *RedirectAction) Equal(that interface{}) bool {
 		return false
 	}
 
+	if strings.Compare(m.GetPrefix(), target.GetPrefix()) != 0 {
+		return false
+	}
+
+	if strings.Compare(m.GetExact(), target.GetExact()) != 0 {
+		return false
+	}
+
+	if h, ok := interface{}(m.GetRegex()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetRegex()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetRegex(), target.GetRegex()) {
+			return false
+		}
+	}
+
 	return true
 }
 
@@ -582,6 +600,38 @@ func (m *HeaderMatch) Equal(that interface{}) bool {
 	}
 
 	if m.GetInvert() != target.GetInvert() {
+		return false
+	}
+
+	return true
+}
+
+// Equal function
+func (m *Regex) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*Regex)
+	if !ok {
+		that2, ok := that.(Regex)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if strings.Compare(m.GetPattern(), target.GetPattern()) != 0 {
+		return false
+	}
+
+	if strings.Compare(m.GetSubstitution(), target.GetSubstitution()) != 0 {
 		return false
 	}
 

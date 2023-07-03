@@ -508,6 +508,34 @@ func (m *RedirectAction) Hash(hasher hash.Hash64) (uint64, error) {
 		return 0, err
 	}
 
+	if _, err = hasher.Write([]byte(m.GetPrefix())); err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetExact())); err != nil {
+		return 0, err
+	}
+
+	if h, ok := interface{}(m.GetRegex()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("Regex")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetRegex(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("Regex")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
 	return hasher.Sum64(), nil
 }
 
@@ -619,6 +647,30 @@ func (m *HeaderMatch) Hash(hasher hash.Hash64) (uint64, error) {
 
 	err = binary.Write(hasher, binary.LittleEndian, m.GetInvert())
 	if err != nil {
+		return 0, err
+	}
+
+	return hasher.Sum64(), nil
+}
+
+// Hash function
+func (m *Regex) Hash(hasher hash.Hash64) (uint64, error) {
+	if m == nil {
+		return 0, nil
+	}
+	if hasher == nil {
+		hasher = fnv.New64()
+	}
+	var err error
+	if _, err = hasher.Write([]byte("gate.xdmybl.io.github.com/xdmybl/gate-type/pkg/api/gate.xdmybl.io/v1.Regex")); err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetPattern())); err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetSubstitution())); err != nil {
 		return 0, err
 	}
 

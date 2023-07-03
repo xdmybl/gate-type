@@ -282,6 +282,16 @@ func (m *RedirectAction) Clone() proto.Message {
 
 	target.PortRedirect = m.GetPortRedirect()
 
+	target.Prefix = m.GetPrefix()
+
+	target.Exact = m.GetExact()
+
+	if h, ok := interface{}(m.GetRegex()).(clone.Cloner); ok {
+		target.Regex = h.Clone().(*Regex)
+	} else {
+		target.Regex = proto.Clone(m.GetRegex()).(*Regex)
+	}
+
 	return target
 }
 
@@ -347,6 +357,21 @@ func (m *HeaderMatch) Clone() proto.Message {
 	target.Contains = m.GetContains()
 
 	target.Invert = m.GetInvert()
+
+	return target
+}
+
+// Clone function
+func (m *Regex) Clone() proto.Message {
+	var target *Regex
+	if m == nil {
+		return target
+	}
+	target = &Regex{}
+
+	target.Pattern = m.GetPattern()
+
+	target.Substitution = m.GetSubstitution()
 
 	return target
 }

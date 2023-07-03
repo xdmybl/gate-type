@@ -81,6 +81,14 @@ message RedirectAction {
   bool https_redirect = 3;
   bool strip_query = 4;
   uint32 port_redirect = 5;
+  enum RedirectPathRewrite{
+    Prefix = 0;
+    Exact = 1;
+    Regex = 2;
+  }
+  string prefix = 6;
+  string exact = 7;
+  Regex regex = 8;
 }
 
 message DirectionAction {
@@ -103,6 +111,23 @@ message HeaderMatch {
   string regex = 3;
   string contains = 4;
   bool invert = 5;
+}
+
+message Regex {
+  // GR2正则表达式里模式
+  string pattern = 1 [
+    (validate.rules).string = {
+      min_bytes : 1,
+      max_bytes : 512
+    }
+  ];
+
+  string substitution = 2 [
+    (validate.rules).string = {
+      min_bytes : 1,
+      max_bytes : 512
+    }
+  ];
 }
 
 message WeightCluster {
