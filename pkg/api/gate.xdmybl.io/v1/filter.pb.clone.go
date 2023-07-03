@@ -276,7 +276,7 @@ func (m *RedirectAction) Clone() proto.Message {
 
 	target.ResponseCode = m.GetResponseCode()
 
-	target.SchemeRewriteSpecifier = m.GetSchemeRewriteSpecifier()
+	target.HttpsRedirect = m.GetHttpsRedirect()
 
 	target.StripQuery = m.GetStripQuery()
 

@@ -493,7 +493,7 @@ func (m *RedirectAction) Hash(hasher hash.Hash64) (uint64, error) {
 		return 0, err
 	}
 
-	err = binary.Write(hasher, binary.LittleEndian, m.GetSchemeRewriteSpecifier())
+	err = binary.Write(hasher, binary.LittleEndian, m.GetHttpsRedirect())
 	if err != nil {
 		return 0, err
 	}

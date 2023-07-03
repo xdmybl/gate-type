@@ -444,7 +444,7 @@ func (m *RedirectAction) Equal(that interface{}) bool {
 		return false
 	}
 
-	if m.GetSchemeRewriteSpecifier() != target.GetSchemeRewriteSpecifier() {
+	if m.GetHttpsRedirect() != target.GetHttpsRedirect() {
 		return false
 	}
 
