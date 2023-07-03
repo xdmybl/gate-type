@@ -78,7 +78,7 @@ message ForwardAction {
 message RedirectAction {
   string host_redirect = 1;
   uint32 response_code = 2;
-  bool scheme_rewrite_specifier = 3;
+  bool https_redirect = 3;
   bool strip_query = 4;
   uint32 port_redirect = 5;
 }
